@@ -109,31 +109,92 @@ function defineThemes(monaco){
     colors:{'editor.background':'#1a2230','editorLineNumber.foreground':'#6c7a8c'}});
 }
 function registerCpp(monaco){
-  var KW='alignas alignof and auto bool break case catch char class const constexpr continue decltype default delete do double else enum explicit export extern false float for friend goto if inline int long mutable namespace new noexcept nullptr operator private protected public return short signed sizeof static static_cast struct switch template this throw true try typedef typename union unsigned using virtual void volatile while'.split(' ');
-  var STL='vector map set unordered_map unordered_set multiset multimap priority_queue queue stack deque string pair tuple array bitset sort stable_sort lower_bound upper_bound binary_search reverse unique accumulate max_element min_element next_permutation fill iota count find swap min max abs push_back pop_back emplace_back size empty begin end front back top push pop insert erase clear resize substr length first second make_pair cin cout cerr endl printf scanf getline to_string stoi stoll'.split(' ');
-  var SNIP=[
-   ['main','int main() {\n\t$0\n\treturn 0;\n}','полный main'],
-   ['fastio','ios_base::sync_with_stdio(false);\ncin.tie(nullptr);','быстрый ввод-вывод'],
-   ['forn','for (int ${1:i} = 0; $1 < ${2:n}; ++$1) {\n\t$0\n}','цикл по индексу'],
-   ['fore','for (auto &${1:x} : ${2:a}) {\n\t$0\n}','range-for по ссылке'],
-   ['readvec','int n;\ncin >> n;\nvector<int> a(n);\nfor (int &x : a) cin >> x;\n$0','прочитать n и массив'],
-   ['printvec','for (int x : ${1:a}) cout << x << " ";\ncout << "\\n";','напечатать массив'],
-   ['sortdesc','sort(${1:a}.begin(), $1.end(), greater<int>());','сортировка по убыванию'],
-   ['cmp','sort(${1:v}.begin(), $1.end(), [](const auto &x, const auto &y) {\n\treturn $0;\n});','сортировка с компаратором'],
-   ['minheap','priority_queue<int, vector<int>, greater<int>> pq;','мин-куча'],
-   ['dsu','vector<int> p(n), sz(n, 1);\niota(p.begin(), p.end(), 0);\nfunction<int(int)> find = [&](int v) { return p[v] == v ? v : p[v] = find(p[v]); };\n$0','СНМ'],
-   ['bfs','queue<int> q;\nvector<int> dist(n + 1, -1);\nq.push(s); dist[s] = 0;\nwhile (!q.empty()) {\n\tint v = q.front(); q.pop();\n\tfor (int to : g[v]) if (dist[to] == -1) {\n\t\tdist[to] = dist[v] + 1;\n\t\tq.push(to);\n\t}\n}\n$0','обход в ширину'],
-   ['graph','int n, m;\ncin >> n >> m;\nvector<vector<int>> g(n + 1);\nfor (int i = 0; i < m; ++i) {\n\tint u, v; cin >> u >> v;\n\tg[u].push_back(v);\n\tg[v].push_back(u);\n}\n$0','прочитать граф']
+  /* Таблица подсказок: [что печатает пользователь, что показать в списке,
+     что вставить (синтаксис сниппетов Monaco), пояснение].
+     Триггер = filterText, поэтому "stack" находит "stack<int> st;". */
+  var T=[
+  /* --- контейнеры: сразу готовое объявление --- */
+  ['vector','vector<int> a;','vector<${1:int}> ${2:a};','пустой вектор'],
+  ['vector','vector<int> a(n);','vector<${1:int}> ${2:a}(${3:n});','вектор заданного размера'],
+  ['vector','vector<int> a(n, 0);','vector<${1:int}> ${2:a}(${3:n}, ${4:0});','вектор с заполнением'],
+  ['vector','vector<vector<int>> g(n);','vector<vector<${1:int}>> ${2:g}(${3:n});','матрица / список смежности'],
+  ['stack','stack<int> st;','stack<${1:int}> ${2:st};','стек'],
+  ['queue','queue<int> q;','queue<${1:int}> ${2:q};','очередь'],
+  ['deque','deque<int> dq;','deque<${1:int}> ${2:dq};','дек'],
+  ['set','set<int> s;','set<${1:int}> ${2:s};','множество'],
+  ['multiset','multiset<int> ms;','multiset<${1:int}> ${2:ms};','мультимножество'],
+  ['map','map<string, int> m;','map<${1:string}, ${2:int}> ${3:m};','упорядоченный словарь'],
+  ['unordered_map','unordered_map<int, int> um;','unordered_map<${1:int}, ${2:int}> ${3:um};','хеш-таблица'],
+  ['unordered_set','unordered_set<int> us;','unordered_set<${1:int}> ${2:us};','хеш-множество'],
+  ['priority_queue','priority_queue<int> pq;   // max-heap','priority_queue<${1:int}> ${2:pq};','макс-куча (по умолчанию)'],
+  ['priority_queue','priority_queue<int, vector<int>, greater<int>> pq;   // min-heap',
+   'priority_queue<${1:int}, vector<${1:int}>, greater<${1:int}>> ${2:pq};','мин-куча'],
+  ['pair','pair<int, int> p;','pair<${1:int}, ${2:int}> ${3:p};','пара'],
+  ['string','string s;','string ${1:s};','строка'],
+  ['array','array<int, 10> a{};','array<${1:int}, ${2:10}> ${3:a}{};','массив фиксированного размера'],
+  ['struct','struct Node { ... };','struct ${1:Node} {\n\t${2:int value;}\n};','структура'],
+
+  /* --- конструкции языка --- */
+  ['for','for (int i = 0; i < n; ++i) { ... }','for (int ${1:i} = 0; ${1:i} < ${2:n}; ++${1:i}) {\n\t$0\n}','цикл по индексу'],
+  ['for','for (auto &x : a) { ... }','for (auto &${1:x} : ${2:a}) {\n\t$0\n}','range-for по ссылке'],
+  ['for','for (int i = 0; i < n; ++i) for (int j = 0; j < m; ++j) { ... }',
+   'for (int ${1:i} = 0; ${1:i} < ${2:n}; ++${1:i}) {\n\tfor (int ${3:j} = 0; ${3:j} < ${4:m}; ++${3:j}) {\n\t\t$0\n\t}\n}','вложенный цикл'],
+  ['for','for (int i = n - 1; i >= 0; --i) { ... }','for (int ${1:i} = ${2:n} - 1; ${1:i} >= 0; --${1:i}) {\n\t$0\n}','цикл в обратную сторону'],
+  ['while','while (cond) { ... }','while (${1:condition}) {\n\t$0\n}','цикл с условием'],
+  ['while','while (!q.empty()) { ... }','while (!${1:q}.empty()) {\n\t$0\n}','пока очередь не пуста'],
+  ['if','if (cond) { ... }','if (${1:condition}) {\n\t$0\n}','условие'],
+  ['ifelse','if (cond) { ... } else { ... }','if (${1:condition}) {\n\t$2\n} else {\n\t$0\n}','условие с else'],
+  ['main','int main() { ... }','int main() {\n\t$0\n\treturn 0;\n}','точка входа'],
+  ['lambda','auto f = [](int x) { ... };','auto ${1:f} = [](${2:int x}) {\n\t$0\n};','лямбда'],
+  ['rec','function<int(int)> f = [&](int v) { ... };','function<${1:int}(${2:int})> ${3:f} = [&](${2:int} ${4:v}) {\n\t$0\n};','рекурсивная лямбда'],
+
+  /* --- алгоритмы: целиком, а не одно слово --- */
+  ['sort','sort(a.begin(), a.end());','sort(${1:a}.begin(), ${1:a}.end());','сортировка по возрастанию'],
+  ['sort','sort(a.begin(), a.end(), greater<int>());','sort(${1:a}.begin(), ${1:a}.end(), greater<${2:int}>());','сортировка по убыванию'],
+  ['sort','sort(v.begin(), v.end(), [](...){ ... });','sort(${1:v}.begin(), ${1:v}.end(), [](const auto &a, const auto &b) {\n\treturn $0;\n});','сортировка со своим компаратором'],
+  ['stable_sort','stable_sort(a.begin(), a.end());','stable_sort(${1:a}.begin(), ${1:a}.end());','устойчивая сортировка'],
+  ['lower_bound','lower_bound(a.begin(), a.end(), x) - a.begin();','lower_bound(${1:a}.begin(), ${1:a}.end(), ${2:x}) - ${1:a}.begin();','первый индекс >= x'],
+  ['upper_bound','upper_bound(a.begin(), a.end(), x) - a.begin();','upper_bound(${1:a}.begin(), ${1:a}.end(), ${2:x}) - ${1:a}.begin();','первый индекс > x'],
+  ['reverse','reverse(a.begin(), a.end());','reverse(${1:a}.begin(), ${1:a}.end());','развернуть'],
+  ['unique','a.erase(unique(a.begin(), a.end()), a.end());','${1:a}.erase(unique(${1:a}.begin(), ${1:a}.end()), ${1:a}.end());','убрать подряд идущие повторы'],
+  ['accumulate','accumulate(a.begin(), a.end(), 0LL);','accumulate(${1:a}.begin(), ${1:a}.end(), 0LL);','сумма'],
+  ['max_element','*max_element(a.begin(), a.end());','*max_element(${1:a}.begin(), ${1:a}.end());','максимум'],
+  ['min_element','*min_element(a.begin(), a.end());','*min_element(${1:a}.begin(), ${1:a}.end());','минимум'],
+
+  /* --- ввод-вывод и заготовки целиком --- */
+  ['cin','cin >> x;','cin >> ${1:x};','чтение'],
+  ['cout','cout << x << "\\n";','cout << ${1:x} << "\\n";','вывод'],
+  ['include','#include <bits/stdc++.h>','#include <bits/stdc++.h>\nusing namespace std;\n$0','заголовок'],
+  ['fastio','ios_base::sync_with_stdio(false); cin.tie(nullptr);','ios_base::sync_with_stdio(false);\ncin.tie(nullptr);','быстрый ввод-вывод'],
+  ['readvec','int n; cin >> n; vector<int> a(n); ...','int ${1:n};\ncin >> ${1:n};\nvector<int> ${2:a}(${1:n});\nfor (int &x : ${2:a}) cin >> x;\n$0','прочитать n и массив'],
+  ['printvec','for (int x : a) cout << x << " ";','for (int x : ${1:a}) cout << x << " ";\ncout << "\\n";','напечатать массив'],
+  ['graph','читать граф в список смежности','int ${1:n}, ${2:m};\ncin >> ${1:n} >> ${2:m};\nvector<vector<int>> ${3:g}(${1:n} + 1);\nfor (int i = 0; i < ${2:m}; ++i) {\n\tint u, v; cin >> u >> v;\n\t${3:g}[u].push_back(v);\n\t${3:g}[v].push_back(u);\n}\n$0','чтение неориентированного графа'],
+  ['bfs','обход в ширину от вершины s','queue<int> q;\nvector<int> dist(${1:n} + 1, -1);\nq.push(${2:s}); dist[${2:s}] = 0;\nwhile (!q.empty()) {\n\tint v = q.front(); q.pop();\n\tfor (int to : ${3:g}[v]) if (dist[to] == -1) {\n\t\tdist[to] = dist[v] + 1;\n\t\tq.push(to);\n\t}\n}\n$0','BFS с расстояниями'],
+  ['dfs','обход в глубину (рекурсивно)','vector<bool> used(${1:n} + 1, false);\nfunction<void(int)> dfs = [&](int v) {\n\tused[v] = true;\n\tfor (int to : ${2:g}[v]) if (!used[to]) dfs(to);\n};\n$0','DFS'],
+  ['dsu','система непересекающихся множеств','vector<int> p(${1:n} + 1), sz(${1:n} + 1, 1);\niota(p.begin(), p.end(), 0);\nfunction<int(int)> find = [&](int v) { return p[v] == v ? v : p[v] = find(p[v]); };\nauto unite = [&](int a, int b) {\n\ta = find(a); b = find(b);\n\tif (a == b) return false;\n\tif (sz[a] < sz[b]) swap(a, b);\n\tp[b] = a; sz[a] += sz[b];\n\treturn true;\n};\n$0','СНМ с сжатием путей'],
+  ['dijkstra','кратчайшие пути от вершины s','vector<long long> d(${1:n} + 1, LLONG_MAX / 4);\npriority_queue<pair<long long,int>, vector<pair<long long,int>>, greater<>> pq;\nd[${2:s}] = 0; pq.push({0, ${2:s}});\nwhile (!pq.empty()) {\n\tauto [dv, v] = pq.top(); pq.pop();\n\tif (dv > d[v]) continue;\n\tfor (auto [to, w] : ${3:g}[v])\n\t\tif (d[v] + w < d[to]) {\n\t\t\td[to] = d[v] + w;\n\t\t\tpq.push({d[to], to});\n\t\t}\n}\n$0','Дейкстра на куче'],
+  ['binsearch','бинпоиск по ответу','long long l = ${1:1}, r = ${2:MAXV};\nwhile (l < r) {\n\tlong long m = l + (r - l + 1) / 2;\n\tif (can(m)) l = m; else r = m - 1;\n}\n$0','максимальный x, для которого can(x)'],
+  ['prefixfunc','префикс-функция','vector<int> pi(${1:s}.size(), 0);\nfor (int i = 1; i < (int)${1:s}.size(); ++i) {\n\tint j = pi[i - 1];\n\twhile (j > 0 && ${1:s}[i] != ${1:s}[j]) j = pi[j - 1];\n\tif (${1:s}[i] == ${1:s}[j]) ++j;\n\tpi[i] = j;\n}\n$0','π-массив для KMP']
   ];
+
+  var KW='alignas alignof auto bool break case catch char class const constexpr continue default delete do double else enum explicit extern false float friend goto inline int long mutable namespace new noexcept nullptr operator private protected public return short signed sizeof static static_cast switch template this throw true try typedef typename union unsigned using virtual void volatile'.split(' ');
+  var WORDS='begin end size empty push_back pop_back emplace_back front back top push pop insert erase clear resize substr length first second make_pair swap min max abs count find iota fill next_permutation binary_search to_string stoi stoll endl cerr printf scanf getline'.split(' ');
+
   monaco.languages.registerCompletionItemProvider('cpp',{
+    triggerCharacters:['<','.','>',':'],
     provideCompletionItems:function(model,pos){
       var w=model.getWordUntilPosition(pos);
-      var range={startLineNumber:pos.lineNumber,endLineNumber:pos.lineNumber,startColumn:w.startColumn,endColumn:w.endColumn};
+      var range={startLineNumber:pos.lineNumber,endLineNumber:pos.lineNumber,
+                 startColumn:w.startColumn,endColumn:w.endColumn};
       var K=monaco.languages.CompletionItemKind, R=monaco.languages.CompletionItemInsertTextRule;
       var out=[];
-      SNIP.forEach(function(s){ out.push({label:s[0],kind:K.Snippet,insertText:s[1],
-        insertTextRules:R.InsertAsSnippet,detail:s[2],documentation:s[2],range:range,sortText:'0'+s[0]}); });
-      STL.forEach(function(k){ out.push({label:k,kind:K.Function,insertText:k,range:range,sortText:'1'+k}); });
+      T.forEach(function(t,i){
+        out.push({label:t[1], filterText:t[0], kind:K.Snippet, insertText:t[2],
+                  insertTextRules:R.InsertAsSnippet, detail:t[3],
+                  documentation:{value:'**'+t[3]+'**\n\n```cpp\n'+t[2].replace(/\$\{\d+:([^}]*)\}/g,'$1').replace(/\$\d+/g,'')+'\n```'},
+                  range:range, sortText:'0'+String(i).padStart(3,'0')});
+      });
+      WORDS.forEach(function(k){ out.push({label:k,kind:K.Method,insertText:k,range:range,sortText:'1'+k}); });
       KW.forEach(function(k){ out.push({label:k,kind:K.Keyword,insertText:k,range:range,sortText:'2'+k}); });
       return {suggestions:out};
     }
