@@ -92,6 +92,7 @@ function ensureMonaco(){
       bracketPairColorization:{enabled:true}, scrollbar:{verticalScrollbarSize:10}
     });
     MON.ed.addCommand(monaco.KeyMod.CtrlCmd|monaco.KeyCode.Enter, run);
+    MON.ed.onDidChangeModelContent(saveState);
     setStatus('редактор готов · подсветка и автодополнение включены');
     return MON.ed;
   }).catch(function(e){
@@ -212,6 +213,29 @@ function registerCpp(monaco){
     }
   });
 }
+/* ---------- состояние переживает перезагрузку ---------- */
+var KEY={code:'ads-cpp-code',stdin:'ads-cpp-stdin',open:'ads-cpp-open'};
+var saveTimer=null;
+function saveState(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(function(){
+    try{
+      localStorage.setItem(KEY.code,getCode());
+      localStorage.setItem(KEY.stdin,stdin?stdin.value:'');
+    }catch(e){}
+  },400);
+}
+function saveOpen(v){ try{ localStorage.setItem(KEY.open,v?'1':'0'); }catch(e){} }
+function restoreState(){
+  var code=null,inp=null;
+  try{ code=localStorage.getItem(KEY.code); inp=localStorage.getItem(KEY.stdin); }catch(e){}
+  if(code!==null && code.trim()){ ta.value=code; renumber(); }
+  else { ta.value=SKELETON; renumber(); }
+  if(inp!==null && stdin) stdin.value=inp;
+  return code!==null && code.trim();
+}
+function wasOpen(){ try{ return localStorage.getItem(KEY.open)==='1'; }catch(e){ return false; } }
+
 function getCode(){ return MON.ed ? MON.ed.getValue() : ta.value; }
 function setCode(c){ if(MON.ed) MON.ed.setValue(c); else { ta.value=c; renumber(); } }
 function syncMonaco(){
@@ -329,6 +353,7 @@ function load(code,label){
 function toggle(on){
   ED.open = (on===undefined)? !ED.open : on;
   body.classList.toggle('ed-on',ED.open);
+  saveOpen(ED.open);
   var b=document.getElementById('pb-code'); if(b) b.classList.toggle('on',ED.open);
   if(ED.open){
     ensureMonaco().then(function(ed){ syncMonaco(); ed.focus(); })
@@ -372,9 +397,10 @@ function build(){
   out=document.getElementById('ed-out'); status=document.getElementById('ed-status');
   nums=document.getElementById('ed-nums'); sel=document.getElementById('ed-snip');
 
-  ta.addEventListener('input',renumber);
+  ta.addEventListener('input',function(){ renumber(); saveState(); });
   ta.addEventListener('scroll',function(){ nums.scrollTop=ta.scrollTop; });
   ta.addEventListener('keydown',keyHandler);
+  stdin.addEventListener('input',saveState);
   stdin.addEventListener('keydown',function(e){ if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();run();} });
   document.getElementById('ed-run').onclick=run;
   document.getElementById('ed-close').onclick=function(){ toggle(false); };
@@ -407,7 +433,11 @@ function build(){
     pre.appendChild(b);
   });
 
-  load(SKELETON);
+  var restored=restoreState();
+  say(restored
+    ? '<span class="dim">Код восстановлен после перезагрузки. Ctrl+Enter — запустить.</span>'
+    : '<span class="dim">Ctrl+Enter или кнопку Run — чтобы скомпилировать и запустить.</span>');
+  setStatus(restored?'восстановлено из прошлой сессии':'готово');
 }
 
 /* ---------- кнопка в панели показа ---------- */
@@ -440,7 +470,7 @@ document.addEventListener('keydown',function(e){
   if(window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',syncMonaco);
 })();
 
-function init(){ build(); addButton(); }
+function init(){ build(); addButton(); if(wasOpen()) toggle(true); }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
 else setTimeout(init,0);
 })();
