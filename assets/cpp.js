@@ -39,6 +39,115 @@ function wrap(code){
   return '#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n'+indented+'\n\n    return 0;\n}\n';
 }
 
+/* ---------- Monaco (редактор из VS Code), грузится лениво при первом открытии ---------- */
+var MON={base:'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/',ed:null,loading:null,failed:false};
+
+function monacoTheme(){
+  var d=document.documentElement.getAttribute('data-theme');
+  if(!d) d=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';
+  return d==='dark'?'ads-dark':'ads-light';
+}
+function monacoFontSize(){
+  var px=parseFloat(getComputedStyle(document.documentElement).fontSize)||16;
+  return Math.round(px*0.92);
+}
+function loadScript(src){
+  return new Promise(function(res,rej){
+    var s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=function(){rej(new Error('не загрузился '+src));};
+    document.head.appendChild(s);
+  });
+}
+function ensureMonaco(){
+  if(MON.ed) return Promise.resolve(MON.ed);
+  if(MON.failed) return Promise.reject(new Error('monaco unavailable'));
+  if(MON.loading) return MON.loading;
+  setStatus('загружаю редактор (Monaco, ~3 МБ, один раз)…');
+  var link=document.createElement('link');
+  link.rel='stylesheet'; link.href=MON.base+'editor/editor.main.css';
+  document.head.appendChild(link);
+  window.MonacoEnvironment={ getWorkerUrl:function(){
+    return URL.createObjectURL(new Blob([
+      "self.MonacoEnvironment={baseUrl:'"+MON.base+"'};importScripts('"+MON.base+"base/worker/workerMain.js');"
+    ],{type:'text/javascript'}));
+  }};
+  MON.loading=loadScript(MON.base+'loader.js').then(function(){
+    return new Promise(function(res,rej){
+      window.require.config({paths:{vs:MON.base.replace(/\/$/,'')}});
+      window.require(['vs/editor/editor.main'],function(){ res(window.monaco); },rej);
+      setTimeout(function(){ rej(new Error('таймаут загрузки')); },30000);
+    });
+  }).then(function(monaco){
+    defineThemes(monaco); registerCpp(monaco);
+    var host=document.getElementById('ed-mon');
+    document.getElementById('ed-code-plain').style.display='none';
+    host.style.display='block';
+    MON.ed=monaco.editor.create(host,{
+      value:ta.value, language:'cpp', theme:monacoTheme(),
+      fontSize:monacoFontSize(), fontFamily:'"IBM Plex Mono", ui-monospace, monospace',
+      fontLigatures:false, minimap:{enabled:false}, automaticLayout:true,
+      scrollBeyondLastLine:false, tabSize:4, insertSpaces:true, renderWhitespace:'none',
+      smoothScrolling:true, cursorBlinking:'smooth', padding:{top:10,bottom:10},
+      suggestOnTriggerCharacters:true, quickSuggestions:{other:true,comments:false,strings:false},
+      bracketPairColorization:{enabled:true}, scrollbar:{verticalScrollbarSize:10}
+    });
+    MON.ed.addCommand(monaco.KeyMod.CtrlCmd|monaco.KeyCode.Enter, run);
+    setStatus('редактор готов · подсветка и автодополнение включены');
+    return MON.ed;
+  }).catch(function(e){
+    MON.failed=true; MON.loading=null;
+    setStatus('Monaco не загрузился ('+e.message+') — работает простой редактор');
+    throw e;
+  });
+  return MON.loading;
+}
+function defineThemes(monaco){
+  var cs=getComputedStyle(document.documentElement);
+  function v(n,f){ return (cs.getPropertyValue(n)||f).trim().replace(/^#?/,'#'); }
+  monaco.editor.defineTheme('ads-light',{base:'vs',inherit:true,rules:[],
+    colors:{'editor.background':'#f6f8fa','editorLineNumber.foreground':'#8091a5'}});
+  monaco.editor.defineTheme('ads-dark',{base:'vs-dark',inherit:true,rules:[],
+    colors:{'editor.background':'#1a2230','editorLineNumber.foreground':'#6c7a8c'}});
+}
+function registerCpp(monaco){
+  var KW='alignas alignof and auto bool break case catch char class const constexpr continue decltype default delete do double else enum explicit export extern false float for friend goto if inline int long mutable namespace new noexcept nullptr operator private protected public return short signed sizeof static static_cast struct switch template this throw true try typedef typename union unsigned using virtual void volatile while'.split(' ');
+  var STL='vector map set unordered_map unordered_set multiset multimap priority_queue queue stack deque string pair tuple array bitset sort stable_sort lower_bound upper_bound binary_search reverse unique accumulate max_element min_element next_permutation fill iota count find swap min max abs push_back pop_back emplace_back size empty begin end front back top push pop insert erase clear resize substr length first second make_pair cin cout cerr endl printf scanf getline to_string stoi stoll'.split(' ');
+  var SNIP=[
+   ['main','int main() {\n\t$0\n\treturn 0;\n}','полный main'],
+   ['fastio','ios_base::sync_with_stdio(false);\ncin.tie(nullptr);','быстрый ввод-вывод'],
+   ['forn','for (int ${1:i} = 0; $1 < ${2:n}; ++$1) {\n\t$0\n}','цикл по индексу'],
+   ['fore','for (auto &${1:x} : ${2:a}) {\n\t$0\n}','range-for по ссылке'],
+   ['readvec','int n;\ncin >> n;\nvector<int> a(n);\nfor (int &x : a) cin >> x;\n$0','прочитать n и массив'],
+   ['printvec','for (int x : ${1:a}) cout << x << " ";\ncout << "\\n";','напечатать массив'],
+   ['sortdesc','sort(${1:a}.begin(), $1.end(), greater<int>());','сортировка по убыванию'],
+   ['cmp','sort(${1:v}.begin(), $1.end(), [](const auto &x, const auto &y) {\n\treturn $0;\n});','сортировка с компаратором'],
+   ['minheap','priority_queue<int, vector<int>, greater<int>> pq;','мин-куча'],
+   ['dsu','vector<int> p(n), sz(n, 1);\niota(p.begin(), p.end(), 0);\nfunction<int(int)> find = [&](int v) { return p[v] == v ? v : p[v] = find(p[v]); };\n$0','СНМ'],
+   ['bfs','queue<int> q;\nvector<int> dist(n + 1, -1);\nq.push(s); dist[s] = 0;\nwhile (!q.empty()) {\n\tint v = q.front(); q.pop();\n\tfor (int to : g[v]) if (dist[to] == -1) {\n\t\tdist[to] = dist[v] + 1;\n\t\tq.push(to);\n\t}\n}\n$0','обход в ширину'],
+   ['graph','int n, m;\ncin >> n >> m;\nvector<vector<int>> g(n + 1);\nfor (int i = 0; i < m; ++i) {\n\tint u, v; cin >> u >> v;\n\tg[u].push_back(v);\n\tg[v].push_back(u);\n}\n$0','прочитать граф']
+  ];
+  monaco.languages.registerCompletionItemProvider('cpp',{
+    provideCompletionItems:function(model,pos){
+      var w=model.getWordUntilPosition(pos);
+      var range={startLineNumber:pos.lineNumber,endLineNumber:pos.lineNumber,startColumn:w.startColumn,endColumn:w.endColumn};
+      var K=monaco.languages.CompletionItemKind, R=monaco.languages.CompletionItemInsertTextRule;
+      var out=[];
+      SNIP.forEach(function(s){ out.push({label:s[0],kind:K.Snippet,insertText:s[1],
+        insertTextRules:R.InsertAsSnippet,detail:s[2],documentation:s[2],range:range,sortText:'0'+s[0]}); });
+      STL.forEach(function(k){ out.push({label:k,kind:K.Function,insertText:k,range:range,sortText:'1'+k}); });
+      KW.forEach(function(k){ out.push({label:k,kind:K.Keyword,insertText:k,range:range,sortText:'2'+k}); });
+      return {suggestions:out};
+    }
+  });
+}
+function getCode(){ return MON.ed ? MON.ed.getValue() : ta.value; }
+function setCode(c){ if(MON.ed) MON.ed.setValue(c); else { ta.value=c; renumber(); } }
+function syncMonaco(){
+  if(!MON.ed) return;
+  MON.ed.updateOptions({fontSize:monacoFontSize()});
+  window.monaco&&window.monaco.editor.setTheme(monacoTheme());
+  MON.ed.layout();
+}
+
 /* ---------- запуск ---------- */
 function stripAnsi(s){ return String(s).replace(/\u001b\[[0-9;]*[A-Za-z]/g,''); }
 function esc(s){ return stripAnsi(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
@@ -82,7 +191,7 @@ function runWandbox(src,inp){
 function run(){
   if(ED.busy) return;
   ED.busy=true;
-  var src=ta.value, inp=stdin.value;
+  var src=getCode(), inp=stdin.value;
   say('<span class="dim">compiling…</span>');
   setStatus('отправлено на удалённый компилятор…');
   var t0=Date.now();
@@ -139,7 +248,7 @@ function keyHandler(e){
 }
 
 function load(code,label){
-  ta.value=code; renumber();
+  setCode(code);
   setStatus(label?('загружено: '+label):'готово');
   say('<span class="dim">Ctrl+Enter или кнопку Run — чтобы скомпилировать и запустить.</span>');
 }
@@ -148,7 +257,10 @@ function toggle(on){
   ED.open = (on===undefined)? !ED.open : on;
   body.classList.toggle('ed-on',ED.open);
   var b=document.getElementById('pb-code'); if(b) b.classList.toggle('on',ED.open);
-  if(ED.open) setTimeout(function(){ ta.focus(); },30);
+  if(ED.open){
+    ensureMonaco().then(function(ed){ syncMonaco(); ed.focus(); })
+                  .catch(function(){ setTimeout(function(){ ta.focus(); },30); });
+  }
 }
 
 /* ---------- сборка интерфейса ---------- */
@@ -168,8 +280,9 @@ function build(){
     '<div class="ed-body">'+
       '<div class="ed-col">'+
         '<div class="ed-lbl">source</div>'+
-        '<div class="ed-code"><div class="ed-nums" id="ed-nums">1</div>'+
+        '<div class="ed-code" id="ed-code-plain"><div class="ed-nums" id="ed-nums">1</div>'+
         '<textarea class="ed-ta" id="ed-ta" spellcheck="false" autocomplete="off"></textarea></div>'+
+        '<div class="ed-mon" id="ed-mon"></div>'+
       '</div>'+
       '<div class="ed-col">'+
         '<div class="ed-lbl">stdin — входные данные</div>'+
@@ -193,7 +306,7 @@ function build(){
   document.getElementById('ed-run').onclick=run;
   document.getElementById('ed-close').onclick=function(){ toggle(false); };
   document.getElementById('ed-copy').onclick=function(){
-    navigator.clipboard&&navigator.clipboard.writeText(ta.value).then(function(){ setStatus('скопировано в буфер'); });
+    navigator.clipboard&&navigator.clipboard.writeText(getCode()).then(function(){ setStatus('скопировано в буфер'); });
   };
   document.getElementById('ed-reset').onclick=function(){ load(SKELETON,'skeleton'); };
 
@@ -241,6 +354,18 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Escape'&&ED.open){ toggle(false); e.preventDefault(); return; }
   if(e.key==='c'||e.key==='C'){ toggle(); e.preventDefault(); }
 });
+
+/* масштаб A+/A− и переключение темы должны докатываться до Monaco */
+(function(){
+  var mo=new MutationObserver(function(muts){
+    for(var i=0;i<muts.length;i++){
+      var a=muts[i].attributeName;
+      if(a==='style'||a==='data-theme'){ syncMonaco(); break; }
+    }
+  });
+  mo.observe(document.documentElement,{attributes:true,attributeFilter:['style','data-theme']});
+  if(window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',syncMonaco);
+})();
 
 function init(){ build(); addButton(); }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);

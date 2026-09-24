@@ -31,6 +31,7 @@ body.ed-on{overflow:hidden}
   font-weight:600;padding:7px 12px 5px;background:var(--surface-2);border-bottom:1px solid var(--line-soft)}
 
 .ed-code{flex:1;display:flex;min-height:0;background:var(--surface-2)}
+.ed-mon{flex:1;min-height:0;display:none}
 .ed-nums{white-space:pre;padding:10px 8px 10px 12px;text-align:right;color:var(--ink-3);user-select:none;
   font-family:"IBM Plex Mono",monospace;font-size:.92rem;line-height:1.55;overflow:hidden;
   border-right:1px solid var(--line-soft);flex:none;min-width:2.6em}
