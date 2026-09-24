@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hashing and Rabin–Karp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
+<link rel="stylesheet" href="assets/notes.css">
+</head><body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">ADS 2026 · KBTU · Lecture 8 · Lab 8</div>
+  <h1>Hashing and <em>Rabin–Karp</em></h1>
+  <p class="dek">Everything so far was built on comparison. Today we stop comparing and start computing an address. The payoff is O(1) lookup and substring equality in constant time; the price is that the answer can be wrong, and the lecture is largely about making that probability negligible.</p>
+  <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>6</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 8 · 6 problems</b></span></div>
+</header>
+
+<div class="cols">
+
+<nav class="rail" aria-label="Running order">
+  <div class="rail-h">Running order</div>
+  <div class="part">I · Hash tables</div>
+  <ol>
+    <li><a href="#b1"><span class="n">01</span><span>From comparison to address</span><span class="t">16′</span></a></li>
+  </ol>
+  <div class="part">II · String hashing</div>
+  <ol>
+    <li><a href="#b2"><span class="n">02</span><span>Polynomial hash</span><span class="t">20′</span></a></li>
+  </ol>
+  <div class="part">III · Rabin–Karp</div>
+  <ol>
+    <li><a href="#b3"><span class="n">03</span><span>Prefix hashes · Rabin–Karp</span><span class="t">22′</span></a></li>
+  </ol>
+  <div class="part">IV · Practice</div>
+  <ol>
+    <li><a href="#b4"><span class="n">04</span><span>Lab 8 walkthrough</span><span class="t">12′</span></a></li>
+    <li><a href="#b5"><span class="n">05</span><span>What comes next</span><span class="t">3′</span></a></li>
+  </ol>
+</nav>
+
+<main>
+<section class="beat" id="b1">
+  <div class="beat-head">
+    <div class="beat-n">01</div>
+    <div>
+      <h2>Compute the place instead of finding it</h2>
+      <div class="sub"><span>16 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>A BST finds a key in O(log n) by comparing. A hash table <strong>computes where the key must be</strong> and goes there — O(1), with no ordering at all.</li>
+        <li>That is the trade, and it is worth naming both halves: you gain constant lookup, you lose <strong>every ordered query</strong>. No "smallest", no range, no in-order output. That is why <code>std::map</code> still exists alongside <code>unordered_map</code>.</li>
+        <li>Collisions are not an edge case — with a table of size m and more than m possible keys they are <strong>guaranteed</strong>. Pigeonhole. The question is only how you handle them.</li>
+        <li>Two standard answers: <strong>chaining</strong> (each bucket is a list) and <strong>open addressing</strong> (probe the next free slot). Chaining is what the STL does; say it and move on.</li>
+        <li>The honest warning about <code>unordered_map</code>: worst case is O(n) per operation when everything lands in one bucket, and on Codeforces this is <strong>weaponised</strong> with anti-hash tests. <code>map</code> at O(log n) guaranteed is often the safer choice under time pressure.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>For the board</h4><div class="formula">index = h(key) mod m</div><pre style="margin-top:13px">unordered_map&lt;string, <span class="k">int</span>&gt; cnt;
+cnt[<span class="s">"abc"</span>]++;              <span class="c">// O(1) average</span>
+<span class="k">if</span> (cnt.count(<span class="s">"abc"</span>)) ...   <span class="c">// O(1) average</span></pre><div class="tw" style="margin-top:14px"><table><thead><tr><th>Operation</th><th class="n">map</th><th class="n">unordered_map</th></tr></thead><tbody><tr><td class="k">insert / find / erase</td><td class="n">O(log n)</td><td class="n" style="color:var(--prime)">O(1) avg</td></tr><tr><td class="k">worst case</td><td class="n" style="color:var(--prime)">O(log n)</td><td class="n" style="color:var(--mark)">O(n)</td></tr><tr><td class="k">iterate in order</td><td style="color:var(--prime)" class="n">yes</td><td class="n" style="color:var(--mark)">no</td></tr><tr><td class="k">lower_bound</td><td class="n" style="color:var(--prime)">yes</td><td class="n" style="color:var(--mark)">no</td></tr></tbody></table></div></div>
+      <div class="card pad board"><h4>What makes a hash function good</h4><p><strong>Deterministic</strong> — same input, same output, always. Otherwise nothing works.</p><p style="margin-top:10px"><strong>Uniform</strong> — spreads keys across buckets. A function that maps every string to 0 is a valid hash function and a useless one.</p><p style="margin-top:10px"><strong>Fast</strong> — computing it must be cheaper than the search it replaces.</p><p style="margin-top:10px"><strong>Avalanche</strong> — changing one character changes the hash a lot. Otherwise similar keys collide in clusters.</p><div class="trap" style="margin-top:14px"><b>Counter-example worth showing:</b> "sum of the letter codes" satisfies the first three and fails the fourth badly — every anagram collides. <code>abc</code>, <code>bca</code> and <code>cab</code> all hash the same. Position must enter the formula, which is exactly what the next beat does.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b2">
+  <div class="beat-head">
+    <div class="beat-n">02</div>
+    <div>
+      <h2>Turning a string into a number</h2>
+      <div class="sub"><span>20 min</span> <span>demo: hash</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>The fix for anagrams is to weight each position differently: treat the string as a <strong>number in base p</strong>. That is the polynomial hash, and it is the only string hash this course uses.</li>
+        <li>Write the formula and the two constants: <strong>p a prime above the alphabet size</strong> (31 for lowercase letters), <strong>m a large prime modulus</strong> (10⁹+7 or 10⁹+9).</li>
+        <li>Compute it in the demo for a few strings, then deliberately find a collision with a tiny modulus. Seeing two different strings share a hash is what makes the probability talk land.</li>
+        <li>The birthday bound, stated plainly: with n strings and modulus m the chance of some collision is about <strong>n²/2m</strong>. At n = 10⁶ and m = 10⁹ that is roughly 1/2 — <strong>not</strong> negligible.</li>
+        <li>Hence <strong>double hashing</strong>: two different moduli, compare both. The effective modulus becomes ~10¹⁸ and the probability drops to nothing. Say that this is standard practice, not paranoia.</li>
+        <li>And the practical rule for this lab: if a hash solution gets a strange wrong answer on one big test and nowhere else, <strong>suspect a collision before suspecting the logic</strong>.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>For the board</h4><div class="formula">h(s) = (s₀·p⁰ + s₁·p¹ + … + s<sub>n−1</sub>·p<sup>n−1</sup>) mod m</div><pre style="margin-top:13px"><span class="k">const long long</span> p = 31, m = 1e9 + 7;
+
+<span class="k">long long</span> h = 0, pw = 1;
+<span class="k">for</span> (<span class="k">char</span> c : s) {
+    h = (h + (c - <span class="s">'a'</span> + 1) * pw) % m;
+    pw = pw * p % m;
+}</pre><div class="trap" style="margin-top:14px"><b>Why <code>c - 'a' + 1</code> and not <code>c - 'a'</code>:</b> without the +1 the letter <code>a</code> maps to 0, and then <code>"a"</code>, <code>"aa"</code> and <code>"aaa"</code> all hash to 0. A whole family of strings collapses.</div><div class="trap" style="margin-top:10px"><b>Overflow:</b> <code>h * p</code> with both near 10⁹ reaches 10¹⁸, which fits <code>long long</code> — barely. Push the modulus higher and it does not. Take the modulus at every step, never at the end.</div></div>
+      <div class="card pad demo"><h4>Demo · hash, and how easily it collides</h4><div class="ctl"><label class="f" style="flex:1 1 150px"><span>string</span><input type="text" id="hsx" value="abc"></label><label class="f" style="flex:1 1 110px"><span>p</span><input type="number" id="hsp" value="31"></label><label class="f" style="flex:1 1 130px"><span>modulus</span><input type="number" id="hsm" value="1000000007"></label><button class="pri" id="hsrun">Hash</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-hs="abc|31|1000000007">abc</button><button class="chip" data-hs="bca|31|1000000007">bca (anagram)</button><button class="chip" data-hs="abc|31|101">tiny modulus</button><button class="chip" data-hs="hello|1|1000000007">p = 1, broken</button></div><div class="readout"><div class="stat good"><div class="lab">hash</div><div class="val" id="hsh">—</div></div><div class="stat"><div class="lab">collisions among 5 000 random words</div><div class="val" id="hsc">—</div></div></div><div class="steps" style="margin-top:14px"><table><thead><tr><th class="n">i</th><th>char</th><th class="n">code</th><th class="n">p^i mod m</th><th class="n">running h</th></tr></thead><tbody id="hssteps"></tbody></table></div><div class="log" id="hslog"></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b3">
+  <div class="beat-head">
+    <div class="beat-n">03</div>
+    <div>
+      <h2>Any substring in O(1)</h2>
+      <div class="sub"><span>22 min</span> <span>demo: search</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Precompute the hash of <strong>every prefix</strong>, and the hash of any substring becomes a subtraction. One O(n) pass buys O(1) queries forever after.</li>
+        <li>Write the substring formula carefully — the power factor is what trips everyone: <code>h[r] − h[l−1]·p^(r−l+1)</code>, all modulo m, and <strong>add m before the final mod</strong> because the subtraction can go negative.</li>
+        <li>That negative-result bug is worth a full minute. In C++ <code>(-5) % 7</code> is <code>-5</code>, not <code>2</code>. A single missing <code>+ m</code> gives wrong answers on perfectly ordinary tests.</li>
+        <li>Now Rabin–Karp is two lines: hash the pattern once, then compare it against the hash of <strong>every window</strong> of the text. O(n + m) instead of O(n·m).</li>
+        <li>Say the honest caveat: a hash match is <strong>probably</strong> a match. The textbook version verifies with a direct comparison; with double hashing, competitive programmers skip the verification. Both are defensible — name which one you expect at the defence.</li>
+        <li>Close the loop with the previous lecture: this is the second time we have replaced an O(n·m) scan with something linear, and next week does it a third way, deterministically, with no probability at all.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>For the board</h4><pre><span class="c">// prefix hashes, 1-indexed</span>
+h[0] = 0; pw[0] = 1;
+<span class="k">for</span> (<span class="k">int</span> i = 1; i &lt;= n; ++i) {
+    h[i]  = (h[i-1] * p + (s[i-1] - <span class="s">'a'</span> + 1)) % m;
+    pw[i] = pw[i-1] * p % m;
+}
+
+<span class="c">// hash of s[l..r], 1-indexed inclusive</span>
+<span class="k">long long</span> get(<span class="k">int</span> l, <span class="k">int</span> r) {
+    <span class="k">return</span> ((h[r] - h[l-1] * pw[r-l+1]) % m + m) % m;
+}                              <span class="c">// ↑ this + m matters</span></pre><div class="trap" style="margin-top:14px"><b>Two hashes, not one, whenever the string is long.</b> Keep a second modulus (10⁹+9) and compare the pair. It doubles the code and removes the entire class of "correct but occasionally wrong" submissions.</div></div>
+      <div class="card pad demo"><h4>Demo · find the pattern with rolling hashes</h4><div class="ctl"><label class="f" style="flex:1 1 230px"><span>text</span><input type="text" id="rkt" value="abracadabra"></label><label class="f" style="flex:1 1 130px"><span>pattern</span><input type="text" id="rkp" value="abra"></label><button class="pri" id="rkrun">Search</button></div><div class="track" id="rktrack" style="flex-wrap:wrap"></div><div class="readout"><div class="stat good"><div class="lab">occurrences</div><div class="val" id="rkocc">—</div></div><div class="stat"><div class="lab">Rabin–Karp, operations</div><div class="val" id="rkfast">—</div></div><div class="stat bad"><div class="lab">naive, comparisons</div><div class="val" id="rkslow">—</div></div></div><div class="log" id="rklog"></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b4">
+  <div class="beat-head">
+    <div class="beat-n">04</div>
+    <div>
+      <h2>Lab 8 — how it maps onto today</h2>
+      <div class="sub"><span>12 min</span> <span>ADS-Lab-08</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Six problems, and they split cleanly: <strong>A and D are the formula itself</strong> — compute a hash, or invert one. Do those first, they need nothing beyond beat 02.</li>
+        <li>B is Rabin–Karp on two strings, straight out of beat 03. E and F are the prefix-hash machinery from the same beat, applied twice.</li>
+        <li>E asks for the number of <strong>distinct</strong> substrings at |s| ≤ 2000. Hashing all O(n²) substrings into a set is the intended solve, and the TL is 4 s precisely because of it.</li>
+        <li>C is the awkward one: the input is <strong>multi-test</strong> — an unknown number of blocks until the terminator. Read the format with them; more submissions die on that than on the algorithm.</li>
+        <li>Warn them the reference solutions for B and C use KMP, which is <strong>next week's</strong> technique. Either approach is accepted; solving them with hashes is the intended exercise.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Hash of digits</span><span class="pill key">key</span><div class="map-why">Beat 02 · compute the hash by a given formula and match strings to hashes</div></div></div>
+<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Plagiarism</span><span class="pill key">key</span><div class="map-why">Beat 03 · Rabin–Karp across two strings; TL 1 s, |s| up to 4·10⁵</div></div></div>
+<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Dominating Patterns</span><div class="map-why">Beat 03 · many patterns over one text — and the input is multi-test</div></div></div>
+<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Restore the string</span><span class="pill key">key</span><div class="map-why">Beat 02 · invert the formula, recover the string from prefix hashes</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Distinct substrings</span><span class="pill key">key</span><div class="map-why">Beat 03 · count distinct substrings via a set of hashes, TL 4 s</div></div></div>
+<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Substrings</span><span class="pill key">key</span><div class="map-why">Beat 03 · prefix hashes answer q queries about substring occurrences</div></div></div><div class="trap" style="margin-top:16px"><b>Two problems left this lab recently:</b> a tape-covering problem and longest-common-substring of k strings were removed as disproportionately hard. If a student has an older copy of the list, that is why it is shorter now.</div></div>
+  </div>
+</section>
+
+<section class="beat" id="b5">
+  <div class="beat-head">
+    <div class="beat-n">05</div>
+    <div>
+      <h2>What comes next</h2>
+      <div class="sub"><span>3 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><p>Lecture 9 solves the same substring-search problem <strong>without probability</strong>: the prefix function and KMP. Set up the contrast now — today's answer is fast and almost always right; next week's is fast and always right, and it needs one array you have never seen before.</p><p style="margin-top:12px">Homework is Lab 8. Ask for <strong>A and B</strong> before the next class — one pure formula, one full Rabin–Karp.</p></div>
+  </div>
+</section>
+</main>
+</div>
+
+<footer>
+  <span>ADS 2026 · KBTU · Lecture 8 — Hashing and Rabin–Karp</span>
+  <span><a href="index.html">All lectures</a></span>
+</footer>
+</div>
+
+<button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
+<script src="assets/notes.js"></script>
+<script>
+
+(function(){
+var N=window.NOTES, el=N.el, on=N.on, each=N.each, grp=N.grp, sci=N.sci;
+
+function polyHash(s,p,m){
+  var h=0,pw=1,rows=[];
+  for(var i=0;i<s.length;i++){
+    var c=s.charCodeAt(i)-96; if(c<1||c>26) c=s.charCodeAt(i)%26+1;
+    h=(h+c*pw)%m; 
+    rows.push([i,s[i],c,pw,h]);
+    pw=pw*p%m;
+  }
+  return {h:h,rows:rows};
+}
+function hsRun(){
+  var s=(el('hsx').value||'').toLowerCase().replace(/[^a-z]/g,'')||'a';
+  var p=Math.max(1,parseInt(el('hsp').value)||31);
+  var m=Math.max(2,parseInt(el('hsm').value)||1000000007);
+  var r=polyHash(s,p,m);
+  el('hsh').textContent=grp(r.h);
+  el('hssteps').innerHTML=r.rows.map(function(x){
+    return '<tr><td class="n">'+x[0]+'</td><td>'+x[1]+'</td><td class="n">'+x[2]+'</td><td class="n">'+grp(x[3])+'</td><td class="n" style="color:var(--accent)">'+grp(x[4])+'</td></tr>';
+  }).join('');
+  var seen={},col=0;
+  for(var k=0;k<5000;k++){
+    var w='',len=3+(k%5);
+    for(var q=0;q<len;q++) w+=String.fromCharCode(97+((k*7919+q*131)%26));
+    var hh=polyHash(w,p,m).h;
+    if(seen[hh]&&seen[hh]!==w) col++; else seen[hh]=w;
+  }
+  el('hsc').textContent=col;
+  el('hsc').parentElement.className='stat '+(col?'bad':'good');
+  el('hslog').textContent = col
+    ? col+' collisions among 5 000 words — with these parameters the hash is not safe to use unverified.'
+    : 'No collisions among 5 000 words. Try the tiny modulus, or p = 1, to see it break.';
+}
+on('hsrun','click',hsRun); on('hsx','change',hsRun); on('hsp','change',hsRun); on('hsm','change',hsRun);
+each('[data-hs]',function(b){ b.addEventListener('click',function(){
+  var v=b.getAttribute('data-hs').split('|');
+  el('hsx').value=v[0]; el('hsp').value=v[1]; el('hsm').value=v[2]; hsRun(); }); });
+hsRun();
+
+/* ---------- 03 rabin-karp ---------- */
+function rkRun(){
+  var t=(el('rkt').value||'').toLowerCase().replace(/[^a-z]/g,'');
+  var p=(el('rkp').value||'').toLowerCase().replace(/[^a-z]/g,'');
+  if(!t||!p||p.length>t.length){ el('rklog').textContent='Pattern must be non-empty and no longer than the text.'; return; }
+  var occ=[];
+  for(var i=0;i+p.length<=t.length;i++) if(t.substr(i,p.length)===p) occ.push(i);
+  var set={}; occ.forEach(function(i){ for(var k=i;k<i+p.length;k++) set[k]=1; });
+  el('rktrack').innerHTML=t.split('').map(function(c,i){
+    return '<div class="box" style="min-width:34px;height:40px;font-size:.9rem;'+
+      (set[i]?'background:var(--prime-soft);border-color:var(--prime);color:var(--prime)':
+              'background:var(--surface-2);border-color:var(--line);color:var(--ink-3)')+'">'+c+'</div>';
+  }).join('');
+  el('rkocc').textContent=occ.length?occ.join(', '):'none';
+  el('rkfast').textContent=sci(t.length+p.length);
+  el('rkslow').textContent=sci((t.length-p.length+1)*p.length);
+  el('rklog').textContent='Rabin–Karp hashes the pattern once and every window in O(1), so the cost is n + m = '+
+    (t.length+p.length)+'. The naive scan compares character by character: '+((t.length-p.length+1)*p.length)+'.';
+}
+on('rkrun','click',rkRun); on('rkt','change',rkRun); on('rkp','change',rkRun);
+rkRun();
+})();
+
+</script>
+</body></html>

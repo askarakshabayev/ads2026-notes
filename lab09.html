@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prefix Function and KMP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
+<link rel="stylesheet" href="assets/notes.css">
+</head><body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">ADS 2026 · KBTU · Lecture 9 · Lab 9</div>
+  <h1>Prefix Function and <em>KMP</em></h1>
+  <p class="dek">Last week substring search was fast and almost always right. This week it is fast and always right. The whole lecture rests on one array of n numbers — and once you see what those numbers mean, half the string problems in the course become one-liners.</p>
+  <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>6</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 9 · 8 problems</b></span></div>
+</header>
+
+<div class="cols">
+
+<nav class="rail" aria-label="Running order">
+  <div class="rail-h">Running order</div>
+  <div class="part">I · The array</div>
+  <ol>
+    <li><a href="#b1"><span class="n">01</span><span>What π[i] means</span><span class="t">18′</span></a></li>
+  </ol>
+  <div class="part">II · Search</div>
+  <ol>
+    <li><a href="#b2"><span class="n">02</span><span>KMP search</span><span class="t">16′</span></a></li>
+  </ol>
+  <div class="part">III · What else it answers</div>
+  <ol>
+    <li><a href="#b3"><span class="n">03</span><span>Periods and borders</span><span class="t">22′</span></a></li>
+  </ol>
+  <div class="part">IV · Practice</div>
+  <ol>
+    <li><a href="#b4"><span class="n">04</span><span>Lab 9 walkthrough</span><span class="t">12′</span></a></li>
+    <li><a href="#b5"><span class="n">05</span><span>What comes next</span><span class="t">3′</span></a></li>
+  </ol>
+</nav>
+
+<main>
+<section class="beat" id="b1">
+  <div class="beat-head">
+    <div class="beat-n">01</div>
+    <div>
+      <h2>The prefix function</h2>
+      <div class="sub"><span>18 min</span> <span>demo: π table</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Definition first, slowly: <strong>π[i] is the length of the longest proper prefix of s[0..i] that is also a suffix of s[0..i]</strong>. Proper means it is not the whole thing.</li>
+        <li>Do <code>abacaba</code> by hand on the board before any code: 0 0 1 0 1 2 3. Ask what π[6] = 3 is telling us — <em>the first three characters equal the last three</em>. That sentence is the entire lecture.</li>
+        <li>Naive computation is O(n³), and it is worth writing just to throw away. Then the improvement: when extending, <strong>if the next character does not match, fall back to π[j−1]</strong> instead of starting over.</li>
+        <li>The cost argument is the elegant part: <code>j</code> increases at most once per step and never goes below zero, so <strong>total fallbacks are at most n</strong>. Linear, amortised.</li>
+        <li>Step the demo on <code>aabaaab</code> and read the fallback chain out loud when it happens. Students accept the code long before they believe the complexity.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>For the board</h4><pre>vector&lt;<span class="k">int</span>&gt; pi(n, 0);
+<span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; ++i) {
+    <span class="k">int</span> j = pi[i - 1];
+    <span class="k">while</span> (j &gt; 0 &amp;&amp; s[i] != s[j])
+        j = pi[j - 1];          <span class="c">// fall back</span>
+    <span class="k">if</span> (s[i] == s[j]) ++j;
+    pi[i] = j;
+}</pre><div class="formula" style="margin-top:13px">a b a c a b a<br>0 0 1 0 1 2 3</div><div class="trap" style="margin-top:14px"><b>Six lines, and two of them are traps.</b> It is <code>pi[j-1]</code>, not <code>pi[j]</code> — falling back to the wrong index loops forever. And the <code>while</code> must come before the <code>if</code>, or a failed match still increments.</div></div>
+      <div class="card pad demo"><h4>Demo · the prefix function, step by step</h4><div class="ctl"><label class="f" style="flex:1 1 220px"><span>string</span><input type="text" id="pfs" value="abacaba"></label><button class="pri" id="pfrun">Compute</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-pf="abacaba">abacaba</button><button class="chip" data-pf="aabaaab">aabaaab</button><button class="chip" data-pf="aaaaa">aaaaa</button><button class="chip" data-pf="abcdef">no repeats</button><button class="chip" data-pf="abababab">abababab</button></div><div class="track" id="pftrack" style="flex-wrap:wrap"></div><div class="readout"><div class="stat"><div class="lab">π of the last position</div><div class="val" id="pflast">—</div></div><div class="stat good"><div class="lab">shortest period</div><div class="val" id="pfper">—</div></div><div class="stat"><div class="lab">fallbacks total</div><div class="val" id="pffb">—</div></div></div><div class="log" id="pflog"></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b2">
+  <div class="beat-head">
+    <div class="beat-n">02</div>
+    <div>
+      <h2>Searching without ever going back</h2>
+      <div class="sub"><span>16 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>The naive search, on a mismatch, moves the pattern one step and <strong>rereads the text</strong>. KMP never rereads — the text pointer only moves forward.</li>
+        <li>The trick is the concatenation: build <strong>pattern + separator + text</strong> and compute π over the whole thing. Wherever <strong>π[i] equals the pattern length</strong>, you have found an occurrence.</li>
+        <li>The separator must be a character that appears in neither string — <code>#</code> for lowercase input. Say why: without it a match can straddle the join and you count occurrences that do not exist.</li>
+        <li>Total cost <strong>O(n + m)</strong>, deterministic, no probability, no collisions. That is the improvement over last week, and it is the whole reason this lecture exists.</li>
+        <li>Position arithmetic is where marks are lost: a match ending at index i in the combined string starts at <code>i − 2·len</code> in the original text. Derive it on the board rather than asserting it.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>For the board</h4><pre>string cur = pat + <span class="s">'#'</span> + txt;
+vector&lt;<span class="k">int</span>&gt; pi = prefixFunction(cur);
+
+<span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; (<span class="k">int</span>)cur.size(); ++i)
+    <span class="k">if</span> (pi[i] == (<span class="k">int</span>)pat.size())
+        cout &lt;&lt; i - 2 * pat.size() &lt;&lt; <span class="s">" "</span>;</pre><div class="trap" style="margin-top:14px"><b>Memory, and it bites in this lab.</b> The combined string is n + m + 1 characters and π is an <code>int</code> per character. With |s| = 5·10⁶ that is 20 MB for the array alone — fine at 256 MB, but do not also keep three copies of the string.</div><div class="trap" style="margin-top:10px"><b>Overlapping matches count.</b> Searching <code>aa</code> in <code>aaaa</code> gives three occurrences, not two. KMP reports all of them for free; a hand-rolled loop that resets on a match will not.</div></div>
+      <div class="card pad board"><h4>Three ways to find a substring</h4><div class="tw"><table><thead><tr><th>Method</th><th class="n">Time</th><th>Always right</th><th>Extra memory</th></tr></thead><tbody><tr><td class="k">Naive</td><td class="n" style="color:var(--mark)">O(n·m)</td><td style="color:var(--prime)">yes</td><td class="n">O(1)</td></tr><tr><td class="k">Rabin–Karp, one hash</td><td class="n" style="color:var(--prime)">O(n+m)</td><td style="color:var(--mark)">probably</td><td class="n">O(n)</td></tr><tr><td class="k">Rabin–Karp, two hashes</td><td class="n" style="color:var(--prime)">O(n+m)</td><td>almost surely</td><td class="n">O(n)</td></tr><tr><td class="k">KMP</td><td class="n" style="color:var(--prime)">O(n+m)</td><td style="color:var(--prime)">yes</td><td class="n">O(n+m)</td></tr></tbody></table></div><p style="margin-top:12px">Worth saying out loud: in a contest most people reach for hashing because it is shorter to type. KMP is what you use when a wrong answer is not survivable — and when the problem wants π itself, which is most of this lab.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b3">
+  <div class="beat-head">
+    <div class="beat-n">03</div>
+    <div>
+      <h2>The array is worth more than the search</h2>
+      <div class="sub"><span>22 min</span> <span>demo: period</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Here is the part that pays for the lecture. From π alone, with no extra work, you get several things that look like different problems.</li>
+        <li><strong>Shortest period.</strong> <code>n − π[n−1]</code>. If it divides n, the string is that block repeated; otherwise it is a partial repetition. Problem G is this single expression.</li>
+        <li><strong>All borders.</strong> π[n−1], then π of that minus one, and so on down to zero — the whole chain of prefixes that are also suffixes. This is the fallback chain made explicit.</li>
+        <li><strong>Occurrence counting.</strong> Walk π backwards adding cnt[π[i]−1] += cnt[i] and you get how many times each prefix occurs in the string. Problem B needs exactly this.</li>
+        <li><strong>Cyclic shift detection.</strong> t is a rotation of s if and only if t is a substring of <code>s + s</code>. One concatenation plus one KMP — problem C in two lines.</li>
+        <li>Let the demo show the period on <code>abababab</code> and on <code>abababa</code>: 2 in the first case, and in the second the period does not divide the length. That difference is the edge case every statement here hinges on.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>The four one-liners</h4><div class="formula">shortest period = n − π[n−1]<br>is fully periodic ⟺ n mod (n − π[n−1]) = 0</div><pre style="margin-top:13px"><span class="c">// how many times each prefix occurs</span>
+vector&lt;<span class="k">int</span>&gt; cnt(n + 1, 0);
+<span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; ++i) cnt[pi[i]]++;
+<span class="k">for</span> (<span class="k">int</span> i = n - 1; i &gt; 0; --i)
+    cnt[pi[i - 1]] += cnt[i];
+<span class="k">for</span> (<span class="k">int</span> i = 0; i &lt;= n; ++i) cnt[i]++;   <span class="c">// itself</span></pre><pre style="margin-top:13px"><span class="c">// is t a rotation of s?</span>
+<span class="k">bool</span> rotation = s.size() == t.size() &amp;&amp;
+                (s + s).find(t) != string::npos;</pre></div>
+      <div class="card pad demo"><h4>Demo · period and borders</h4><div class="ctl"><label class="f" style="flex:1 1 230px"><span>string</span><input type="text" id="pds" value="abababab"></label><button class="pri" id="pdrun">Analyse</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-pd="abababab">abababab</button><button class="chip" data-pd="abababa">abababa</button><button class="chip" data-pd="aaaaaa">aaaaaa</button><button class="chip" data-pd="abcabcabc">abcabcabc</button><button class="chip" data-pd="abcdef">abcdef</button></div><div class="readout"><div class="stat good"><div class="lab">shortest period</div><div class="val" id="pdp">—</div></div><div class="stat"><div class="lab">fully periodic?</div><div class="val" id="pdf">—</div></div><div class="stat"><div class="lab">repetitions</div><div class="val" id="pdr">—</div></div></div><div style="margin-top:14px;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600">borders, longest first</div><div class="track" id="pdb" style="flex-wrap:wrap;min-height:58px"></div><div class="log" id="pdlog"></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b4">
+  <div class="beat-head">
+    <div class="beat-n">04</div>
+    <div>
+      <h2>Lab 9 — how it maps onto today</h2>
+      <div class="sub"><span>12 min</span> <span>ADS-Lab-09</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>F is the plain search from beat 02 and should be done first — it is the template, and everything else reuses it.</li>
+        <li>G is beat 03's first formula, literally <code>n − π[n−1]</code>. If they have the array, the problem is one line; if they do not, it is impossible. Good demonstration of why the array matters more than the search.</li>
+        <li>C is the rotation trick, B is occurrence counting, D is longest overlap between a suffix and a prefix — all three are beat 03.</li>
+        <li><strong>E and H are the heavy pair and neither is on the defence.</strong> E mixes the prefix function with arithmetic that overflows int at 5·10¹¹; H runs on a string of 5·10⁶ characters.</li>
+        <li>A is the awkward one to read: repeat A until B fits inside it. The answer is bounded by ⌈|B|/|A|⌉ + 1 — derive that bound with them, or they will loop forever.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Substring of a Repeated String</span><span class="pill key">key</span><div class="map-why">Repeat A until B fits — bound the count by ⌈|B|/|A|⌉ + 1, then one KMP</div></div></div>
+<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Password</span><span class="pill key">key</span><div class="map-why">Beat 03 · count occurrences, at least K times</div></div></div>
+<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Cyclic Shift</span><span class="pill key">key</span><div class="map-why">Beat 03 · cyclic shift — search t inside s + s</div></div></div>
+<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Modified Towns game</span><span class="pill key">key</span><div class="map-why">Beat 03 · longest overlap between a suffix and a prefix</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Chainsaw Man: 13th generation</span><div class="map-why">Prefix function plus arithmetic that overflows int at 5·10¹¹ — not on the defence</div></div></div>
+<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Simple KMP</span><span class="pill key">key</span><div class="map-why">Beat 02 · the plain KMP search, print all occurrence indices</div></div></div>
+<div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Another one prefix function problem</span><span class="pill key">key</span><div class="map-why">Beat 03 · shortest period, literally n − π[n−1]</div></div></div>
+<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">Splitting</span><div class="map-why">|s| up to 5·10⁶ — heaviest in the lab, not on the defence</div></div></div></div>
+  </div>
+</section>
+
+<section class="beat" id="b5">
+  <div class="beat-head">
+    <div class="beat-n">05</div>
+    <div>
+      <h2>What comes next</h2>
+      <div class="sub"><span>3 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><p>Strings are done. Lecture 10 starts the last block of the course — <strong>graphs</strong>, which is where the remaining four lectures live and where the final exam is heaviest. The first question is unglamorous and decides everything after it: <em>how do you even store a graph?</em></p><p style="margin-top:12px">Homework is Lab 9. Ask for <strong>F and G</strong> — the search and the one-line period, which together prove the array was understood.</p></div>
+  </div>
+</section>
+</main>
+</div>
+
+<footer>
+  <span>ADS 2026 · KBTU · Lecture 9 — Prefix Function and KMP</span>
+  <span><a href="index.html">All lectures</a></span>
+</footer>
+</div>
+
+<button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
+<script src="assets/notes.js"></script>
+<script>
+
+(function(){
+var N=window.NOTES, el=N.el, on=N.on, each=N.each;
+
+function prefixFunction(s){
+  var n=s.length, pi=new Array(n).fill(0), fb=0;
+  for(var i=1;i<n;i++){
+    var j=pi[i-1];
+    while(j>0 && s[i]!==s[j]){ j=pi[j-1]; fb++; }
+    if(s[i]===s[j]) j++;
+    pi[i]=j;
+  }
+  return {pi:pi,fb:fb};
+}
+function pfRun(){
+  var s=(el('pfs').value||'').toLowerCase().replace(/[^a-z]/g,'')||'a';
+  var r=prefixFunction(s);
+  el('pftrack').innerHTML=s.split('').map(function(c,i){
+    var v=r.pi[i];
+    return '<div style="flex:none;text-align:center;margin-right:4px">'+
+      '<div class="box" style="min-width:36px;height:38px;font-size:.92rem;'+
+      (v>0?'':'background:var(--surface-2);border-color:var(--line);color:var(--ink-3)')+'">'+c+'</div>'+
+      '<div class="mono" style="font-size:.76rem;color:'+(v>0?'var(--accent)':'var(--ink-3)')+';margin-top:3px">'+v+'</div></div>';
+  }).join('');
+  var last=r.pi[s.length-1], per=s.length-last;
+  el('pflast').textContent=last;
+  el('pfper').textContent=per;
+  el('pffb').textContent=r.fb;
+  el('pflog').textContent = last>0
+    ? 'π of the last position is '+last+' — the first '+last+' characters ("'+s.slice(0,last)+'") are also the last '+last+'.'
+    : 'π of the last position is 0 — no proper prefix of this string is also a suffix.';
+}
+on('pfrun','click',pfRun); on('pfs','change',pfRun);
+each('[data-pf]',function(b){ b.addEventListener('click',function(){ el('pfs').value=b.getAttribute('data-pf'); pfRun(); }); });
+pfRun();
+
+/* ---------- 03 period and borders ---------- */
+function pdRun(){
+  var s=(el('pds').value||'').toLowerCase().replace(/[^a-z]/g,'')||'a';
+  var pi=prefixFunction(s).pi, n=s.length;
+  var per=n-pi[n-1], full=(n%per===0);
+  el('pdp').textContent=per;
+  el('pdf').textContent=full?'yes':'no';
+  el('pdf').parentElement.className='stat '+(full?'good':'');
+  el('pdr').textContent=full?(n/per)+' × "'+s.slice(0,per)+'"':'—';
+  var b=[], j=pi[n-1];
+  while(j>0){ b.push(j); j=pi[j-1]; }
+  el('pdb').innerHTML = b.length
+    ? b.map(function(L){ return '<div class="box" style="min-width:auto;padding:0 12px;font-size:.85rem">'+s.slice(0,L)+' <span style="opacity:.55">('+L+')</span></div>'; }).join('')
+    : '<span class="empty">no borders — no proper prefix is also a suffix</span>';
+  el('pdlog').textContent = full
+    ? 'n = '+n+' is divisible by the period '+per+', so the string is "'+s.slice(0,per)+'" repeated '+(n/per)+' times.'
+    : 'n = '+n+' is NOT divisible by the period '+per+' — the repetition is cut off partway. This is the edge case the statements care about.';
+}
+on('pdrun','click',pdRun); on('pds','change',pdRun);
+each('[data-pd]',function(b){ b.addEventListener('click',function(){ el('pds').value=b.getAttribute('data-pd'); pdRun(); }); });
+pdRun();
+})();
+
+</script>
+</body></html>

@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Linked Lists</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
+<link rel="stylesheet" href="assets/notes.css">
+</head><body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">ADS 2026 · KBTU · Lecture 2 · Lab 2</div>
+  <h1>Linked <em>Lists</em></h1>
+  <p class="dek">The week where a data structure stops being a black box. We open up what <code>std::stack</code> and <code>std::deque</code> stand on, build a singly linked list by hand, do the three interview classics on it, and finish with the doubly linked one. Each beat carries what to say, what to write on the board, and a demo to project.</p>
+  <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>6</b></span><span class="fact">Live demos <b>3</b></span><span class="fact">Practice <b>Lab 2 · 10 problems</b></span></div>
+</header>
+
+<div class="cols">
+
+<nav class="rail" aria-label="Running order">
+  <div class="rail-h">Running order</div>
+  <div class="part">I · The node</div>
+  <ol>
+    <li><a href="#b1"><span class="n">01</span><span>Array vs node</span><span class="t">14′</span></a></li>
+  </ol>
+  <div class="part">II · Singly linked</div>
+  <ol>
+    <li><a href="#b2"><span class="n">02</span><span>The four operations</span><span class="t">18′</span></a></li>
+    <li><a href="#b3"><span class="n">03</span><span>Reverse · middle · merge</span><span class="t">22′</span></a></li>
+  </ol>
+  <div class="part">III · Doubly linked</div>
+  <ol>
+    <li><a href="#b4"><span class="n">04</span><span>Doubly linked list</span><span class="t">16′</span></a></li>
+  </ol>
+  <div class="part">IV · Practice</div>
+  <ol>
+    <li><a href="#b5"><span class="n">05</span><span>Lab 2 walkthrough</span><span class="t">14′</span></a></li>
+    <li><a href="#b6"><span class="n">06</span><span>What comes next</span><span class="t">4′</span></a></li>
+  </ol>
+</nav>
+
+<main>
+<section class="beat" id="b1">
+  <div class="beat-head">
+    <div class="beat-n">01</div>
+    <div>
+      <h2>Why a list at all</h2>
+      <div class="sub"><span>14 min</span> <span>demo: cost table</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Last week the stack and the queue were <strong>STL boxes</strong>. Today we open them: underneath there is either an array or a chain of nodes, and the choice decides what is cheap.</li>
+        <li>The one sentence that carries the lecture: <strong>an array owns a contiguous block, a list owns only pointers</strong>. Everything else follows from that.</li>
+        <li>Insert in the middle of an array of a million elements moves half a million of them. In a list it is <strong>two assignments</strong> — but only once you already hold the node.</li>
+        <li>And that "only once you hold it" is the catch: <strong>getting to position i costs O(i)</strong>. Make the room say out loud that a list has no random access.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>Cost, side by side</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Array</th><th class="n">Linked list</th></tr></thead><tbody><tr><td class="k">Access i-th</td><td class="n" style="color:var(--prime)">O(1)</td><td class="n" style="color:var(--mark)">O(n)</td></tr><tr><td class="k">Insert at front</td><td class="n" style="color:var(--mark)">O(n)</td><td class="n" style="color:var(--prime)">O(1)</td></tr><tr><td class="k">Insert after a held node</td><td class="n" style="color:var(--mark)">O(n)</td><td class="n" style="color:var(--prime)">O(1)</td></tr><tr><td class="k">Delete a held node</td><td class="n" style="color:var(--mark)">O(n)</td><td class="n" style="color:var(--prime)">O(1)</td></tr><tr><td class="k">Memory per element</td><td class="n">value</td><td class="n">value + pointer</td></tr><tr><td class="k">Cache behaviour</td><td class="n" style="color:var(--prime)">contiguous</td><td class="n" style="color:var(--mark)">scattered</td></tr></tbody></table></div><div class="trap" style="margin-top:14px"><b>Say the unpopular half too:</b> on modern hardware an array beats a list even at things the table calls O(n), because it walks memory in order. The list wins when you hold the node already and the data is huge.</div></div>
+      <div class="card pad board"><h4>For the board</h4><pre><span class="k">struct</span> Node {
+    <span class="k">int</span> data;
+    Node* next;
+    Node(<span class="k">int</span> d) : data(d), next(<span class="k">nullptr</span>) {}
+};
+
+Node* head = <span class="k">new</span> Node(10);
+head-&gt;next = <span class="k">new</span> Node(20);
+head-&gt;next-&gt;next = <span class="k">new</span> Node(30);</pre><p style="margin-top:13px">Draw these three boxes on the board and keep them there for the whole lecture — every later beat is a redrawing of this picture.</p><div class="formula" style="margin-top:13px">head → [10|•] → [20|•] → [30|✕]</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b2">
+  <div class="beat-head">
+    <div class="beat-n">02</div>
+    <div>
+      <h2>Walk, insert, delete</h2>
+      <div class="sub"><span>18 min</span> <span>demo: playground</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Traversal is the only way in: <code>for (Node* p = head; p; p = p-&gt;next)</code>. Write it once and reuse it all lecture.</li>
+        <li><strong>Insert after p</strong> is two lines, and the order matters: first hang the tail on the new node, only then rewire <code>p-&gt;next</code>. Do it in the wrong order on the board and lose the rest of the list on purpose.</li>
+        <li><strong>Delete after p</strong> needs a saved pointer, otherwise the node leaks. Show <code>Node* dead = p-&gt;next; p-&gt;next = dead-&gt;next; delete dead;</code>.</li>
+        <li>Deleting the <strong>head</strong> is the special case every student forgets. Use the playground: pop_front and watch <code>head</code> itself move.</li>
+        <li>Mention the trick that removes the special case entirely — a <strong>dummy head</strong> node. It is the single best habit from this lecture.</li>
+      </ul>
+    </div>
+    <div class="card pad demo"><h4>Demo · list playground</h4><div class="ctl"><button id="llpf">push_front</button><button id="llpb">push_back</button><button id="llppf">pop_front</button><button id="llppb">pop_back</button><button id="llins">insert after #2</button><button id="lldel">erase #2</button><button id="llclr">Clear</button></div><div class="track" id="lltrack"></div><div class="log" id="lllog">Empty list. head = nullptr.</div><div class="readout"><div class="stat"><div class="lab">size</div><div class="val" id="llsize">0</div></div><div class="stat"><div class="lab">pointer writes</div><div class="val" id="llops">0</div></div><div class="stat"><div class="lab">nodes walked</div><div class="val" id="llwalk">0</div></div></div><p style="margin-top:12px;font-size:.83rem;color:var(--ink-3)">Watch the two counters: push_front never walks, insert in the middle always does. That gap is the whole lecture.</p></div>
+  </div>
+</section>
+
+<section class="beat" id="b3">
+  <div class="beat-head">
+    <div class="beat-n">03</div>
+    <div>
+      <h2>The three classics</h2>
+      <div class="sub"><span>22 min</span> <span>demo: reverse, step by step</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li><strong>Reverse.</strong> Three pointers — <code>prev</code>, <code>cur</code>, <code>nxt</code> — and one rule: save the next node <em>before</em> you overwrite the link. Step the demo and read the three values out loud each time.</li>
+        <li><strong>Middle.</strong> Two runners: <code>slow</code> moves one, <code>fast</code> moves two. When fast falls off the end, slow stands in the middle. One pass, no counting, no second traversal.</li>
+        <li>Ask which middle you get for an even length — the demo answers it. That ambiguity is exactly what problem E pins down in its statement.</li>
+        <li><strong>Merge.</strong> Two sorted lists, one output: compare heads, take the smaller, advance. The tail that is left over is <strong>appended whole</strong>, not copied element by element — that is the point of using lists.</li>
+        <li>All three are <strong>O(n) time, O(1) extra memory</strong>. Say that out loud: no arrays, no vectors, no copying.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>For the board</h4><pre><span class="c">// reverse</span>
+Node* prev = <span class="k">nullptr</span>;
+Node* cur  = head;
+<span class="k">while</span> (cur) {
+    Node* nxt = cur-&gt;next;   <span class="c">// save first!</span>
+    cur-&gt;next = prev;
+    prev = cur;
+    cur  = nxt;
+}
+head = prev;</pre><pre style="margin-top:13px"><span class="c">// middle</span>
+Node *slow = head, *fast = head;
+<span class="k">while</span> (fast &amp;&amp; fast-&gt;next) {
+    slow = slow-&gt;next;
+    fast = fast-&gt;next-&gt;next;
+}</pre><div class="trap" style="margin-top:14px"><b>The line everyone drops:</b> <code>head = prev</code> at the end of reverse. Without it <code>head</code> still points at what is now the last node, and the list looks empty from outside.</div></div>
+      <div class="card pad demo"><h4>Demo · reverse, one step at a time</h4><div class="ctl"><button class="pri" id="rvstep">Step</button><button id="rvauto">▶ Play</button><button id="rvreset">Reset</button><label class="f" style="flex:1 1 130px"><span>length</span><input type="number" id="rvn" value="5" min="2" max="9"></label></div><div class="track" id="rvtrack"></div><div class="readout"><div class="stat"><div class="lab">prev</div><div class="val" id="rvprev">null</div></div><div class="stat"><div class="lab">cur</div><div class="val" id="rvcur">—</div></div><div class="stat"><div class="lab">nxt</div><div class="val" id="rvnxt">—</div></div></div><div class="log" id="rvlog">Press Step. Green is the part already reversed.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b4">
+  <div class="beat-head">
+    <div class="beat-n">04</div>
+    <div>
+      <h2>Two pointers per node</h2>
+      <div class="sub"><span>16 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Add <code>prev</code> to the node and two things become possible: walking backwards, and <strong>deleting a node you hold without knowing its predecessor</strong>. That second one is why <code>std::list</code> is doubly linked.</li>
+        <li>Deletion becomes symmetric — <code>a-&gt;next = b-&gt;next; b-&gt;next-&gt;prev = a;</code> — and the price is one extra pointer per element plus twice the rewiring on every insert.</li>
+        <li>Now close the loop with last week: <strong><code>std::deque</code> is not this</strong>. It is a table of fixed blocks, which is why it has O(1) random access and a list does not. Students conflate the two every year.</li>
+        <li>Sketch where each one actually shows up: an LRU cache is a hash map plus a doubly linked list, a text editor undo stack is a list, a music player playlist is a circular one.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>For the board</h4><pre><span class="k">struct</span> Node {
+    <span class="k">int</span> data;
+    Node *prev, *next;
+};
+
+<span class="c">// erase a node we already hold</span>
+<span class="k">if</span> (n-&gt;prev) n-&gt;prev-&gt;next = n-&gt;next;
+<span class="k">else</span>        head       = n-&gt;next;
+<span class="k">if</span> (n-&gt;next) n-&gt;next-&gt;prev = n-&gt;prev;
+<span class="k">else</span>        tail       = n-&gt;prev;
+<span class="k">delete</span> n;</pre><div class="trap" style="margin-top:14px"><b>Four branches, not two.</b> Head and tail are both special. This is the exact shape of problem I, and it is where submissions die.</div></div>
+      <div class="card pad board"><h4>What is built on what</h4><div class="tw"><table><thead><tr><th>STL</th><th>Underneath</th><th>Random access</th></tr></thead><tbody><tr><td class="k mono">std::vector</td><td>one array</td><td style="color:var(--prime)">yes</td></tr><tr><td class="k mono">std::deque</td><td>table of blocks</td><td style="color:var(--prime)">yes</td></tr><tr><td class="k mono">std::list</td><td>doubly linked</td><td style="color:var(--mark)">no</td></tr><tr><td class="k mono">std::forward_list</td><td>singly linked</td><td style="color:var(--mark)">no</td></tr><tr><td class="k mono">std::stack</td><td>deque by default</td><td>—</td></tr><tr><td class="k mono">std::queue</td><td>deque by default</td><td>—</td></tr></tbody></table></div><p style="margin-top:13px">Worth one minute: <code>std::list</code> is the structure you are writing by hand today, and almost the only one in the table you will rarely reach for in a contest.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b5">
+  <div class="beat-head">
+    <div class="beat-n">05</div>
+    <div>
+      <h2>Lab 2 — how it maps onto today</h2>
+      <div class="sub"><span>14 min</span> <span>ADS-Lab-02</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>D, E and F are the three classics from beat 03, one each: <strong>reverse, middle, merge</strong>. They are solvable straight from the board.</li>
+        <li>I is the doubly linked list built by hand — the four-branch erase from beat 04. It is the heaviest problem of the lab, and the only one with a real maximum test.</li>
+        <li><strong>Be honest with them about the rest.</strong> We measured it: every problem except I passes with a plain array or vector, because an array is never asymptotically worse here and is faster in practice.</li>
+        <li>So say where the requirement actually lives: <strong>at the defence</strong>. In D, E and F the notes now say it outright — you will be asked to show the pointers. A vector solution can be accepted by the judge and still score zero on the defence.</li>
+        <li>Repeat the limits: <strong>1 second and 256 MB</strong>, except I at 2 s and J at 1.5 s.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">One-time guests</span><div class="map-why">Queue in disguise — the intended solve is a single pass with a counter, no list needed</div></div></div>
+<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Kuanyshbek</span><div class="map-why">Delete every k-th node while walking the chain</div></div></div>
+<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Database</span><span class="pill fixed">fixed</span><div class="map-why">Beat 02 · delete a node equal to its immediate predecessor</div></div></div>
+<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Reverse the Linked List</span><span class="pill new">new</span><div class="map-why">Beat 03 · reverse — three pointers, O(1) memory</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Delete the Middle Node</span><span class="pill new">new</span><div class="map-why">Beat 03 · middle — slow and fast runners</div></div></div>
+<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Merge Two Sorted Lists</span><span class="pill new">new</span><div class="map-why">Beat 03 · merge two sorted lists by relinking, not copying</div></div></div>
+<div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Jonathan the Poet</span><div class="map-why">Walk the chain and collect; array passes just as well</div></div></div>
+<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">Ragnarok</span><div class="map-why">Kadane with n ≤ 100 — nothing list-specific</div></div></div>
+<div class="map-row"><span class="map-idx">I</span><div><span class="map-name">Doubly linked list</span><span class="pill key">key</span><div class="map-why">Beat 04 · doubly linked list by hand — the one problem a vector cannot carry</div></div></div>
+<div class="map-row"><span class="map-idx">J</span><div><span class="map-name">Zoro and Seven Sword Style.</span><span class="pill fixed">fixed</span><div class="map-why">Full list interface by index; watch the empty-list print case</div></div></div><div class="trap" style="margin-top:16px"><b>Known rough edges, so you are not caught out:</b> in B the jury solution is O(N²) although the editorial promises one pass, and its <code>size</code> field goes stale on a no-op delete — harmless for the output, but do not read that code aloud as exemplary.</div></div>
+  </div>
+</section>
+
+<section class="beat" id="b6">
+  <div class="beat-head">
+    <div class="beat-n">06</div>
+    <div>
+      <h2>What comes next</h2>
+      <div class="sub"><span>4 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><p>Lecture 3 is <strong>binary search</strong> — the first time this course trades a linear scan for a logarithmic one. Tell them the prerequisite out loud: it only works on something <strong>sorted and randomly accessible</strong>, which is exactly what a linked list is not. That contrast is the bridge from today.</p><p style="margin-top:12px">Homework is Lab 2. Ask for <strong>problem D submitted before the next class</strong> — it is fifteen lines and it surfaces pointer mistakes early, while there is still time to fix the habit.</p></div>
+  </div>
+</section>
+</main>
+</div>
+
+<footer>
+  <span>ADS 2026 · KBTU · Lecture 2 — Linked Lists</span>
+  <span><a href="index.html">All lectures</a></span>
+</footer>
+</div>
+
+<button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
+<script src="assets/notes.js"></script>
+<script>
+
+(function(){
+var N=window.NOTES, el=N.el, on=N.on;
+
+/* ---------- 02 list playground ---------- */
+var L=[], next=1, ops=0, walk=0;
+var tr=el('lltrack'), lg=el('lllog');
+function llRender(){
+  if(!L.length){ tr.innerHTML='<span class="empty">head = nullptr</span>'; }
+  else{
+    tr.innerHTML='<span class="endcap">head</span>'+
+      L.map(function(v,i){return '<div class="box">'+v+'</div>'+
+        (i<L.length-1?'<span style="color:var(--ink-3)">→</span>':'');}).join('')+
+      '<span class="endcap">null</span>';
+  }
+  el('llsize').textContent=L.length; el('llops').textContent=ops; el('llwalk').textContent=walk;
+}
+function say(t){ lg.textContent=t; }
+on('llpf','click',function(){ L.unshift(next++); ops+=1; say('push_front — one pointer write, zero nodes walked'); llRender(); });
+on('llpb','click',function(){ if(L.length) walk+=L.length; L.push(next++); ops+=1; say('push_back — walked '+L.length+' nodes to find the tail (keep a tail pointer and this becomes O(1))'); llRender(); });
+on('llppf','click',function(){ if(!L.length)return; var v=L.shift(); ops+=1; say('pop_front → '+v+' — head moves, the old node is deleted'); llRender(); });
+on('llppb','click',function(){ if(!L.length)return; walk+=Math.max(0,L.length-1); var v=L.pop(); ops+=1; say('pop_back → '+v+' — needed the node BEFORE the tail, so a full walk'); llRender(); });
+on('llins','click',function(){ if(L.length<2){say('Need at least 2 nodes.');return;} walk+=2; L.splice(2,0,next++); ops+=2; say('insert after node #2 — walked 2 nodes, then 2 pointer writes'); llRender(); });
+on('lldel','click',function(){ if(L.length<3){say('Need at least 3 nodes.');return;} walk+=2; var v=L.splice(2,1)[0]; ops+=1; say('erase node #3 ('+v+') — walked to its predecessor, 1 pointer write, then delete'); llRender(); });
+on('llclr','click',function(){ L=[];next=1;ops=0;walk=0; say('Empty list. head = nullptr.'); llRender(); });
+llRender();
+
+/* ---------- 03 reverse stepper ---------- */
+var R={arr:[],prev:-1,cur:0,done:false},timer=null;
+function rvReset(){
+  var n=Math.max(2,Math.min(9,parseInt(el('rvn').value)||5));
+  R={arr:[],prev:-1,cur:0,done:false};
+  for(var i=1;i<=n;i++) R.arr.push(i*10);
+  rvPaint(); el('rvlog').textContent='Press Step. Green is the part already reversed.';
+}
+function rvPaint(){
+  var h='';
+  R.arr.forEach(function(v,i){
+    var st='';
+    if(R.done||i<R.cur) st='background:var(--prime-soft);border-color:var(--prime);color:var(--prime)';
+    if(i===R.cur&&!R.done) st='background:var(--accent);border-color:var(--accent);color:#fff';
+    h+='<div class="box" style="'+st+'">'+v+'</div>';
+    if(i<R.arr.length-1) h+='<span style="color:var(--ink-3)">'+((R.done||i<R.cur-1)?'←':'→')+'</span>';
+  });
+  el('rvtrack').innerHTML=h||'<span class="empty">empty</span>';
+  el('rvprev').textContent = R.prev<0?'null':R.arr[R.prev];
+  el('rvcur').textContent  = R.done?'null':R.arr[R.cur];
+  el('rvnxt').textContent  = (R.done||R.cur+1>=R.arr.length)?'null':R.arr[R.cur+1];
+}
+function rvStep(){
+  if(R.done){ el('rvlog').textContent='Done. head = prev = '+R.arr[R.arr.length-1]+' — this is the assignment everyone forgets.'; return; }
+  var nx=R.cur+1;
+  el('rvlog').textContent='nxt = cur→next ('+(nx<R.arr.length?R.arr[nx]:'null')+') · cur→next = prev ('+(R.prev<0?'null':R.arr[R.prev])+') · prev = cur · cur = nxt';
+  R.prev=R.cur; R.cur=nx;
+  if(R.cur>=R.arr.length){ R.done=true; rvStop(); }
+  rvPaint();
+}
+function rvStop(){ if(timer){clearInterval(timer);timer=null;} el('rvauto').textContent='▶ Play'; }
+on('rvstep','click',rvStep);
+on('rvreset','click',function(){ rvStop(); rvReset(); });
+on('rvn','change',function(){ rvStop(); rvReset(); });
+on('rvauto','click',function(){
+  if(timer){ rvStop(); return; }
+  el('rvauto').textContent='❚❚ Pause';
+  timer=setInterval(function(){ if(R.done){rvStop();return;} rvStep(); },850);
+});
+rvReset();
+})();
+
+</script>
+</body></html>

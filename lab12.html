@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shortest Paths</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
+<link rel="stylesheet" href="assets/notes.css">
+</head><body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">ADS 2026 · KBTU · Lecture 13 · Lab 12</div>
+  <h1>Shortest <em>Paths</em></h1>
+  <p class="dek">The last lecture of the course. Three algorithms, and the entire skill is picking the right one — which is decided by two questions the statement always answers: are there negative weights, and do you need one source or all pairs.</p>
+  <div class="facts"><span class="fact">Length <b>~105 min</b></span><span class="fact">Beats <b>6</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 12 · 5 problems</b></span></div>
+</header>
+
+<div class="cols">
+
+<nav class="rail" aria-label="Running order">
+  <div class="rail-h">Running order</div>
+  <div class="part">I · Dijkstra</div>
+  <ol>
+    <li><a href="#b1"><span class="n">01</span><span>Why BFS is not enough</span><span class="t">16′</span></a></li>
+    <li><a href="#b2"><span class="n">02</span><span>Dijkstra, live</span><span class="t">16′</span></a></li>
+  </ol>
+  <div class="part">II · Floyd</div>
+  <ol>
+    <li><a href="#b3"><span class="n">03</span><span>Floyd–Warshall</span><span class="t">16′</span></a></li>
+  </ol>
+  <div class="part">III · Bellman–Ford</div>
+  <ol>
+    <li><a href="#b4"><span class="n">04</span><span>Bellman–Ford</span><span class="t">16′</span></a></li>
+  </ol>
+  <div class="part">IV · Practice</div>
+  <ol>
+    <li><a href="#b5"><span class="n">05</span><span>Lab 12 walkthrough</span><span class="t">12′</span></a></li>
+    <li><a href="#b6"><span class="n">06</span><span>End of course</span><span class="t">4′</span></a></li>
+  </ol>
+</nav>
+
+<main>
+<section class="beat" id="b1">
+  <div class="beat-head">
+    <div class="beat-n">01</div>
+    <div>
+      <h2>Weights break BFS</h2>
+      <div class="sub"><span>16 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Open with a counter-example, not a definition. Two routes from A to D: one edge of weight 10, or three edges of weight 1 each. <strong>BFS picks the single edge</strong> because it counts edges. It is wrong.</li>
+        <li>So the fix is to explore by <strong>accumulated distance</strong> instead of by hop count. Replace the queue with a priority queue and the algorithm becomes Dijkstra. Literally one line different from lecture 10.</li>
+        <li>The invariant: <strong>when a vertex is popped, its distance is final</strong>. Everything still in the queue costs at least as much, so nothing can improve it later.</li>
+        <li>Relaxation is the only other idea: if <code>d[v] + w &lt; d[to]</code>, we found a better route, write it down and push.</li>
+        <li>Complexity <strong>O(m log n)</strong> with a binary heap. Mention that with an adjacency matrix and no heap it is O(n²), which is actually better on dense graphs — problem C is dense enough to care.</li>
+        <li><strong>And the hard limit: Dijkstra requires non-negative weights.</strong> The invariant depends on it. Say it now, because beat 03 is what you do when it fails.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>For the board</h4><pre>priority_queue&lt;pair&lt;<span class="k">long long</span>,<span class="k">int</span>&gt;,
+  vector&lt;pair&lt;<span class="k">long long</span>,<span class="k">int</span>&gt;&gt;,
+  greater&lt;&gt;&gt; pq;              <span class="c">// min-heap!</span>
+
+d[s] = 0; pq.push({0, s});
+<span class="k">while</span> (!pq.empty()) {
+    <span class="k">auto</span> [dv, v] = pq.top(); pq.pop();
+    <span class="k">if</span> (dv &gt; d[v]) <span class="k">continue</span>;      <span class="c">// stale entry</span>
+    <span class="k">for</span> (<span class="k">auto</span> [to, w] : g[v])
+        <span class="k">if</span> (d[v] + w &lt; d[to]) {
+            d[to] = d[v] + w;
+            pq.push({d[to], to});
+        }
+}</pre><div class="trap" style="margin-top:14px"><b>Three traps in nine lines.</b> Forget <code>greater&lt;&gt;</code> and you get a max-heap and nonsense. Forget the stale check and the complexity degrades. And initialise distances to something above the maximum possible path — <code>LLONG_MAX</code> then overflows on the addition, so use a large finite constant instead.</div></div>
+      <div class="card pad board"><h4>Choosing the algorithm</h4><div class="tw"><table><thead><tr><th>Need</th><th>Negative weights</th><th>Algorithm</th><th class="n">Complexity</th></tr></thead><tbody><tr><td class="k">one source</td><td>no</td><td>Dijkstra</td><td class="n">O(m log n)</td></tr><tr><td class="k">one source</td><td>yes</td><td>Bellman–Ford</td><td class="n">O(n·m)</td></tr><tr><td class="k">all pairs</td><td>yes</td><td>Floyd–Warshall</td><td class="n">O(n³)</td></tr><tr><td class="k">unweighted</td><td>—</td><td>BFS</td><td class="n">O(n+m)</td></tr></tbody></table></div><p style="margin-top:12px">Put this table on the board and leave it there. It is the whole decision procedure, and the exam rewards making it quickly.</p><div class="trap" style="margin-top:14px"><b>n ≤ 500 in a statement is a signal</b>, not a coincidence — it means O(n³) is allowed and Floyd is probably intended.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b2">
+  <div class="beat-head">
+    <div class="beat-n">02</div>
+    <div>
+      <h2>Watch it settle</h2>
+      <div class="sub"><span>16 min</span> <span>demo: dijkstra</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Step the demo and read out what changes: the popped vertex turns final, its neighbours get tentative distances, and some of those get overwritten later.</li>
+        <li>Point at a vertex whose distance improves <strong>twice</strong> — that is relaxation doing its job, and it is why a single pass over the edges is not enough.</li>
+        <li>Then point at one that never improves after being popped. That is the invariant, visible.</li>
+        <li>Ask what happens if one edge is given weight −5. Let them predict, then say the answer: a vertex can be popped and <em>then</em> improved, and Dijkstra has no way to revisit it.</li>
+        <li>Mention path reconstruction, since one problem wants it: keep <code>parent[to] = v</code> on every successful relaxation, then walk back from the target and reverse.</li>
+      </ul>
+    </div>
+    <div class="card pad demo"><h4>Demo · Dijkstra on a small weighted graph</h4><div class="ctl"><button class="pri" id="djstep">Step</button><button id="djplay">▶ Play</button><button id="djreset">New graph</button></div><div class="readout" style="margin-top:0;margin-bottom:12px"><div class="stat"><div class="lab">in the queue</div><div class="val" id="djq">0</div></div><div class="stat good"><div class="lab">finalised</div><div class="val" id="djf">0</div></div><div class="stat"><div class="lab">relaxations</div><div class="val" id="djr">0</div></div></div><div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:6px">distance from vertex 1</div><div class="track" id="djtrack" style="flex-wrap:wrap"></div><div class="steps" style="margin-top:14px"><table><thead><tr><th class="n">pop</th><th class="n">d</th><th>relaxed</th></tr></thead><tbody id="djsteps"></tbody></table></div><div class="log" id="djlog">Green means finalised — its distance can no longer change.</div></div>
+  </div>
+</section>
+
+<section class="beat" id="b3">
+  <div class="beat-head">
+    <div class="beat-n">03</div>
+    <div>
+      <h2>All pairs, in five lines</h2>
+      <div class="sub"><span>16 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Different question: <strong>shortest distance between every pair</strong>. Running Dijkstra n times works, but there is something shorter and it handles negative edges.</li>
+        <li>The idea is one sentence: <strong>allow paths to pass through vertex 1, then also through 2, and so on</strong>. After allowing all n, every distance is final.</li>
+        <li>Write the triple loop and then say the thing that matters: <strong>k must be the outermost loop.</strong> Swap it with i or j and the algorithm is silently wrong — it compiles, runs, and gives plausible garbage.</li>
+        <li>O(n³) and O(n²) memory. At n = 500 that is 1.25·10⁸ operations — comfortable. At n = 1000 it is 10⁹ and borderline. That is why these statements cap n so low.</li>
+        <li>Initialisation: 0 on the diagonal, the edge weight where an edge exists, a large constant elsewhere. Use something like 10¹⁸/4 rather than <code>LLONG_MAX</code>, so that adding two of them does not overflow.</li>
+        <li>It handles negative edges fine; and if any <code>d[i][i]</code> ends up negative, the graph has a <strong>negative cycle</strong> — which is the next beat.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>For the board</h4><pre><span class="k">for</span> (<span class="k">int</span> k = 1; k &lt;= n; ++k)       <span class="c">// OUTERMOST</span>
+  <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt;= n; ++i)
+    <span class="k">for</span> (<span class="k">int</span> j = 1; j &lt;= n; ++j)
+      <span class="k">if</span> (d[i][k] + d[k][j] &lt; d[i][j])
+        d[i][j] = d[i][k] + d[k][j];</pre><p style="margin-top:12px">Ask the room to say aloud what <code>d[i][j]</code> means after iteration k: <em>the shortest path from i to j using only 1…k as intermediate vertices</em>. That sentence is the proof.</p><div class="trap" style="margin-top:14px"><b>Guard the addition.</b> If both <code>d[i][k]</code> and <code>d[k][j]</code> are the "infinity" constant, their sum may wrap. Either check that both are below infinity before adding, or pick a constant small enough that doubling is safe.</div></div>
+      <div class="card pad board"><h4>Problem A is Floyd, incrementally</h4><p>Vertices are added <strong>one at a time</strong>, and after each addition you report the sum of all shortest paths among the vertices added so far.</p><p style="margin-top:11px">The trick is that this is Floyd read in the other direction: the <code>k</code> loop <em>is</em> "allow one more vertex". Add the vertices in <strong>reverse</strong> of the deletion order and each new vertex is exactly one k-iteration.</p><pre style="margin-top:12px"><span class="c">// after adding vertex k</span>
+<span class="k">for</span> (<span class="k">int</span> i = 1; i &lt;= n; ++i)
+  <span class="k">for</span> (<span class="k">int</span> j = 1; j &lt;= n; ++j)
+    d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
+<span class="c">// then sum over the already-added set</span></pre><div class="trap" style="margin-top:14px"><b>Same shape as problem E of lab 11.</b> An operation that is hard forwards and easy backwards. Worth pointing out that this is a recurring trick, not a one-off.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b4">
+  <div class="beat-head">
+    <div class="beat-n">04</div>
+    <div>
+      <h2>Negative weights and negative cycles</h2>
+      <div class="sub"><span>16 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Bellman–Ford does not care about the order of exploration at all. It simply <strong>relaxes every edge, n − 1 times</strong>.</li>
+        <li>Why n − 1: a shortest path has at most n − 1 edges, and each pass extends the reach by at least one edge. Simple, slow, correct.</li>
+        <li>O(n·m), which at n = 100 is nothing. Only use it when Dijkstra cannot — that is, when weights can be negative.</li>
+        <li><strong>The detection trick.</strong> Run one extra pass. If anything still improves, there is a <strong>negative cycle</strong> — a loop you can go round forever, getting cheaper. The shortest path is then undefined, not merely large.</li>
+        <li>To print the cycle rather than just report it: remember which vertex relaxed on the n-th pass, walk <code>parent</code> back <strong>n times to land inside the cycle</strong>, then walk until you return to that vertex. The "n times" step is the part everyone omits, and without it you print a tail that leads to the cycle instead of the cycle itself.</li>
+        <li>Close the course here: BFS, Dijkstra, Floyd and Bellman–Ford are one idea — <strong>relaxation</strong> — under four different orders of visiting.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>For the board</h4><pre><span class="k">for</span> (<span class="k">int</span> pass = 0; pass &lt; n - 1; ++pass)
+  <span class="k">for</span> (<span class="k">auto</span>&amp; e : edges)
+    <span class="k">if</span> (d[e.u] + e.w &lt; d[e.v]) {
+      d[e.v] = d[e.u] + e.w;
+      parent[e.v] = e.u;
+    }
+
+<span class="c">// one more pass — anything moving means a negative cycle</span>
+<span class="k">int</span> x = -1;
+<span class="k">for</span> (<span class="k">auto</span>&amp; e : edges)
+  <span class="k">if</span> (d[e.u] + e.w &lt; d[e.v]) { d[e.v] = d[e.u] + e.w; x = e.v; }</pre><div class="trap" style="margin-top:14px"><b>Walk back n times first.</b> <code>for (int i = 0; i &lt; n; ++i) x = parent[x];</code> guarantees x is <em>on</em> the cycle. Skipping it prints the path leading into the cycle, which looks right on small tests and fails on the real ones.</div></div>
+      <div class="card pad board"><h4>The course in one table</h4><div class="tw"><table><thead><tr><th>Algorithm</th><th>Order of visiting</th><th>Gives</th></tr></thead><tbody><tr><td class="k">BFS</td><td>queue — by hop count</td><td>fewest edges</td></tr><tr><td class="k">Dijkstra</td><td>heap — by distance</td><td>cheapest, weights ≥ 0</td></tr><tr><td class="k">Bellman–Ford</td><td>no order, repeated passes</td><td>cheapest, any weights</td></tr><tr><td class="k">Floyd</td><td>by allowed intermediate</td><td>all pairs</td></tr></tbody></table></div><p style="margin-top:12px">Every one of them does the same update — <code>if (d[u] + w &lt; d[v]) d[v] = d[u] + w</code>. They differ only in <em>when</em> they do it. That is a good last sentence for the course.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b5">
+  <div class="beat-head">
+    <div class="beat-n">05</div>
+    <div>
+      <h2>Lab 12 — how it maps onto today</h2>
+      <div class="sub"><span>12 min</span> <span>ADS-Lab-12</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Five problems, one per algorithm, plus two that make you choose. Read the constraints with them and let the table from beat 01 do the work.</li>
+        <li>B is plain Dijkstra at N ≤ 10⁵ — the heap version, no alternative.</li>
+        <li>A is Floyd read backwards (beat 03), n ≤ 500. C is BFS on the <strong>complement</strong> graph at n ≤ 400 — the edges you can use are the ones that are <em>not</em> listed, which is a nice reminder that the graph in your head need not be the graph in the input.</li>
+        <li>D is the odd one and worth flagging as a good exam question: minimise the <em>maximum</em> edge on a path. That is not a shortest path, it is a bottleneck path — binary search the answer plus a reachability check, which brings lecture 3 back on the last day.</li>
+        <li><strong>E is excluded from the defence</strong> — negative cycle detection plus printing the cycle, with more than one valid answer and its own checker.</li>
+        <li>Finally, the calendar: <strong>labs 11 and 12 are defended together</strong>, one problem from each lab in every variant.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Nugman and Graph</span><span class="pill key">key</span><div class="map-why">Beat 03 · Floyd read backwards — vertices added one at a time, n ≤ 500</div></div></div>
+<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Red Riding Hood and Long Journey</span><span class="pill key">key</span><div class="map-why">Beat 01 · plain Dijkstra on a heap, N ≤ 10⁵</div></div></div>
+<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Nugman and Graph 3</span><span class="pill key">key</span><div class="map-why">BFS on the complement graph, n ≤ 400 — the usable edges are the unlisted ones</div></div></div>
+<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Element of SPADA</span><span class="pill key">key</span><div class="map-why">Bottleneck path — minimise the maximum edge; binary search plus reachability</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Cycle.</span><div class="map-why">Beat 04 · negative cycle, and print it — own checker, not on the defence</div></div></div></div>
+  </div>
+</section>
+
+<section class="beat" id="b6">
+  <div class="beat-head">
+    <div class="beat-n">06</div>
+    <div>
+      <h2>End of the course</h2>
+      <div class="sub"><span>4 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><p>That is the syllabus. Thirteen lectures, twelve labs, from counting operations to shortest paths on weighted graphs.</p><p style="margin-top:12px">Worth saying explicitly on the last day: the exam does not reward memorised code. It rewards the reflex from beat 01 — <strong>reading the constraints and naming the technique</strong>. n ≤ 20 means brute force; "minimum maximum" means binary search on the answer; "repeatedly the next smallest" means a heap; a weighted graph with non-negative edges means Dijkstra. Everything else is implementation.</p><p style="margin-top:12px">Remind them the defence for labs 11 and 12 is the last graded item before the exam, and that the lab score still multiplies rather than adds — a lab left undefended is a lab worth zero, however many green ticks it has.</p></div>
+  </div>
+</section>
+</main>
+</div>
+
+<footer>
+  <span>ADS 2026 · KBTU · Lecture 13 — Shortest Paths</span>
+  <span><a href="index.html">All lectures</a></span>
+</footer>
+</div>
+
+<button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
+<script src="assets/notes.js"></script>
+<script>
+
+(function(){
+var N=window.NOTES, el=N.el, on=N.on;
+var V=8, adj=[], d=[], done=[], pq=[], rel=0, steps=0, dtimer=null;
+
+function build(){
+  adj=[]; for(var i=0;i<=V;i++) adj[i]=[];
+  for(var u=1;u<=V;u++) for(var v=u+1;v<=V;v++) if(Math.random()<0.4){
+    var w=1+Math.floor(Math.random()*15);
+    adj[u].push([v,w]); adj[v].push([u,w]);
+  }
+  for(var u2=1;u2<V;u2++) if(!adj[u2].some(function(e){return e[0]===u2+1;})){
+    var w2=1+Math.floor(Math.random()*15);
+    adj[u2].push([u2+1,w2]); adj[u2+1].push([u2,w2]);
+  }
+  d=[]; done=[]; for(var i2=0;i2<=V;i2++){ d[i2]=Infinity; done[i2]=false; }
+  d[1]=0; pq=[[0,1]]; rel=0; steps=0;
+  el('djsteps').innerHTML='';
+  el('djlog').textContent='New random graph on '+V+' vertices. Green means finalised.';
+  paint();
+}
+function paint(){
+  el('djtrack').innerHTML='';
+  var h='';
+  for(var v=1;v<=V;v++){
+    var st = done[v] ? 'background:var(--prime-soft);border-color:var(--prime);color:var(--prime)'
+           : (d[v]<Infinity ? 'background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)'
+           : 'background:var(--surface-2);border-color:var(--line);color:var(--ink-3)');
+    h+='<div style="flex:none;text-align:center;margin-right:6px">'+
+       '<div class="box" style="min-width:42px;'+st+'">'+(d[v]===Infinity?'∞':d[v])+'</div>'+
+       '<div class="mono" style="font-size:.72rem;color:var(--ink-3);margin-top:3px">v'+v+'</div></div>';
+  }
+  el('djtrack').innerHTML=h;
+  el('djq').textContent=pq.length;
+  el('djf').textContent=done.filter(Boolean).length;
+  el('djr').textContent=rel;
+}
+function step(){
+  pq.sort(function(a,b){return a[0]-b[0];});
+  while(pq.length && done[pq[0][1]]) pq.shift();
+  if(!pq.length){ el('djlog').textContent='Queue empty — every reachable vertex is finalised.'; stop(); return false; }
+  var top=pq.shift(), dv=top[0], v=top[1];
+  done[v]=true; steps++;
+  var touched=[];
+  adj[v].forEach(function(e){
+    var to=e[0], w=e[1];
+    if(dv+w<d[to]){ d[to]=dv+w; pq.push([d[to],to]); rel++; touched.push('v'+to+'→'+d[to]); }
+  });
+  el('djsteps').innerHTML += '<tr><td class="n">v'+v+'</td><td class="n">'+dv+'</td>'+
+    '<td class="mono" style="font-size:.78rem">'+(touched.join(', ')||'—')+'</td></tr>';
+  el('djlog').textContent='Popped v'+v+' at distance '+dv+' — finalised. '+
+    (touched.length?('Relaxed '+touched.length+' neighbour(s).'):'No neighbour improved.');
+  paint(); return true;
+}
+function stop(){ if(dtimer){clearInterval(dtimer);dtimer=null;} el('djplay').textContent='▶ Play'; }
+on('djstep','click',step);
+on('djreset','click',function(){ stop(); build(); });
+on('djplay','click',function(){
+  if(dtimer){ stop(); return; }
+  el('djplay').textContent='❚❚ Pause';
+  dtimer=setInterval(function(){ if(!step()) stop(); },750);
+});
+build();
+})();
+
+</script>
+</body></html>

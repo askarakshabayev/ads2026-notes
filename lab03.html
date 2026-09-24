@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Binary Search</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
+<link rel="stylesheet" href="assets/notes.css">
+</head><body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">ADS 2026 · KBTU · Lecture 3 · Lab 3</div>
+  <h1>Binary <em>Search</em></h1>
+  <p class="dek">One idea, three shapes. First the textbook search in a sorted array, then the two boundary versions that actually get used, and finally the move that makes this the most reusable technique in the course — searching over the answer instead of over the data.</p>
+  <div class="facts"><span class="fact">Length <b>~105 min</b></span><span class="fact">Beats <b>6</b></span><span class="fact">Live demos <b>3</b></span><span class="fact">Practice <b>Lab 3 · 11 problems</b></span></div>
+</header>
+
+<div class="cols">
+
+<nav class="rail" aria-label="Running order">
+  <div class="rail-h">Running order</div>
+  <div class="part">I · The idea</div>
+  <ol>
+    <li><a href="#b1"><span class="n">01</span><span>Halving the range</span><span class="t">16′</span></a></li>
+  </ol>
+  <div class="part">II · Boundaries</div>
+  <ol>
+    <li><a href="#b2"><span class="n">02</span><span>lower · upper bound</span><span class="t">18′</span></a></li>
+  </ol>
+  <div class="part">III · Search on the answer</div>
+  <ol>
+    <li><a href="#b3"><span class="n">03</span><span>Binary search on the answer</span><span class="t">24′</span></a></li>
+    <li><a href="#b4"><span class="n">04</span><span>Recognising the pattern</span><span class="t">12′</span></a></li>
+  </ol>
+  <div class="part">IV · Practice</div>
+  <ol>
+    <li><a href="#b5"><span class="n">05</span><span>Lab 3 walkthrough</span><span class="t">12′</span></a></li>
+    <li><a href="#b6"><span class="n">06</span><span>What comes next</span><span class="t">3′</span></a></li>
+  </ol>
+</nav>
+
+<main>
+<section class="beat" id="b1">
+  <div class="beat-head">
+    <div class="beat-n">01</div>
+    <div>
+      <h2>Guess the number</h2>
+      <div class="sub"><span>16 min</span> <span>demo: search stepper</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Open with the game: I picked a number from 1 to 1000, you have ten guesses. Someone will say 500. Ask <strong>why</strong> — that answer is the whole lecture.</li>
+        <li>Each comparison <strong>throws away half</strong> the candidates. n → n/2 → n/4 → … → 1 takes <strong>log₂n</strong> steps. For a million that is 20, for a billion 30.</li>
+        <li>Two preconditions, and they are non-negotiable: the data is <strong>sorted</strong>, and you can jump to the middle in O(1). Say out loud that this is exactly what a linked list cannot do — that is the bridge from last week.</li>
+        <li>Run the demo on n = 100 and then on n = 10⁹ and let them read the step count. Linear search on 10⁹ is a billion comparisons; this is thirty.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>For the board</h4><pre><span class="k">int</span> l = 0, r = n - 1;
+<span class="k">while</span> (l &lt;= r) {
+    <span class="k">int</span> m = l + (r - l) / 2;   <span class="c">// not (l+r)/2</span>
+    <span class="k">if</span> (a[m] == x) <span class="k">return</span> m;
+    <span class="k">if</span> (a[m] &lt; x) l = m + 1;
+    <span class="k">else</span>          r = m - 1;
+}
+<span class="k">return</span> -1;</pre><div class="trap" style="margin-top:14px"><b>Why <code>l + (r-l)/2</code>:</b> with <code>l</code> and <code>r</code> near 2·10⁹ the sum <code>l+r</code> overflows <code>int</code> and the index goes negative. This is the famous bug that sat in the JDK for nine years — worth the thirty seconds it takes to tell.</div><div class="trap" style="margin-top:10px"><b>The other classic:</b> writing <code>l = m</code> instead of <code>l = m + 1</code>. The range stops shrinking and the loop hangs. If a submission times out on a tiny test, this is why.</div></div>
+      <div class="card pad demo"><h4>Demo · watch the range collapse</h4><div class="ctl"><label class="f" style="flex:1 1 120px"><span>n</span><input type="number" id="bsn" value="64" min="2" max="1000000000"></label><label class="f" style="flex:1 1 120px"><span>target</span><input type="number" id="bsx" value="41"></label><button class="pri" id="bsrun">Search</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-bs="64,41">n=64</button><button class="chip" data-bs="1000,777">n=1 000</button><button class="chip" data-bs="1000000,999999">n=10⁶</button><button class="chip" data-bs="1000000000,1">n=10⁹, worst</button></div><div class="readout"><div class="stat good"><div class="lab">Binary, comparisons</div><div class="val" id="bsfast">—</div></div><div class="stat bad"><div class="lab">Linear, comparisons</div><div class="val" id="bsslow">—</div></div></div><div class="steps" style="margin-top:14px"><table><thead><tr><th class="n">step</th><th class="n">l</th><th class="n">m</th><th class="n">r</th><th class="n">range</th></tr></thead><tbody id="bssteps"></tbody></table></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b2">
+  <div class="beat-head">
+    <div class="beat-n">02</div>
+    <div>
+      <h2>The two versions you actually use</h2>
+      <div class="sub"><span>18 min</span> <span>demo: duplicates</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>The textbook version answers <em>is it there</em>. Real problems ask <strong>where is the first one ≥ x</strong> or <strong>how many are &lt; x</strong>. That is <code>lower_bound</code>.</li>
+        <li>Switch the loop to <code>while (l &lt; r)</code> with <code>r = n</code> — the answer is a <strong>position, possibly n</strong>, not an index that must exist. This off-by-one is where most of the lab is lost.</li>
+        <li>With duplicates: <code>lower_bound</code> gives the first occurrence, <code>upper_bound</code> the one past the last, and the <strong>difference is the count</strong>. Show it in the demo on an array full of repeats.</li>
+        <li>Then say the practical thing: in C++ these are <code>std::lower_bound</code> and <code>std::upper_bound</code>, and <strong>you should use them</strong> — but you must be able to write them, because at the defence you will be asked to.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>For the board</h4><pre><span class="c">// first index with a[i] &gt;= x</span>
+<span class="k">int</span> l = 0, r = n;        <span class="c">// note: n, not n-1</span>
+<span class="k">while</span> (l &lt; r) {
+    <span class="k">int</span> m = l + (r - l) / 2;
+    <span class="k">if</span> (a[m] &lt; x) l = m + 1;
+    <span class="k">else</span>          r = m;
+}
+<span class="c">// l is the answer, l == n means "no such element"</span></pre><div class="formula" style="margin-top:13px">count of x = upper_bound(x) − lower_bound(x)</div><div class="trap" style="margin-top:14px"><b>The invariant to say out loud:</b> everything left of <code>l</code> is <code>&lt; x</code>, everything from <code>r</code> on is <code>≥ x</code>. When <code>l == r</code> the boundary is found. Teach the invariant, not the template — students who memorise the template cannot adapt it.</div></div>
+      <div class="card pad demo"><h4>Demo · bounds on a array with repeats</h4><div class="ctl"><label class="f" style="flex:1 1 220px"><span>array (sorted)</span><input type="text" id="lba" value="1 3 3 3 5 5 8 9"></label><label class="f" style="flex:1 1 90px"><span>x</span><input type="number" id="lbx" value="3"></label><button class="pri" id="lbrun">Find</button></div><div class="track" id="lbtrack"></div><div class="readout"><div class="stat"><div class="lab">lower_bound</div><div class="val" id="lblo">—</div></div><div class="stat"><div class="lab">upper_bound</div><div class="val" id="lbhi">—</div></div><div class="stat good"><div class="lab">count of x</div><div class="val" id="lbcnt">—</div></div></div><div class="log" id="lblog">Blue is the block equal to x.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b3">
+  <div class="beat-head">
+    <div class="beat-n">03</div>
+    <div>
+      <h2>When there is no array to search</h2>
+      <div class="sub"><span>24 min</span> <span>demo: rope cutting</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>This is the beat that matters. Most of the lab is <strong>not</strong> searching a given array — there is no array.</li>
+        <li>The pattern: the answer is a number in a known range, and there is a <strong>yes/no check</strong> <code>can(x)</code> that is monotone — if x works then everything smaller works too. Then binary search the <em>answer</em>.</li>
+        <li>Say the three questions to ask on every such problem, in this order: <strong>what is the answer</strong>, <strong>what are its bounds</strong>, <strong>what is can(x) and is it monotone</strong>. Write them on the board and leave them up.</li>
+        <li>Work problem G live: n ropes, cut exactly k pieces, maximise the piece length. can(x) = "Σ⌊aᵢ/x⌋ ≥ k", which clearly only gets harder as x grows. Total cost O(n log(max a)).</li>
+        <li><strong>Watch the direction.</strong> Here we want the largest x that works, so the loop keeps the good half: <code>if (can(m)) l = m; else r = m - 1;</code> — and <code>m</code> must round <strong>up</strong> or it hangs.</li>
+        <li>For real-valued answers do not use <code>l &lt; r</code>. Run a fixed <strong>100 iterations</strong> and stop; it is simpler and always terminates.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>The template</h4><pre><span class="k">bool</span> can(<span class="k">long long</span> x) { <span class="c">/* monotone check */</span> }
+
+<span class="k">long long</span> l = 1, r = MAXA;
+<span class="k">while</span> (l &lt; r) {
+    <span class="k">long long</span> m = l + (r - l + 1) / 2;   <span class="c">// round UP</span>
+    <span class="k">if</span> (can(m)) l = m;
+    <span class="k">else</span>        r = m - 1;
+}
+<span class="c">// l is the largest x with can(x) == true</span></pre><div class="trap" style="margin-top:14px"><b>Rounding up is not decoration.</b> With <code>l = m</code> in the loop and <code>m</code> rounded down, <code>l</code> and <code>r</code> one apart make <code>m == l</code> forever. The submission hangs on a two-element test.</div><div class="trap" style="margin-top:10px"><b>Check the empty answer.</b> If even x = 1 fails, the answer is 0 and there is usually a special line to print. Problem G says so explicitly.</div></div>
+      <div class="card pad demo"><h4>Demo · cutting the ropes (problem G)</h4><div class="ctl"><label class="f" style="flex:1 1 200px"><span>ropes</span><input type="text" id="rca" value="802 743 457 539"></label><label class="f" style="flex:1 1 90px"><span>k</span><input type="number" id="rck" value="11"></label><button class="pri" id="rcrun">Solve</button></div><div class="readout"><div class="stat good"><div class="lab">Longest piece</div><div class="val" id="rcans">—</div></div><div class="stat"><div class="lab">Iterations</div><div class="val" id="rcit">—</div></div><div class="stat bad"><div class="lab">If we tried every length</div><div class="val" id="rcnaive">—</div></div></div><div class="steps" style="margin-top:14px"><table><thead><tr><th class="n">l</th><th class="n">m</th><th class="n">r</th><th class="n">pieces at m</th><th>can(m)</th></tr></thead><tbody id="rcsteps"></tbody></table></div><p style="margin-top:12px;font-size:.83rem;color:var(--ink-3)">The <em>can</em> column only ever goes from yes to no as you read down a fixed column — that is monotonicity, made visible.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b4">
+  <div class="beat-head">
+    <div class="beat-n">04</div>
+    <div>
+      <h2>How to spot it in a statement</h2>
+      <div class="sub"><span>12 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Give them the vocabulary that signals it: <strong>"maximum such that"</strong>, <strong>"minimum time to"</strong>, <strong>"the largest k for which it is possible"</strong>. Almost every one of those is a binary search on the answer.</li>
+        <li>Second signal: the direct computation is hopeless, but <strong>checking a candidate is easy</strong>. Robin Hood (F) is exactly that — you cannot compute the rate, but given a rate you can add up the hours in one pass.</li>
+        <li>Third: the answer range is huge (up to 10⁹ or 10¹⁸) while n is small. That mismatch is a giveaway — the log is over the <em>values</em>, not over n.</li>
+        <li>Warn them about the cost: the check runs <strong>inside</strong> the loop. An O(n) check gives O(n log C) overall, which is fine; an O(n²) check is not.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>The three questions, filled in</h4><div class="tw"><table><thead><tr><th>Problem</th><th>Answer</th><th>can(x)</th></tr></thead><tbody><tr><td class="k">G · Cutting the Ropes</td><td>piece length</td><td>Σ⌊aᵢ/x⌋ ≥ k</td></tr><tr><td class="k">F · Robin Hood</td><td>bars per hour</td><td>Σ⌈bagsᵢ/x⌉ ≤ H</td></tr><tr><td class="k">C · Debugging</td><td>blocks read</td><td>mistakes found ≥ M</td></tr><tr><td class="k">I · Ghouls</td><td>segment value</td><td>a valid split exists</td></tr><tr><td class="k">J · Jonathan the Farmer</td><td>distance</td><td>K sheep fit that far apart</td></tr></tbody></table></div><p style="margin-top:13px">Five of the eleven problems are the same technique wearing different clothes. Say that — it lowers the apparent size of the lab a great deal.</p></div>
+      <div class="card pad board"><h4>Where binary search hides</h4><p>Two problems in the lab are binary search on something that is <strong>not a number line at all</strong>:</p><p style="margin-top:11px"><strong>D · Win me if you can</strong> — sort the competitors once, then every round is a <code>upper_bound</code> plus a prefix sum. The search is over the sorted array; the work is in noticing you should sort first.</p><p style="margin-top:11px"><strong>K · Snake</strong> — the array is never built (it can be 10⁹ cells). You binary search the <em>column</em>, then compute the row by formula. Pure "search a virtual structure".</p><div class="trap" style="margin-top:14px"><b>B and E are the same problem twice.</b> B has n, q ≤ 100 so a double loop passes; E raises both to 10⁵ and the double loop dies. Hand them out as a pair — solving B naively and then being forced to rewrite is the lesson.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b5">
+  <div class="beat-head">
+    <div class="beat-n">05</div>
+    <div>
+      <h2>Lab 3 — how it maps onto today</h2>
+      <div class="sub"><span>12 min</span> <span>ADS-Lab-03</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>A is the warm-up and should be done in the room, on the projector, in three minutes.</li>
+        <li>Then point at the split: <strong>A, B, D, E, K</strong> search inside data; <strong>C, F, G, I, J</strong> search over the answer. H is the odd one out — it is prefix sums plus a set, and it is there to stop the lab being monotonous.</li>
+        <li>Tell them the honest order of difficulty: A → D → F → G → C → J. Starting at J because it looks like a farm story is how people lose an evening.</li>
+        <li>Limits are mostly 1–2 s; <strong>J has 5 s</strong> because n = 2·10⁵ with a log inside a log.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Binary search</span><span class="pill new">new</span><div class="map-why">Beat 01 · the plain search, n ≤ 100 — write it once, correctly</div></div></div>
+<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Patchwork Staccato I</span><div class="map-why">Beat 02 · bounds inside a segment; n, q ≤ 100 so brute force still passes</div></div></div>
+<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Debugging</span><div class="map-why">Beat 03 · search the answer — how many blocks until M mistakes are found</div></div></div>
+<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Win me if you can!</span><div class="map-why">Beat 04 · sort once, then upper_bound plus a prefix sum per round</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Patchwork Staccato II</span><div class="map-why">Beat 04 · the same statement as B with n, q ≤ 10⁵ — brute force now dies</div></div></div>
+<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Robin Hood stealing the Gold</span><div class="map-why">Beat 03 · search the answer — minimum bars per hour, ceilings not floors</div></div></div>
+<div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Cutting the Ropes</span><span class="pill new">new</span><div class="map-why">Beat 03 · the worked example — longest equal piece, Σ⌊aᵢ/x⌋ ≥ k</div></div></div>
+<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">K-subarray</span><div class="map-why">Prefix sums with a set — the one problem that is not binary search</div></div></div>
+<div class="map-row"><span class="map-idx">I</span><div><span class="map-name">Oshiete oshiete yo sono shikumi wo</span><div class="map-why">Beat 03 · search the answer over a split of the street</div></div></div>
+<div class="map-row"><span class="map-idx">J</span><div><span class="map-name">Jonathan the Farmer</span><div class="map-why">Beat 03 · classic "place K items as far apart as possible", TL 5 s</div></div></div>
+<div class="map-row"><span class="map-idx">K</span><div><span class="map-name">Snake</span><div class="map-why">Beat 04 · search a virtual array — the snake is never built</div></div></div></div>
+  </div>
+</section>
+
+<section class="beat" id="b6">
+  <div class="beat-head">
+    <div class="beat-n">06</div>
+    <div>
+      <h2>What comes next</h2>
+      <div class="sub"><span>3 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><p>Lecture 4 is the <strong>binary search tree</strong> — the same halving idea, but built into the structure itself instead of applied to a flat array. Leave them with the question: <em>a sorted array supports binary search in O(log n), so why would anyone need a tree?</em> The answer is insertion, and it opens the next lecture.</p><p style="margin-top:12px">Homework is Lab 3. Ask for <strong>A and G</strong> before the next class — one of each kind, so both templates get written at least once.</p></div>
+  </div>
+</section>
+</main>
+</div>
+
+<footer>
+  <span>ADS 2026 · KBTU · Lecture 3 — Binary Search</span>
+  <span><a href="index.html">All lectures</a></span>
+</footer>
+</div>
+
+<button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
+<script src="assets/notes.js"></script>
+<script>
+
+(function(){
+var N=window.NOTES, el=N.el, on=N.on, each=N.each, grp=N.grp;
+
+/* ---------- 01 binary search stepper ---------- */
+function bsRun(){
+  var n=Math.max(2,parseInt(el('bsn').value)||64);
+  var x=parseInt(el('bsx').value); if(isNaN(x)) x=1;
+  x=Math.max(1,Math.min(n,x));
+  var l=1,r=n,steps=0,rows='';
+  while(l<=r){
+    var m=l+Math.floor((r-l)/2); steps++;
+    rows+='<tr'+(steps%2?'':'')+'><td class="n">'+steps+'</td><td class="n">'+grp(l)+'</td>'+
+         '<td class="n" style="color:var(--accent);font-weight:600">'+grp(m)+'</td>'+
+         '<td class="n">'+grp(r)+'</td><td class="n">'+grp(r-l+1)+'</td></tr>';
+    if(m===x) break;
+    if(m<x) l=m+1; else r=m-1;
+    if(steps>200) break;
+  }
+  el('bssteps').innerHTML=rows;
+  el('bsfast').textContent=steps;
+  el('bsslow').textContent=grp(x);
+}
+on('bsrun','click',bsRun);
+each('[data-bs]',function(b){ b.addEventListener('click',function(){
+  var p=b.getAttribute('data-bs').split(','); el('bsn').value=p[0]; el('bsx').value=p[1]; bsRun(); }); });
+bsRun();
+
+/* ---------- 02 lower / upper bound ---------- */
+function lbRun(){
+  var a=(el('lba').value||'').trim().split(/\s+/).map(Number).filter(function(v){return !isNaN(v);});
+  a.sort(function(p,q){return p-q;});
+  var x=parseInt(el('lbx').value);
+  var lo=0,hi=a.length;
+  while(lo<hi){ var m=lo+((hi-lo)>>1); if(a[m]<x) lo=m+1; else hi=m; }
+  var lb=lo;
+  lo=0;hi=a.length;
+  while(lo<hi){ var m2=lo+((hi-lo)>>1); if(a[m2]<=x) lo=m2+1; else hi=m2; }
+  var ub=lo;
+  el('lbtrack').innerHTML=a.map(function(v,i){
+    var inb=(i>=lb&&i<ub);
+    return '<div class="box" style="'+(inb?'':'background:var(--surface-2);border-color:var(--line);color:var(--ink-3)')+'">'+v+'</div>';
+  }).join('')||'<span class="empty">empty</span>';
+  el('lblo').textContent=lb; el('lbhi').textContent=ub; el('lbcnt').textContent=ub-lb;
+  el('lblog').textContent = (ub-lb)? ('x = '+x+' occupies positions ['+lb+', '+ub+') — '+(ub-lb)+' element(s).')
+                                   : ('x = '+x+' is absent; lower_bound = upper_bound = '+lb+', which is where it would be inserted.');
+}
+on('lbrun','click',lbRun); on('lbx','change',lbRun); on('lba','change',lbRun);
+lbRun();
+
+/* ---------- 03 rope cutting ---------- */
+function rcRun(){
+  var a=(el('rca').value||'').trim().split(/\s+/).map(Number).filter(function(v){return v>0;});
+  var k=Math.max(1,parseInt(el('rck').value)||1);
+  var mx=Math.max.apply(null,a.concat([1]));
+  function pieces(x){ var s=0; for(var i=0;i<a.length;i++) s+=Math.floor(a[i]/x); return s; }
+  var l=1,r=mx,it=0,rows='';
+  while(l<r){
+    var m=l+Math.floor((r-l+1)/2); it++;
+    var p=pieces(m), ok=p>=k;
+    rows+='<tr><td class="n">'+l+'</td><td class="n" style="color:var(--accent);font-weight:600">'+m+'</td>'+
+          '<td class="n">'+r+'</td><td class="n">'+p+'</td><td style="color:'+(ok?'var(--prime)':'var(--mark)')+'">'+(ok?'yes':'no')+'</td></tr>';
+    if(ok) l=m; else r=m-1;
+    if(it>80) break;
+  }
+  var ans=pieces(l)>=k?l:0;
+  el('rcsteps').innerHTML=rows;
+  el('rcans').textContent=ans?ans:'0 (impossible)';
+  el('rcit').textContent=it;
+  el('rcnaive').textContent=grp(mx);
+}
+on('rcrun','click',rcRun); on('rck','change',rcRun); on('rca','change',rcRun);
+rcRun();
+})();
+
+</script>
+</body></html>

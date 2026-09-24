@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Heap and Priority Queue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
+<link rel="stylesheet" href="assets/notes.css">
+</head><body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">ADS 2026 · KBTU · Lecture 5 · Lab 5</div>
+  <h1>Heap and <em>Priority Queue</em></h1>
+  <p class="dek">A tree that gives up almost everything a BST offers and keeps exactly one promise — the smallest element is at the root. In exchange it never degenerates, needs no pointers at all, and answers "give me the next one" in logarithmic time forever.</p>
+  <div class="facts"><span class="fact">Length <b>~105 min</b></span><span class="fact">Beats <b>6</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 5 · 5 problems</b></span></div>
+</header>
+
+<div class="cols">
+
+<nav class="rail" aria-label="Running order">
+  <div class="rail-h">Running order</div>
+  <div class="part">I · The shape</div>
+  <ol>
+    <li><a href="#b1"><span class="n">01</span><span>A weaker promise</span><span class="t">14′</span></a></li>
+  </ol>
+  <div class="part">II · Operations</div>
+  <ol>
+    <li><a href="#b2"><span class="n">02</span><span>Sift up · sift down</span><span class="t">22′</span></a></li>
+  </ol>
+  <div class="part">III · Using it</div>
+  <ol>
+    <li><a href="#b3"><span class="n">03</span><span>priority_queue</span><span class="t">16′</span></a></li>
+  </ol>
+  <div class="part">IV · Practice</div>
+  <ol>
+    <li><a href="#b4"><span class="n">04</span><span>Lab 5 walkthrough</span><span class="t">12′</span></a></li>
+    <li><a href="#b5"><span class="n">05</span><span>What comes next</span><span class="t">3′</span></a></li>
+  </ol>
+</nav>
+
+<main>
+<section class="beat" id="b1">
+  <div class="beat-head">
+    <div class="beat-n">01</div>
+    <div>
+      <h2>Less order, more guarantee</h2>
+      <div class="sub"><span>14 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Start from last week's failure: a BST built from sorted input becomes a list of height n. <strong>The heap cannot do that</strong> — and the reason is worth the whole beat.</li>
+        <li>The heap property is local and weak: <strong>every parent is ≤ both children</strong>. Nothing is claimed about siblings, nothing about left versus right.</li>
+        <li>Because the order is weak, the structure can be forced: a heap is always a <strong>complete binary tree</strong> — every level full except possibly the last, which fills left to right. Complete means <strong>height is always ⌈log₂n⌉</strong>. No degenerate case exists.</li>
+        <li>And a complete tree needs <strong>no pointers</strong>: store it in an array, children of i are 2i+1 and 2i+2, parent is (i−1)/2. Write those three formulas and leave them up.</li>
+        <li>Say what you gave up: you <strong>cannot search a heap</strong>. "Is 47 in here" is O(n), the same as a plain array. A heap answers one question only — what is the minimum.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>For the board</h4><div class="formula">left(i)   = 2i + 1<br>right(i)  = 2i + 2<br>parent(i) = (i − 1) / 2</div><pre style="margin-top:13px"><span class="c">// the heap [1, 3, 6, 5, 9, 8] is this tree:</span>
+<span class="c">//          1</span>
+<span class="c">//        /   \</span>
+<span class="c">//       3     6</span>
+<span class="c">//      / \   /</span>
+<span class="c">//     5   9 8</span></pre><p style="margin-top:12px">Check the property with them on this example: 1 ≤ 3, 1 ≤ 6, 3 ≤ 5, 3 ≤ 9, 6 ≤ 8. Note that <strong>9 sits above nothing and below 3</strong>, yet 5 and 8 are smaller — that is allowed, and it is why a heap is cheap.</p></div>
+      <div class="card pad board"><h4>BST against heap</h4><div class="tw"><table><thead><tr><th>Question</th><th class="n">BST</th><th class="n">Heap</th></tr></thead><tbody><tr><td class="k">Find the minimum</td><td class="n">O(h)</td><td class="n" style="color:var(--prime)">O(1)</td></tr><tr><td class="k">Remove the minimum</td><td class="n">O(h)</td><td class="n" style="color:var(--prime)">O(log n)</td></tr><tr><td class="k">Insert</td><td class="n">O(h)</td><td class="n" style="color:var(--prime)">O(log n)</td></tr><tr><td class="k">Search for a key</td><td class="n" style="color:var(--prime)">O(h)</td><td class="n" style="color:var(--mark)">O(n)</td></tr><tr><td class="k">Print sorted</td><td class="n" style="color:var(--prime)">O(n)</td><td class="n">O(n log n)</td></tr><tr><td class="k">Worst-case height</td><td class="n" style="color:var(--mark)">n</td><td class="n" style="color:var(--prime)">log n</td></tr><tr><td class="k">Memory overhead</td><td class="n">2 pointers</td><td class="n" style="color:var(--prime)">none</td></tr></tbody></table></div><div class="trap" style="margin-top:14px"><b>The line that makes it click:</b> a BST is organised so you can <em>find anything</em>; a heap is organised so you can <em>find the next thing</em>. Different jobs, and most scheduling-shaped problems want the second.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b2">
+  <div class="beat-head">
+    <div class="beat-n">02</div>
+    <div>
+      <h2>Two repairs, that is all</h2>
+      <div class="sub"><span>22 min</span> <span>demo: heap stepper</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li><strong>Insert.</strong> Put the new value at the end of the array — the tree stays complete — then <strong>sift up</strong>: while it is smaller than its parent, swap. At most log n swaps.</li>
+        <li><strong>Extract-min.</strong> The root is the answer. Move the <em>last</em> element into the root (complete again), then <strong>sift down</strong>: swap with the smaller child while it is bigger. Again log n.</li>
+        <li>Insist on <em>smaller</em> child. Swapping with the larger one silently breaks the property and the bug survives small tests. Step the demo on that deliberately if time allows.</li>
+        <li>Use the demo: insert a few values, then extract three times, and read the swap counter. It never exceeds the height.</li>
+        <li><strong>Building from n values.</strong> Inserting one by one is O(n log n). Heapify — sift down from the last parent backwards — is <strong>O(n)</strong>. Surprising enough to state; the proof is that most nodes are near the bottom and sift down almost nowhere.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>For the board</h4><pre><span class="k">void</span> siftUp(<span class="k">int</span> i) {
+    <span class="k">while</span> (i &gt; 0 &amp;&amp; a[(i-1)/2] &gt; a[i]) {
+        swap(a[(i-1)/2], a[i]);
+        i = (i-1)/2;
+    }
+}
+
+<span class="k">void</span> siftDown(<span class="k">int</span> i) {
+    <span class="k">while</span> (2*i+1 &lt; n) {
+        <span class="k">int</span> j = 2*i+1;
+        <span class="k">if</span> (j+1 &lt; n &amp;&amp; a[j+1] &lt; a[j]) j++;  <span class="c">// smaller child</span>
+        <span class="k">if</span> (a[i] &lt;= a[j]) <span class="k">break</span>;
+        swap(a[i], a[j]);
+        i = j;
+    }
+}</pre><div class="trap" style="margin-top:14px"><b>The <code>j+1 &lt; n</code> check</b> is not optional — a node can have a left child and no right one. Dropping it reads past the end of the array, and on a judge that is either a wrong answer or a crash, depending on luck.</div></div>
+      <div class="card pad demo"><h4>Demo · the heap, live</h4><div class="ctl"><label class="f" style="flex:1 1 110px"><span>value</span><input type="number" id="hpv" value="4"></label><button class="pri" id="hpins">insert</button><button id="hpext">extract-min</button><button id="hprand">random 10</button><button id="hpclr">clear</button></div><div class="track" id="hptrack"></div><div id="hptree" style="margin-top:12px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.5;color:var(--ink-2)"></div><div class="readout"><div class="stat"><div class="lab">size</div><div class="val" id="hpn">0</div></div><div class="stat"><div class="lab">height</div><div class="val" id="hph">0</div></div><div class="stat good"><div class="lab">swaps, last op</div><div class="val" id="hps">—</div></div></div><div class="log" id="hplog">Array view on top, tree view below. They are the same thing.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b3">
+  <div class="beat-head">
+    <div class="beat-n">03</div>
+    <div>
+      <h2>In practice you write one line</h2>
+      <div class="sub"><span>16 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Everything above exists in the standard library as <code>std::priority_queue</code> — and by default it is a <strong>max</strong>-heap, which catches people out every single year.</li>
+        <li>Write both forms on the board: the default, and the min-heap incantation with <code>greater&lt;&gt;</code>. Make them copy it; nobody remembers it under time pressure.</li>
+        <li>The operations are named differently from what we just built: <code>push</code>, <code>top</code>, <code>pop</code>, and <strong><code>pop</code> returns nothing</strong> — read <code>top()</code> first.</li>
+        <li>For pairs, it sorts by <code>.first</code> then <code>.second</code>, which is usually exactly what you want for "cheapest first, then by index".</li>
+        <li>Say where it shows up later in this course: <strong>Dijkstra in lecture 13 is a priority queue with a relaxation step</strong>. Today is the prerequisite for that.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>For the board</h4><pre><span class="c">// max-heap — the default, surprises everyone</span>
+priority_queue&lt;<span class="k">int</span>&gt; pq;
+
+<span class="c">// min-heap — memorise this line</span>
+priority_queue&lt;<span class="k">int</span>, vector&lt;<span class="k">int</span>&gt;, greater&lt;<span class="k">int</span>&gt;&gt; pq;
+
+pq.push(5);
+<span class="k">int</span> x = pq.top();   <span class="c">// look</span>
+pq.pop();           <span class="c">// remove, returns void</span></pre><div class="trap" style="margin-top:14px"><b>Two traps in one:</b> <code>pop()</code> on an empty queue is undefined behaviour, not an exception — check <code>empty()</code>. And if your answer comes out reversed, you almost certainly forgot <code>greater&lt;&gt;</code>.</div></div>
+      <div class="card pad board"><h4>The shapes worth naming</h4><p><strong>Repeated "take the two cheapest".</strong> Pull twice, combine, push the result back. That loop is problem B almost verbatim, and it is also how Huffman coding works.</p><p style="margin-top:11px"><strong>Event simulation.</strong> Keep a queue of (time, event); pop the earliest, process it, push whatever it spawns. Problem C is this.</p><p style="margin-top:11px"><strong>k smallest of something huge.</strong> Never build the huge thing. Seed the heap with the obvious candidates and expand only the popped one — problem E in one sentence.</p><p style="margin-top:11px"><strong>Keep the k best seen so far.</strong> A max-heap of size k: push, and if the size exceeds k drop the top. O(n log k) instead of sorting everything.</p><div class="trap" style="margin-top:14px"><b>Heap sort, since it is on the syllabus:</b> heapify in O(n), then extract-min n times — O(n log n), in place, no extra memory. It loses to quicksort in practice on cache, which is next week's discussion.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b4">
+  <div class="beat-head">
+    <div class="beat-n">04</div>
+    <div>
+      <h2>Lab 5 — how it maps onto today</h2>
+      <div class="sub"><span>12 min</span> <span>ADS-Lab-05</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Only five problems this week, and <strong>four of them are one priority queue each</strong>. Say that up front — it is the shortest lab of the semester.</li>
+        <li>B is the "take the two cheapest, put the result back" loop from beat 03. If they can write that loop, B is ten lines.</li>
+        <li>E is the one that needs thought: <strong>k-th smallest sum without building all the sums</strong>. There are n² sums and n can be large; the heap exists precisely so you never materialise them.</li>
+        <li><strong>D is the heavy one</strong> — TL 3 s, and it is not on the defence. Tell them to attempt it last, or not at all if they are short of time.</li>
+        <li>At the defence you will be asked to show the sift, not the <code>#include</code>. Solving with <code>priority_queue</code> is fine and expected; not knowing what it does underneath is not.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Optimizing Program</span><span class="pill key">key</span><div class="map-why">Beat 03 · priority queue over the tasks; TL 2 s</div></div></div>
+<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Rock Game</span><span class="pill key">key</span><div class="map-why">Beat 03 · take the two cheapest, push the result back — the Huffman loop</div></div></div>
+<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Standard problem about soccer</span><span class="pill key">key</span><div class="map-why">Beat 03 · event simulation, earliest first</div></div></div>
+<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Experiment with Mixtures</span><div class="map-why">Heaviest of the five, TL 3 s — not on the defence</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">K-th sum</span><span class="pill key">key</span><div class="map-why">Beat 03 · k-th smallest sum without ever building the n² sums</div></div></div></div>
+  </div>
+</section>
+
+<section class="beat" id="b5">
+  <div class="beat-head">
+    <div class="beat-n">05</div>
+    <div>
+      <h2>What comes next</h2>
+      <div class="sub"><span>3 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><p>Lecture 6 is <strong>sorting</strong> — heap sort, which you can already derive from today, and quick sort, which is the opposite philosophy. The hook to leave them with: heap sort has a guaranteed O(n log n) and still loses to quicksort on real data. Ask them to guess why before the next class; the answer is cache, and it is the first time in this course where the machine, not the asymptotics, decides.</p><p style="margin-top:12px">Homework is Lab 5. It is small — ask for <strong>B and C</strong>, both of which are the plain queue loop.</p></div>
+  </div>
+</section>
+</main>
+</div>
+
+<footer>
+  <span>ADS 2026 · KBTU · Lecture 5 — Heap and Priority Queue</span>
+  <span><a href="index.html">All lectures</a></span>
+</footer>
+</div>
+
+<button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
+<script src="assets/notes.js"></script>
+<script>
+
+(function(){
+var N=window.NOTES, el=N.el, on=N.on;
+var H=[], lastSwaps=0;
+
+function swap(i,j){ var t=H[i]; H[i]=H[j]; H[j]=t; }
+function up(i){ var s=0; while(i>0 && H[(i-1)>>1]>H[i]){ swap((i-1)>>1,i); i=(i-1)>>1; s++; } return s; }
+function down(i){ var s=0; while(2*i+1<H.length){ var j=2*i+1;
+  if(j+1<H.length && H[j+1]<H[j]) j++;
+  if(H[i]<=H[j]) break; swap(i,j); i=j; s++; } return s; }
+function tree(){
+  if(!H.length) return '';
+  var lines=[], depth=Math.floor(Math.log2(H.length))+1;
+  for(var d=0; d<depth; d++){
+    var from=(1<<d)-1, to=Math.min(H.length,(1<<(d+1))-1), pad=new Array((depth-d)*2).join(' ');
+    var row=[]; for(var i=from;i<to;i++) row.push(H[i]);
+    if(row.length) lines.push(pad+row.join('   '));
+  }
+  return lines.map(function(s){return s.replace(/ /g,'&nbsp;');}).join('<br>');
+}
+function paint(){
+  el('hptrack').innerHTML = H.length
+    ? H.map(function(v,i){ return '<div class="box" style="'+(i===0?'background:var(--prime-soft);border-color:var(--prime);color:var(--prime)':'')+'">'+v+'</div>'; }).join('')
+    : '<span class="empty">empty heap</span>';
+  el('hptree').innerHTML=tree();
+  el('hpn').textContent=H.length;
+  el('hph').textContent=H.length?Math.floor(Math.log2(H.length))+1:0;
+  el('hps').textContent=lastSwaps;
+}
+on('hpins','click',function(){
+  var v=parseInt(el('hpv').value); if(isNaN(v)) v=Math.floor(Math.random()*99)+1;
+  H.push(v); lastSwaps=up(H.length-1);
+  el('hplog').textContent='insert('+v+') — placed at the end, then sifted up '+lastSwaps+' time(s).';
+  el('hpv').value=Math.floor(Math.random()*99)+1; paint();
+});
+on('hpext','click',function(){
+  if(!H.length){ el('hplog').textContent='Empty — extract-min here is undefined behaviour, not an error.'; return; }
+  var m=H[0]; H[0]=H[H.length-1]; H.pop(); lastSwaps=H.length?down(0):0;
+  el('hplog').textContent='extract-min → '+m+' — last element moved to the root, then sifted down '+lastSwaps+' time(s).';
+  paint();
+});
+on('hprand','click',function(){
+  H=[]; for(var i=0;i<10;i++){ H.push(Math.floor(Math.random()*99)+1); up(H.length-1); }
+  lastSwaps=0; el('hplog').textContent='Ten random values inserted one by one. Note the root is the smallest and nothing else is sorted.'; paint();
+});
+on('hpclr','click',function(){ H=[]; lastSwaps=0; el('hplog').textContent='Cleared.'; paint(); });
+paint();
+})();
+
+</script>
+</body></html>

@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Binary Search Tree</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
+<link rel="stylesheet" href="assets/notes.css">
+</head><body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">ADS 2026 · KBTU · Lecture 4 · Lab 4</div>
+  <h1>Binary Search <em>Tree</em></h1>
+  <p class="dek">Last week binary search needed a sorted array, and a sorted array is expensive to insert into. The tree fixes that — and then immediately introduces the failure mode that the rest of the lecture is about: a tree that has quietly become a list.</p>
+  <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>6</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 4 · 10 problems</b></span></div>
+</header>
+
+<div class="cols">
+
+<nav class="rail" aria-label="Running order">
+  <div class="rail-h">Running order</div>
+  <div class="part">I · Shape</div>
+  <ol>
+    <li><a href="#b1"><span class="n">01</span><span>Why a tree</span><span class="t">14′</span></a></li>
+  </ol>
+  <div class="part">II · Operations</div>
+  <ol>
+    <li><a href="#b2"><span class="n">02</span><span>Insert · search · height</span><span class="t">20′</span></a></li>
+  </ol>
+  <div class="part">III · Traversal</div>
+  <ol>
+    <li><a href="#b3"><span class="n">03</span><span>The four traversals</span><span class="t">18′</span></a></li>
+  </ol>
+  <div class="part">IV · Practice</div>
+  <ol>
+    <li><a href="#b4"><span class="n">04</span><span>Lab 4 walkthrough</span><span class="t">14′</span></a></li>
+    <li><a href="#b5"><span class="n">05</span><span>What comes next</span><span class="t">3′</span></a></li>
+  </ol>
+</nav>
+
+<main>
+<section class="beat" id="b1">
+  <div class="beat-head">
+    <div class="beat-n">01</div>
+    <div>
+      <h2>The gap a sorted array leaves</h2>
+      <div class="sub"><span>14 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Recall last week honestly: a sorted array searches in O(log n) — but <strong>inserting into it is O(n)</strong>, because everything after the insertion point shifts.</li>
+        <li>A linked list inserts in O(1) once you hold the node, but <strong>cannot binary search at all</strong>. Neither structure gives you both.</li>
+        <li>The BST is the compromise: <strong>search, insert and delete all O(h)</strong>, where h is the height. Say <em>height</em>, not <em>log n</em> — the difference is the whole lecture.</li>
+        <li>The invariant, and write it exactly: for every node, <strong>all keys in the left subtree are smaller, all keys in the right subtree are larger</strong>. Not just the children — the entire subtree.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>Three structures, one table</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Sorted array</th><th class="n">Linked list</th><th class="n">BST</th></tr></thead><tbody><tr><td class="k">Search</td><td class="n" style="color:var(--prime)">O(log n)</td><td class="n" style="color:var(--mark)">O(n)</td><td class="n" style="color:var(--prime)">O(h)</td></tr><tr><td class="k">Insert</td><td class="n" style="color:var(--mark)">O(n)</td><td class="n" style="color:var(--prime)">O(1)*</td><td class="n" style="color:var(--prime)">O(h)</td></tr><tr><td class="k">Delete</td><td class="n" style="color:var(--mark)">O(n)</td><td class="n" style="color:var(--prime)">O(1)*</td><td class="n" style="color:var(--prime)">O(h)</td></tr><tr><td class="k">Sorted output</td><td class="n" style="color:var(--prime)">free</td><td class="n" style="color:var(--mark)">O(n log n)</td><td class="n" style="color:var(--prime)">O(n)</td></tr></tbody></table></div><p style="margin-top:11px;font-size:.85rem;color:var(--ink-3)">* once you already hold the node — finding it is still O(n).</p><div class="trap" style="margin-top:14px"><b>h is not log n.</b> It is log n only if the tree is balanced. Insert 1, 2, 3, …, n in order and you get a tree of height n — a linked list with extra pointers. Every problem in this lab lives or dies on which case it is.</div></div>
+      <div class="card pad board"><h4>For the board</h4><pre><span class="k">struct</span> Node {
+    <span class="k">int</span> key;
+    Node *left, *right;
+    Node(<span class="k">int</span> k) : key(k), left(0), right(0) {}
+};
+
+Node* insert(Node* t, <span class="k">int</span> k) {
+    <span class="k">if</span> (!t) <span class="k">return</span> <span class="k">new</span> Node(k);
+    <span class="k">if</span> (k &lt; t-&gt;key) t-&gt;left  = insert(t-&gt;left,  k);
+    <span class="k">else if</span> (k &gt; t-&gt;key) t-&gt;right = insert(t-&gt;right, k);
+    <span class="k">return</span> t;
+}</pre><p style="margin-top:12px">Draw the tree for <span class="mono">20 8 22 4 12 10 14</span> and keep it on the board — six of the ten lab problems are questions about this exact picture.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b2">
+  <div class="beat-head">
+    <div class="beat-n">02</div>
+    <div>
+      <h2>Build it live</h2>
+      <div class="sub"><span>20 min</span> <span>demo: tree builder</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Insert is one rule repeated: <strong>smaller goes left, larger goes right, keep walking until you fall off</strong>. Type keys into the demo and let the tree grow on the screen.</li>
+        <li>Then do the thing that makes the point: press <strong>"sorted 1…12"</strong> and watch the tree collapse into a diagonal. Height jumps from 4 to 12, and the readout says so.</li>
+        <li>Ask the room what input is worst for a BST. The answer — <strong>already sorted data</strong> — is counter-intuitive enough to be worth the pause.</li>
+        <li>Search is the same walk, returning when the key matches or the pointer is null. <strong>Minimum is leftmost, maximum is rightmost</strong>, both one straight descent.</li>
+        <li>Deletion has three cases: leaf, one child, two children. For two children you replace the key with its <strong>in-order successor</strong> — the leftmost node of the right subtree — and delete that instead.</li>
+        <li>Name the fix without teaching it: <strong>AVL and red-black trees</strong> rebalance on insert to keep h ≈ log n. <code>std::set</code> and <code>std::map</code> are red-black trees. That is why they never degrade the way today's code does.</li>
+      </ul>
+    </div>
+    <div class="card pad demo"><h4>Demo · build a BST and watch its height</h4><div class="ctl"><label class="f" style="flex:1 1 260px"><span>keys, in insertion order</span><input type="text" id="bta" value="20 8 22 4 12 10 14"></label><button class="pri" id="btrun">Build</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-bt="20 8 22 4 12 10 14">balanced-ish</button><button class="chip" data-bt="1 2 3 4 5 6 7 8 9 10 11 12">sorted 1…12</button><button class="chip" data-bt="8 4 12 2 6 10 14 1 3 5 7 9 11 13 15">perfect</button><button class="chip" data-bt="50 30 70 20 40 60 80 10">random</button></div><div class="readout" style="margin-top:0"><div class="stat"><div class="lab">nodes</div><div class="val" id="btn">—</div></div><div class="stat"><div class="lab">height h</div><div class="val" id="bth">—</div></div><div class="stat good"><div class="lab">log₂n (ideal)</div><div class="val" id="btlog">—</div></div><div class="stat"><div class="lab">worst search</div><div class="val" id="btw">—</div></div></div><div id="bttree" style="margin-top:16px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.5;color:var(--ink-2)"></div><div class="log" id="btlog2"></div></div>
+  </div>
+</section>
+
+<section class="beat" id="b3">
+  <div class="beat-head">
+    <div class="beat-n">03</div>
+    <div>
+      <h2>In-order, and the other three</h2>
+      <div class="sub"><span>18 min</span> <span>demo: traversal order</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Three depth-first orders, and they differ by <strong>one line moved</strong>: visit before the children (pre), between them (in), after them (post).</li>
+        <li><strong>In-order on a BST prints the keys sorted.</strong> That is not a coincidence, it is the invariant read out loud — and it is the single most used fact in the lab.</li>
+        <li>Give each one a job: pre-order <strong>copies</strong> a tree, in-order <strong>sorts</strong>, post-order <strong>frees</strong> it (children before parent, or you delete the pointers you still need).</li>
+        <li>The fourth is level-order — a <strong>BFS with a queue</strong>, not recursion. It answers "what is on each level", which is problems D and E almost word for word.</li>
+        <li>Mention recursion depth: with h up to 10⁵ in the degenerate case, a recursive traversal can <strong>overflow the stack</strong>. On ejudge the import sets a 256 MB stack, so it survives — but say it, because elsewhere it will not.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board"><h4>For the board</h4><pre><span class="k">void</span> inorder(Node* t) {
+    <span class="k">if</span> (!t) <span class="k">return</span>;
+    inorder(t-&gt;left);
+    cout &lt;&lt; t-&gt;key &lt;&lt; <span class="s">" "</span>;   <span class="c">// ← move this line</span>
+    inorder(t-&gt;right);
+}</pre><pre style="margin-top:13px"><span class="c">// level order — a queue, not recursion</span>
+queue&lt;Node*&gt; q; q.push(root);
+<span class="k">while</span> (!q.empty()) {
+    <span class="k">int</span> sz = q.size();        <span class="c">// one full level</span>
+    <span class="k">while</span> (sz--) {
+        Node* v = q.front(); q.pop();
+        <span class="k">if</span> (v-&gt;left)  q.push(v-&gt;left);
+        <span class="k">if</span> (v-&gt;right) q.push(v-&gt;right);
+    }
+}</pre><div class="trap" style="margin-top:14px"><b>The <code>int sz = q.size()</code> line</b> is what separates levels. Without it you get one flat list and problems D and E both fail.</div></div>
+      <div class="card pad demo"><h4>Demo · the same tree, four readings</h4><div class="ctl"><div class="seg" id="tvmode"><button data-t="in" class="on">in-order</button><button data-t="pre">pre-order</button><button data-t="post">post-order</button><button data-t="level">level</button></div></div><div class="track" id="tvtrack"></div><div class="log" id="tvlog"></div><p style="margin-top:12px;font-size:.83rem;color:var(--ink-3)">Uses the tree from the beat above — rebuild it there and this follows.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b4">
+  <div class="beat-head">
+    <div class="beat-n">04</div>
+    <div>
+      <h2>Lab 4 — how it maps onto today</h2>
+      <div class="sub"><span>14 min</span> <span>ADS-Lab-04</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Five problems are <strong>"build the tree, then answer one question about it"</strong>: B, C, H, I, J. They all start with the same fifteen lines from beat 02.</li>
+        <li>D and E are the <strong>level-order</strong> pair — D asks for the sum per level, E for the widest level. Both are the queue loop from beat 03.</li>
+        <li>A is the odd one: the tree is <strong>given as edges</strong>, not built by insertion, and you follow a path of L/R instructions. Read the input format carefully with them.</li>
+        <li><strong>Warn them off F and G.</strong> F counts nodes per depth on n = 10⁴ with TL 3 s, G is the tree diameter on n = 2·10⁴ with TL 5 s. Both are real work and neither is on the defence.</li>
+        <li>J is the one worth doing carefully: k-th smallest is <strong>in-order traversal with a counter</strong>, stopping early. Doing it by collecting everything into a vector also passes here, but it is the wrong habit.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Mountains</span><div class="map-why">Tree given as edges — follow an L/R path, n ≤ 10⁵</div></div></div>
+<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Get subtree</span><span class="pill key">key</span><div class="map-why">Beat 02 · build, then size of one subtree</div></div></div>
+<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Christmas Gifts</span><span class="pill key">key</span><div class="map-why">Beat 02 · build, then a subtree question</div></div></div>
+<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Aureole</span><div class="map-why">Beat 03 · level order — how many levels and the sum of each</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Width</span><div class="map-why">Beat 03 · level order — the widest level</div></div></div>
+<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Triangle Binary Search Tree</span><div class="map-why">Nodes per depth, n = 10⁴, TL 3 s — heavy, not on the defence</div></div></div>
+<div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Killua and Hunter exam</span><div class="map-why">Tree diameter, n = 2·10⁴, TL 5 s — heaviest in the lab, not on the defence</div></div></div>
+<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">Greater Sum Tree</span><div class="map-why">Beat 03 · reverse in-order with a running sum</div></div></div>
+<div class="map-row"><span class="map-idx">I</span><div><span class="map-name">More One Night</span><div class="map-why">Beat 02 · insert a permutation, count something about the shape</div></div></div>
+<div class="map-row"><span class="map-idx">J</span><div><span class="map-name">K-th element in Binary Search Tree</span><span class="pill key">key</span><div class="map-why">Beat 03 · k-th smallest — in-order with a counter, stop early</div></div></div><div class="trap" style="margin-top:16px"><b>On the defence:</b> the variants are built from eight of these ten — F and G are excluded as disproportionately heavy. Say so, so nobody burns the evening on the diameter problem thinking it is required.</div></div>
+  </div>
+</section>
+
+<section class="beat" id="b5">
+  <div class="beat-head">
+    <div class="beat-n">05</div>
+    <div>
+      <h2>What comes next</h2>
+      <div class="sub"><span>3 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><p>Lecture 5 is the <strong>heap</strong> — a tree that gives up total order and keeps only one guarantee: the smallest element is at the root. Set it up with the contrast: today's tree can answer "is 47 here", the heap cannot — but it never degenerates into a list, because it is stored in an array and is balanced by construction.</p><p style="margin-top:12px">Homework is Lab 4. Ask for <strong>B and J</strong> before the next class — the first is the bare skeleton, the second is that skeleton plus one counter.</p></div>
+  </div>
+</section>
+</main>
+</div>
+
+<footer>
+  <span>ADS 2026 · KBTU · Lecture 4 — Binary Search Tree</span>
+  <span><a href="index.html">All lectures</a></span>
+</footer>
+</div>
+
+<button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
+<script src="assets/notes.js"></script>
+<script>
+
+(function(){
+var N=window.NOTES, el=N.el, on=N.on, each=N.each;
+var TREE=null, ORDER=[];
+
+function ins(t,k){ if(!t) return {k:k,l:null,r:null};
+  if(k<t.k) t.l=ins(t.l,k); else if(k>t.k) t.r=ins(t.r,k); return t; }
+function height(t){ return t?1+Math.max(height(t.l),height(t.r)):0; }
+function count(t){ return t?1+count(t.l)+count(t.r):0; }
+function walk(t,mode,out){
+  if(!t) return out;
+  if(mode==='pre') out.push(t.k);
+  walk(t.l,mode,out);
+  if(mode==='in') out.push(t.k);
+  walk(t.r,mode,out);
+  if(mode==='post') out.push(t.k);
+  return out;
+}
+function level(t){ var out=[],q=t?[t]:[]; while(q.length){ var v=q.shift(); out.push(v.k);
+  if(v.l)q.push(v.l); if(v.r)q.push(v.r);} return out; }
+function render(t,pad,out){
+  if(!t) return out;
+  render(t.r,pad+'      ',out);
+  out.push(pad+'── '+t.k);
+  render(t.l,pad+'      ',out);
+  return out;
+}
+function btRun(){
+  var ks=(el('bta').value||'').trim().split(/\s+/).map(Number).filter(function(v){return !isNaN(v);});
+  TREE=null; ks.forEach(function(k){ TREE=ins(TREE,k); });
+  var n=count(TREE), h=height(TREE);
+  el('btn').textContent=n; el('bth').textContent=h;
+  el('btlog').textContent=n?Math.ceil(Math.log2(n+1)):0;
+  el('btw').textContent=h+' comparisons';
+  el('bttree').innerHTML=render(TREE,'',[]).map(function(s){return s.replace(/ /g,'&nbsp;');}).join('<br>');
+  var ideal=n?Math.ceil(Math.log2(n+1)):0;
+  el('btlog2').textContent = h>ideal*1.7
+    ? 'Degenerate: height '+h+' against an ideal of '+ideal+'. Search here is linear, not logarithmic.'
+    : 'Height '+h+', ideal '+ideal+'. This tree behaves.';
+  tvRun();
+}
+on('btrun','click',btRun);
+on('bta','change',btRun);
+each('[data-bt]',function(b){ b.addEventListener('click',function(){ el('bta').value=b.getAttribute('data-bt'); btRun(); }); });
+
+var tvmode='in';
+function tvRun(){
+  var seq = tvmode==='level' ? level(TREE) : walk(TREE,tvmode,[]);
+  el('tvtrack').innerHTML = seq.length
+    ? seq.map(function(v){return '<div class="box">'+v+'</div>';}).join('')
+    : '<span class="empty">empty tree</span>';
+  var msg={in:'In-order — sorted, always. This is the BST invariant read aloud.',
+           pre:'Pre-order — root first. Replay this sequence into an empty tree and you get the same tree back.',
+           post:'Post-order — children before the parent. This is the only safe order to delete in.',
+           level:'Level order — BFS with a queue. Problems D and E are exactly this loop.'};
+  el('tvlog').textContent=msg[tvmode];
+}
+each('#tvmode button',function(b){ b.addEventListener('click',function(){
+  each('#tvmode button',function(x){x.classList.remove('on');});
+  b.classList.add('on'); tvmode=b.getAttribute('data-t'); tvRun(); }); });
+btRun();
+})();
+
+</script>
+</body></html>

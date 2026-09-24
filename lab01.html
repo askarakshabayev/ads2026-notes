@@ -1,0 +1,1198 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>
+<title>Complexity and Memory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
+
+<style>
+/* ---------- tokens: light is the base, both dark states re-map only tokens ---------- */
+:root{
+  --paper:#eef1f5;
+  --surface:#ffffff;
+  --surface-2:#f6f8fa;
+  --line:#d3dae3;
+  --line-soft:#e4e9ef;
+  --ink:#121a25;
+  --ink-2:#3d4a5c;
+  --ink-3:#6c7a8c;
+  --accent:#2f44c9;
+  --accent-soft:#e6e9fb;
+  --accent-ink:#1e2f96;
+  --prime:#0d6b53;
+  --prime-soft:#dcefe8;
+  --mark:#c0374b;
+  --mark-soft:#fae3e6;
+  --grid:rgba(18,26,37,.055);
+  --shadow:0 1px 2px rgba(16,24,40,.05), 0 8px 24px -12px rgba(16,24,40,.18);
+  --radius:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0d121a;
+    --surface:#141b25;
+    --surface-2:#1a2230;
+    --line:#2a3545;
+    --line-soft:#212b39;
+    --ink:#e7ecf3;
+    --ink-2:#b3bfd0;
+    --ink-3:#8091a5;
+    --accent:#8b99ff;
+    --accent-soft:#1e2540;
+    --accent-ink:#aeb8ff;
+    --prime:#42c9a3;
+    --prime-soft:#12302a;
+    --mark:#ff8095;
+    --mark-soft:#33191f;
+    --grid:rgba(231,236,243,.05);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0d121a;
+  --surface:#141b25;
+  --surface-2:#1a2230;
+  --line:#2a3545;
+  --line-soft:#212b39;
+  --ink:#e7ecf3;
+  --ink-2:#b3bfd0;
+  --ink-3:#8091a5;
+  --accent:#8b99ff;
+  --accent-soft:#1e2540;
+  --accent-ink:#aeb8ff;
+  --prime:#42c9a3;
+  --prime-soft:#12302a;
+  --mark:#ff8095;
+  --mark-soft:#33191f;
+  --grid:rgba(231,236,243,.05);
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.7);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  color:var(--ink);
+  font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:Newsreader,ui-serif,Georgia,"Times New Roman",serif;font-weight:500;text-wrap:balance;margin:0;letter-spacing:-.01em}
+p{margin:0}
+code,kbd,pre,.mono,.num{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+a{color:var(--accent);text-underline-offset:3px}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
+
+/* ---------- shell ---------- */
+.wrap{max-width:1320px;margin:0 auto;padding:0 clamp(16px,3vw,40px) 96px}
+.masthead{padding:clamp(36px,6vw,72px) 0 28px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.masthead h1{font-size:clamp(2.3rem,6vw,4rem);line-height:1.02;margin:.28em 0 .3em}
+.masthead h1 em{font-style:italic;color:var(--accent)}
+.dek{font-size:clamp(1rem,1.6vw,1.13rem);color:var(--ink-2);max-width:62ch}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.fact{display:inline-flex;align-items:baseline;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 13px;font-size:.82rem;color:var(--ink-2)}
+.fact b{font-weight:600;color:var(--ink);font-family:"IBM Plex Mono",monospace}
+
+.cols{display:grid;grid-template-columns:1fr;gap:40px;margin-top:36px}
+@media(min-width:1060px){.cols{grid-template-columns:15.5rem minmax(0,1fr);gap:52px;align-items:start}}
+
+/* ---------- agenda rail ---------- */
+.rail{position:relative}
+@media(min-width:1060px){.rail{position:sticky;top:24px;max-height:calc(100vh - 48px);overflow-y:auto;padding-right:6px}}
+.rail-h{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:12px}
+.rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px}
+.rail a{display:grid;grid-template-columns:1.9rem 1fr auto;gap:8px;align-items:baseline;padding:7px 9px;border-radius:7px;text-decoration:none;color:var(--ink-2);font-size:.87rem;border-left:2px solid transparent;transition:background .15s,color .15s}
+.rail a:hover{background:var(--surface);color:var(--ink)}
+.rail a.on{background:var(--surface);color:var(--ink);border-left-color:var(--accent);font-weight:500;box-shadow:var(--shadow)}
+.rail .n{font-family:"IBM Plex Mono",monospace;font-size:.76rem;color:var(--ink-3)}
+.rail a.on .n{color:var(--accent)}
+.rail .t{font-size:.72rem;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+.rail .part{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:16px 0 5px;padding-left:9px}
+.rail .part:first-of-type{margin-top:0}
+
+/* ---------- beats ---------- */
+.beat{scroll-margin-top:22px;padding-top:8px;margin-bottom:56px}
+.beat-head{display:flex;gap:16px;align-items:flex-start;margin-bottom:18px}
+.beat-n{flex:none;width:2.6rem;height:2.6rem;border-radius:8px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);font-family:"IBM Plex Mono",monospace;font-size:.95rem;font-weight:600;color:var(--accent);box-shadow:var(--shadow)}
+.beat-head h2{font-size:clamp(1.5rem,3vw,2rem);line-height:1.15}
+.beat-head .sub{font-size:.84rem;color:var(--ink-3);margin-top:3px;display:flex;gap:12px;flex-wrap:wrap;font-family:"IBM Plex Mono",monospace}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.pad{padding:clamp(16px,2.4vw,26px)}
+.stack{display:flex;flex-direction:column;gap:18px}
+.two{display:grid;grid-template-columns:1fr;gap:18px}
+@media(min-width:820px){.two{grid-template-columns:1fr 1fr}}
+
+.say{border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 var(--radius) var(--radius) 0;padding:16px 20px}
+.say h4{font-family:"IBM Plex Sans",sans-serif;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink);font-weight:600;margin-bottom:9px}
+.say ul{margin:0;padding-left:19px;display:flex;flex-direction:column;gap:7px;color:var(--ink-2);font-size:.95rem}
+.say strong{color:var(--ink);font-weight:600}
+
+.board h4,.demo h4{font-family:"IBM Plex Sans",sans-serif;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:12px}
+.board p+p{margin-top:11px}
+.board p{color:var(--ink-2);font-size:.95rem}
+
+pre{margin:0;overflow-x:auto;background:var(--surface-2);border:1px solid var(--line-soft);border-radius:8px;padding:14px 16px;font-size:.85rem;line-height:1.65;color:var(--ink)}
+pre .c{color:var(--ink-3);font-style:italic}
+pre .k{color:var(--accent);font-weight:500}
+pre .s{color:var(--prime)}
+.formula{background:var(--surface-2);border:1px solid var(--line-soft);border-radius:8px;padding:13px 16px;font-family:"IBM Plex Mono",monospace;font-size:.93rem;color:var(--ink);overflow-x:auto}
+.trap{border-left:3px solid var(--mark);background:var(--mark-soft);border-radius:0 8px 8px 0;padding:13px 17px;font-size:.9rem;color:var(--ink-2)}
+.trap b{color:var(--ink);font-weight:600}
+
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+.tw table{font-size:.85rem}
+th{text-align:left;font-weight:600;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);padding:10px 13px;border-bottom:1px solid var(--line);background:var(--surface-2);white-space:nowrap}
+td{padding:9px 13px;border-bottom:1px solid var(--line-soft);color:var(--ink-2);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.n,th.n{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+td.k{color:var(--ink);font-weight:500}
+
+/* ---------- controls ---------- */
+.ctl{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-bottom:16px}
+button{font-family:inherit;font-size:.85rem;font-weight:500;padding:7px 15px;border-radius:7px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer;transition:background .13s,border-color .13s,transform .06s}
+button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+button:active:not(:disabled){transform:translateY(1px)}
+button:disabled{opacity:.42;cursor:not-allowed}
+button.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+button.pri:hover:not(:disabled){filter:brightness(1.08);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] button.pri{color:#0d121a}
+:root[data-theme="dark"] button.pri:hover:not(:disabled){color:#0d121a}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) button.pri{color:#0d121a}
+  :root:not([data-theme="light"]) button.pri:hover:not(:disabled){color:#0d121a}
+}
+input[type=text],input[type=number],select{font-family:"IBM Plex Mono",monospace;font-size:.85rem;padding:7px 10px;border-radius:7px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);min-width:0}
+input[type=range]{accent-color:var(--accent);width:100%}
+label.f{display:inline-flex;flex-direction:column;gap:4px;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:.76rem;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink-2);cursor:pointer;font-family:"IBM Plex Mono",monospace}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:none;border-radius:0;background:var(--surface-2);padding:7px 16px}
+.seg button.on{background:var(--accent);color:#fff}
+:root[data-theme="dark"] .seg button.on{color:#0d121a}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .seg button.on{color:#0d121a}}
+
+.readout{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.stat{flex:1 1 130px;background:var(--surface-2);border:1px solid var(--line-soft);border-radius:8px;padding:10px 13px}
+.stat .lab{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.stat .val{font-family:"IBM Plex Mono",monospace;font-size:1.02rem;font-weight:500;color:var(--ink);margin-top:3px;word-break:break-all}
+.stat.good .val{color:var(--prime)}
+.stat.bad .val{color:var(--mark)}
+
+/* ---------- sieve ---------- */
+.sieve{display:grid;gap:3px;grid-template-columns:repeat(auto-fill,minmax(var(--cell,38px),1fr))}
+.cell{aspect-ratio:1;display:grid;place-items:center;border-radius:5px;font-family:"IBM Plex Mono",monospace;font-size:calc(var(--cell,38px)*.34);font-weight:500;background:var(--surface-2);border:1px solid var(--line-soft);color:var(--ink-2);transition:background .18s,color .18s,border-color .18s,transform .18s}
+.cell.prime{background:var(--prime-soft);border-color:var(--prime);color:var(--prime);font-weight:600}
+.cell.comp{background:transparent;border-color:transparent;color:var(--ink-3);opacity:.42;text-decoration:line-through}
+.cell.one{opacity:.3}
+.cell.p{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(1.1);z-index:1}
+:root[data-theme="dark"] .cell.p{color:#0d121a}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .cell.p{color:#0d121a}}
+.cell.hit{background:var(--mark-soft);border-color:var(--mark);color:var(--mark);transform:scale(1.08)}
+
+/* ---------- linear structures ---------- */
+.track{display:flex;gap:6px;align-items:center;min-height:74px;padding:12px;background:var(--surface-2);border:1px solid var(--line-soft);border-radius:8px;overflow-x:auto}
+.box{flex:none;min-width:52px;height:50px;display:grid;place-items:center;border-radius:7px;background:var(--accent-soft);border:1.5px solid var(--accent);color:var(--accent-ink);font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:1rem;animation:pop .22s ease-out}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.endcap{flex:none;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:600;writing-mode:vertical-rl;transform:rotate(180deg)}
+.empty{color:var(--ink-3);font-size:.87rem;font-style:italic;padding-left:6px}
+.log{margin-top:12px;font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink-3);min-height:1.4em}
+
+/* ---------- misc ---------- */
+.steps{max-height:290px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+.steps table{font-size:.82rem}
+.steps th{position:sticky;top:0;z-index:1}
+.steps tr.cur td{background:var(--accent-soft)}
+.map-row{display:grid;grid-template-columns:2.2rem 1fr;gap:12px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line-soft)}
+.map-row:last-child{border-bottom:none}
+.map-idx{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--accent);font-size:.95rem}
+.map-name{font-weight:500;color:var(--ink)}
+.map-why{font-size:.85rem;color:var(--ink-3)}
+.pill{display:inline-block;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-3);margin-left:7px}
+.pill.new{background:var(--prime-soft);border-color:var(--prime);color:var(--prime)}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);color:var(--ink-3);font-size:.83rem;display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between}
+.theme-btn{position:fixed;right:18px;bottom:18px;z-index:20;width:42px;height:42px;border-radius:999px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);font-size:1rem;padding:0}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">ADS 2026 · KBTU · Lecture 1</div>
+  <h1>Complexity and <em>Memory</em></h1>
+  <p class="dek">A running order for the first class: course logistics, how we measure cost, four number-theory algorithms, and the linear data structures. The beats are in the order you should teach them — each one carries what to say, what to put on the board, and a live demo to project.</p>
+  <div class="facts">
+    <span class="fact">Length <b>~115 min</b></span>
+    <span class="fact">Beats <b>11</b></span>
+    <span class="fact">Live demos <b>7</b></span>
+    <span class="fact">Practice <b>Lab 1 · 10 problems</b></span>
+  </div>
+</header>
+
+<div class="cols">
+
+<nav class="rail" aria-label="Running order">
+  <div class="rail-h">Running order</div>
+  <div class="part">I · Logistics</div>
+  <ol>
+    <li><a href="#b1"><span class="n">01</span><span>Course and rules</span><span class="t">15′</span></a></li>
+  </ol>
+  <div class="part">II · Cost</div>
+  <ol>
+    <li><a href="#b2"><span class="n">02</span><span>Why complexity matters</span><span class="t">12′</span></a></li>
+    <li><a href="#b3"><span class="n">03</span><span>Big-O and memory</span><span class="t">13′</span></a></li>
+  </ol>
+  <div class="part">III · Numbers</div>
+  <ol>
+    <li><a href="#b4"><span class="n">04</span><span>GCD and Euclid</span><span class="t">12′</span></a></li>
+    <li><a href="#b5"><span class="n">05</span><span>Binary exponentiation</span><span class="t">12′</span></a></li>
+    <li><a href="#b6"><span class="n">06</span><span>Sieve of Eratosthenes</span><span class="t">14′</span></a></li>
+    <li><a href="#b7"><span class="n">07</span><span>Prime factorization</span><span class="t">10′</span></a></li>
+  </ol>
+  <div class="part">IV · Structures</div>
+  <ol>
+    <li><a href="#b8"><span class="n">08</span><span>Stack · Queue · Deque</span><span class="t">20′</span></a></li>
+  </ol>
+  <div class="part">V · Practice</div>
+  <ol>
+    <li><a href="#b9"><span class="n">09</span><span>Lab 1 walkthrough</span><span class="t">10′</span></a></li>
+    <li><a href="#b10"><span class="n">10</span><span>Defence and scoring</span><span class="t">5′</span></a></li>
+    <li><a href="#b11"><span class="n">11</span><span>What comes next</span><span class="t">2′</span></a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ============ 1 ============ -->
+<section class="beat" id="b1">
+  <div class="beat-head">
+    <div class="beat-n">01</div>
+    <div>
+      <h2>Course, rules, grading</h2>
+      <div class="sub"><span>15 min</span><span>no demo</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Walk the <strong>13 lectures</strong>. Show that the course builds from simple structures up to graphs, and that what we do today comes back in week 13.</li>
+        <li>Explain the format: the lecture gives the idea, the <strong>labs are the practice</strong>, and a lab only counts once it is defended.</li>
+        <li>Spell out the ejudge.kz login: <code>ADS25_[STUDENT_ID]</code>, password is the <code>STUDENT_ID</code> itself. Ask everyone to log in today.</li>
+        <li>Grading: <strong>12 labs × 1 point</strong> and <strong>4 quizzes × 12 points</strong> in weeks 4, 8, 12 and 16. One quiz will run as a contest.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board">
+        <h4>Course topics</h4>
+        <div class="tw">
+          <table>
+            <thead><tr><th class="n">#</th><th>Topic</th></tr></thead>
+            <tbody>
+              <tr><td class="n">1</td><td class="k">Complexity and Memory · GCD, binpow, sieve, factorization, stack, queue, deque</td></tr>
+              <tr><td class="n">2</td><td>Data structures · linked lists, doubly-linked lists</td></tr>
+              <tr><td class="n">3</td><td>Search · binary search</td></tr>
+              <tr><td class="n">4</td><td>Trees · binary search tree</td></tr>
+              <tr><td class="n">5</td><td>Priority queues, heap</td></tr>
+              <tr><td class="n">6</td><td>Sorting I · heap sort, quick sort</td></tr>
+              <tr><td class="n">7</td><td>Sorting II · merge sort · <b>Midterm</b></td></tr>
+              <tr><td class="n">8</td><td>Hash tables · Rabin–Karp</td></tr>
+              <tr><td class="n">9</td><td>Strings · Knuth–Morris–Pratt</td></tr>
+              <tr><td class="n">10</td><td>Graphs · representation, BFS</td></tr>
+              <tr><td class="n">11</td><td>DFS, topological sort</td></tr>
+              <tr><td class="n">12</td><td>Spanning trees · Kruskal, Prim</td></tr>
+              <tr><td class="n">13</td><td>Shortest paths · Dijkstra, Floyd–Warshall, Bellman–Ford</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card pad board">
+        <h4>Lab contests</h4>
+        <p>There are <strong>12 lab contests</strong> across the semester, one per week starting from week 3, plus a <strong>TSIS</strong> assignment each week. Every contest carries its own point value — the syllabus lists them next to the week.</p>
+        <div class="tw" style="margin-top:14px">
+          <table>
+            <thead><tr><th>Contest</th><th class="n">Week</th><th class="n">Points</th></tr></thead>
+            <tbody>
+              <tr><td class="k">LabContest 1</td><td class="n">3</td><td class="n">3</td></tr>
+              <tr><td class="k">LabContest 2</td><td class="n">4</td><td class="n">3</td></tr>
+              <tr><td class="k">LabContest 3</td><td class="n">5</td><td class="n">3</td></tr>
+              <tr><td class="k">LabContest 4</td><td class="n">6</td><td class="n">3</td></tr>
+              <tr><td class="k">LabContest 5</td><td class="n">7</td><td class="n">3</td></tr>
+              <tr><td class="k">LabContest 6</td><td class="n">8</td><td class="n">2</td></tr>
+              <tr><td colspan="3" style="color:var(--ink-3);font-style:italic">LabContest 7 … 12 — see the syllabus</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="trap" style="margin-top:14px"><b>Say it out loud:</b> a lab contest is submitted on ejudge, but the points are awarded only after the defence, where you rewrite two of your solved problems on the spot. A green AC on its own is not the grade — the exact formula is in beat 10.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="beat" id="b2">
+  <div class="beat-head">
+    <div class="beat-n">02</div>
+    <div>
+      <h2>Why complexity matters at all</h2>
+      <div class="sub"><span>12 min</span><span>demo: growth calculator</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Sorting 10 numbers finishes instantly with a good algorithm and with a terrible one alike. Sorting <strong>10 million</strong> takes hours with the terrible one.</li>
+        <li>So we do not measure seconds — those depend on the machine. We measure <strong>how fast the cost grows</strong> as <code>n</code> grows.</li>
+        <li>Open the demo and <strong>drag the slider</strong>. Let the room watch <code>n²</code> fall out of the time limit, and <code>2ⁿ</code> break entirely.</li>
+        <li>The number to remember for labs: a judge does roughly <strong>10⁸–10⁹ operations per second</strong>. From the <code>n</code> in the statement you can pick the complexity you are allowed before writing a line of code.</li>
+      </ul>
+    </div>
+    <div class="card pad demo">
+      <h4>Demo · how long an algorithm runs for a given n</h4>
+      <div class="ctl" style="align-items:stretch">
+        <label class="f" style="flex:1 1 340px">
+          <span>Input size n = <span id="gn" class="mono" style="color:var(--accent);font-size:.95rem;text-transform:none;letter-spacing:0">1 000</span></span>
+          <input type="range" id="gslider" min="0" max="36" value="12" step="1">
+        </label>
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Complexity</th><th>Example</th><th class="n">Operations</th><th class="n">Time at 10⁹ ops/s</th></tr></thead>
+          <tbody id="gbody"></tbody>
+        </table>
+      </div>
+      <p style="margin-top:12px;font-size:.83rem;color:var(--ink-3)">Green fits inside one second, red does not. This is exactly the estimate to make before choosing an approach.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="beat" id="b3">
+  <div class="beat-head">
+    <div class="beat-n">03</div>
+    <div>
+      <h2>Big-O, and memory separately</h2>
+      <div class="sub"><span>13 min</span><span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Big-O is an <strong>upper bound on the growth rate</strong> in the worst case.</li>
+        <li>Two things we drop: <strong>constant factors</strong> (2n and 5n are both O(n)) and <strong>lower-order terms</strong> (n² + n → O(n²), because n² dominates for large n).</li>
+        <li>Name the neighbours: <strong>Θ</strong> is a tight bound, <strong>Ω</strong> is a lower bound. Do not go deep, but the students should have heard the words.</li>
+        <li>Memory is counted separately by the same rules: O(1) for counters, O(n) for an array, O(n²) for an adjacency matrix. Remind them the labs allow <strong>256 MB</strong>.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board">
+        <h4>Table for the board</h4>
+        <div class="tw">
+          <table>
+            <thead><tr><th>O(·)</th><th>Name</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td class="k mono">O(1)</td><td>Constant</td><td>array element access</td></tr>
+              <tr><td class="k mono">O(log n)</td><td>Logarithmic</td><td>binary search</td></tr>
+              <tr><td class="k mono">O(n)</td><td>Linear</td><td>one pass over an array</td></tr>
+              <tr><td class="k mono">O(n log n)</td><td>Linearithmic</td><td>merge sort</td></tr>
+              <tr><td class="k mono">O(n²)</td><td>Quadratic</td><td>nested loops</td></tr>
+              <tr><td class="k mono">O(2ⁿ)</td><td>Exponential</td><td>naive Fibonacci</td></tr>
+              <tr><td class="k mono">O(n!)</td><td>Factorial</td><td>brute-force TSP</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card pad board">
+        <h4>The exponential, live</h4>
+        <pre><span class="k">int</span> fib(<span class="k">int</span> n) {
+    <span class="k">if</span> (n &lt;= 1) <span class="k">return</span> n;
+    <span class="k">return</span> fib(n - 1) + fib(n - 2);
+}</pre>
+        <p style="margin-top:13px">Ask the room: how many times is <code>fib(1)</code> called for <code>n = 40</code>? The answer is on the order of <span class="mono">10⁸</span> — that is the moment to say why O(2ⁿ) is unusable.</p>
+        <div class="trap" style="margin-top:14px"><b>Rules of thumb for the labs:</b> n ≤ 20 → brute force; n ≤ 5·10³ → O(n²); n ≤ 10⁶ → O(n log n); n ≤ 10¹⁸ → only O(log n) or a closed formula.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="beat" id="b4">
+  <div class="beat-head">
+    <div class="beat-n">04</div>
+    <div>
+      <h2>GCD: brute force against Euclid</h2>
+      <div class="sub"><span>12 min</span><span>demo: side by side</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Start with the <strong>naive solution</strong> — walk down from <code>min(a,b)</code> to the first common divisor. It is correct, and for <code>gcd(12,18)</code> it finishes in 12 checks.</li>
+        <li>Now take <code>gcd(1000000007, 1000000009)</code> — <strong>a billion checks</strong>. Run the demo and let them read the number off the screen.</li>
+        <li>Derive the identity <strong>gcd(a, b) = gcd(b, a mod b)</strong> with the base case <strong>gcd(a, 0) = a</strong>. Do three or four steps by hand on the board.</li>
+        <li>Stress the count: <strong>O(log min(a,b))</strong> iterations. For 10¹⁸ that is under a hundred. The demo shows the two numbers ten orders of magnitude apart.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board">
+        <h4>For the board</h4>
+        <div class="formula">gcd(a, b) = gcd(b, a mod b)<br>gcd(a, 0) = a</div>
+        <pre style="margin-top:13px"><span class="k">long long</span> gcd(<span class="k">long long</span> a, <span class="k">long long</span> b) {
+    <span class="k">while</span> (b &gt; 0) {
+        <span class="k">long long</span> t = a % b;
+        a = b;
+        b = t;
+    }
+    <span class="k">return</span> a;
+}</pre>
+        <div class="trap" style="margin-top:14px"><b>Trap in problem A:</b> <code>a, b ≤ 10¹⁸</code> does not fit into <code>int</code>. It has to be <code>long long</code>.</div>
+      </div>
+      <div class="card pad demo">
+        <h4>Demo · how many steps each one takes</h4>
+        <div class="ctl">
+          <label class="f" style="flex:1 1 160px"><span>a</span><input type="text" id="ga" value="1000000007"></label>
+          <label class="f" style="flex:1 1 160px"><span>b</span><input type="text" id="gb" value="1000000009"></label>
+          <button class="pri" id="grun">Compute</button>
+        </div>
+        <div class="chips" style="margin-bottom:14px">
+          <button class="chip" data-gcd="12,18">12, 18</button>
+          <button class="chip" data-gcd="1000000007,1000000009">10⁹ primes</button>
+          <button class="chip" data-gcd="576460752303423488,288230376151711744">2⁵⁹, 2⁵⁸</button>
+          <button class="chip" data-gcd="999999999999999989,999999999999999937">10¹⁸ primes</button>
+        </div>
+        <div class="readout">
+          <div class="stat good"><div class="lab">Euclid, iterations</div><div class="val" id="geuc">—</div></div>
+          <div class="stat bad"><div class="lab">Brute force, checks</div><div class="val" id="gnaive">—</div></div>
+          <div class="stat"><div class="lab">GCD</div><div class="val" id="gres">—</div></div>
+        </div>
+        <div class="steps" style="margin-top:14px"><table><thead><tr><th class="n">step</th><th class="n">a</th><th class="n">b</th><th class="n">a mod b</th></tr></thead><tbody id="gsteps"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="beat" id="b5">
+  <div class="beat-head">
+    <div class="beat-n">05</div>
+    <div>
+      <h2>Binary exponentiation</h2>
+      <div class="sub"><span>12 min</span><span>demo: step table</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Naively, <code>aⁿ</code> costs <code>n</code> multiplications. At <code>n = 10¹⁸</code> and a billion operations per second that is <strong>more than thirty years</strong>.</li>
+        <li>The observation: if <code>n</code> is even then <code>aⁿ = (a^(n/2))²</code>, and if it is odd then <code>aⁿ = a · a^(n-1)</code>. Every step <strong>halves the exponent</strong>.</li>
+        <li>Do <code>2¹⁰</code> by hand — <strong>4 multiplications instead of 10</strong>. Then show in the demo that 10¹⁸ takes about 60.</li>
+        <li>Tie it to the binary form: the ones in the binary representation of <code>n</code> are exactly the factors that end up in the answer.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board">
+        <h4>For the board</h4>
+        <pre><span class="k">long long</span> result = 1 % m;
+a %= m;
+<span class="k">while</span> (n &gt; 0) {
+    <span class="k">if</span> (n % 2 == 1)
+        result = result * a % m;
+    a = a * a % m;
+    n /= 2;
+}</pre>
+        <div class="trap" style="margin-top:14px"><b>Two traps in problem B.</b> First: initialise with <code>1 % m</code>, not <code>1</code> — otherwise <code>n = 0, m = 1</code> gives 1 instead of 0. Second: since <code>m ≤ 10⁹</code>, the product of two residues stays below 10¹⁸ and fits into <code>long long</code>; with a larger <code>m</code> you would need <code>__int128</code>.</div>
+      </div>
+      <div class="card pad demo">
+        <h4>Demo · step by step</h4>
+        <div class="ctl">
+          <label class="f" style="flex:1 1 110px"><span>a</span><input type="text" id="ba" value="2"></label>
+          <label class="f" style="flex:1 1 110px"><span>n</span><input type="text" id="bn" value="10"></label>
+          <label class="f" style="flex:1 1 110px"><span>m</span><input type="text" id="bm" value="1000000000"></label>
+          <button class="pri" id="brun">Compute</button>
+        </div>
+        <div class="chips" style="margin-bottom:14px">
+          <button class="chip" data-bp="2,10,1000000000">2¹⁰</button>
+          <button class="chip" data-bp="5,0,1">n=0, m=1</button>
+          <button class="chip" data-bp="2,1000000000000000000,998244353">2^10¹⁸ mod p</button>
+        </div>
+        <div class="readout">
+          <div class="stat good"><div class="lab">Multiplications, binpow</div><div class="val" id="bfast">—</div></div>
+          <div class="stat bad"><div class="lab">Multiplications, naive</div><div class="val" id="bslow">—</div></div>
+          <div class="stat"><div class="lab">Answer</div><div class="val" id="bres">—</div></div>
+        </div>
+        <div style="margin-top:12px;font-size:.82rem;color:var(--ink-3)">n in binary: <span class="mono" id="bbin" style="color:var(--accent)">1010</span></div>
+        <div class="steps" style="margin-top:10px"><table><thead><tr><th class="n">n</th><th class="n">bit</th><th class="n">result</th><th class="n">a</th></tr></thead><tbody id="bsteps"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="beat" id="b6">
+  <div class="beat-head">
+    <div class="beat-n">06</div>
+    <div>
+      <h2>Sieve of Eratosthenes</h2>
+      <div class="sub"><span>14 min</span><span>demo: animation</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>The task is to find <strong>all</strong> primes up to n. Testing each one separately is O(n√n). The sieve does the same job in <strong>O(n log log n)</strong>.</li>
+        <li>Start the animation and <strong>narrate it</strong>: take the first uncrossed number — it is prime — and cross out all of its multiples.</li>
+        <li>Stop deliberately on <strong>why we start crossing at p²</strong> and not at 2p: every smaller multiple has already been crossed by a smaller prime. Hit "Step" at p = 5 and point at 10, 15, 20 already being grey.</li>
+        <li>Memory: a <code>bool</code> array of n entries is O(n). For n = 10⁶ that is about a megabyte — comfortably inside the 256 MB limit.</li>
+      </ul>
+    </div>
+    <div class="card pad demo">
+      <h4>Demo · the sieve running</h4>
+      <div class="ctl">
+        <button class="pri" id="splay">▶ Play</button>
+        <button id="sstep">Step</button>
+        <button id="sreset">Reset</button>
+        <div class="seg" id="ssize">
+          <button data-n="50">50</button>
+          <button data-n="100" class="on">100</button>
+          <button data-n="200">200</button>
+          <button data-n="400">400</button>
+        </div>
+        <label class="f" style="flex:1 1 150px"><span>speed</span><input type="range" id="sspeed" min="1" max="10" value="6"></label>
+      </div>
+      <div class="readout" style="margin-top:0;margin-bottom:16px">
+        <div class="stat"><div class="lab">Current prime p</div><div class="val" id="scur">—</div></div>
+        <div class="stat good"><div class="lab">Primes found</div><div class="val" id="scount">0</div></div>
+        <div class="stat"><div class="lab">Cross-outs</div><div class="val" id="sops">0</div></div>
+        <div class="stat"><div class="lab">Checks if done one by one</div><div class="val" id="snaive">0</div></div>
+      </div>
+      <div class="sieve" id="sgrid"></div>
+      <p style="margin-top:14px;font-size:.83rem;color:var(--ink-3)">
+        <span style="color:var(--accent);font-weight:600">■</span> current prime p ·
+        <span style="color:var(--mark);font-weight:600">■</span> being crossed out ·
+        <span style="color:var(--prime);font-weight:600">■</span> prime ·
+        <span style="opacity:.5">■</span> composite
+      </p>
+    </div>
+    <div class="card pad board">
+      <h4>For the board</h4>
+      <pre><span class="k">vector</span>&lt;<span class="k">bool</span>&gt; isPrime(n + 1, <span class="k">true</span>);
+isPrime[0] = isPrime[1] = <span class="k">false</span>;
+<span class="k">for</span> (<span class="k">int</span> i = 2; i * i &lt;= n; i++)
+    <span class="k">if</span> (isPrime[i])
+        <span class="k">for</span> (<span class="k">int</span> j = i * i; j &lt;= n; j += i)   <span class="c">// start at i*i, not at 2*i</span>
+            isPrime[j] = <span class="k">false</span>;</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="beat" id="b7">
+  <div class="beat-head">
+    <div class="beat-n">07</div>
+    <div>
+      <h2>Prime factorization</h2>
+      <div class="sub"><span>10 min</span><span>demo: trial division</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Fundamental theorem of arithmetic: the factorization exists and is <strong>unique</strong> up to order. <code>60 = 2·2·3·5</code>, <code>210 = 2·3·5·7</code>.</li>
+        <li>Dividing by everything up to n is O(n). Going up to <strong>√n</strong> is enough: a number cannot have two distinct prime factors above √n, their product would exceed n.</li>
+        <li><strong>The moment of the lecture.</strong> After the loop the leftover may be greater than 1, and that leftover is a prime factor too. Dropping <code>if (n > 1)</code> is the classic mistake — show it in the demo on <code>999999999989</code>.</li>
+        <li>For n = 10¹² this is about 10⁶ iterations, a fraction of a second.</li>
+      </ul>
+    </div>
+    <div class="two">
+      <div class="card pad board">
+        <h4>For the board</h4>
+        <pre><span class="k">for</span> (<span class="k">long long</span> i = 2; i * i &lt;= n; ++i)
+    <span class="k">while</span> (n % i == 0) {
+        cout &lt;&lt; i &lt;&lt; <span class="s">" "</span>;
+        n /= i;
+    }
+<span class="k">if</span> (n &gt; 1) cout &lt;&lt; n;   <span class="c">// ← the line everyone forgets</span></pre>
+        <div class="trap" style="margin-top:14px"><b>Why √n is enough:</b> if n had two prime factors p, q &gt; √n, then p·q &gt; n. So once the loop ends, what remains is either 1 or a single prime.</div>
+      </div>
+      <div class="card pad demo">
+        <h4>Demo · dividing step by step</h4>
+        <div class="ctl">
+          <label class="f" style="flex:1 1 220px"><span>n</span><input type="text" id="fn" value="60"></label>
+          <button class="pri" id="frun">Factorize</button>
+        </div>
+        <div class="chips" style="margin-bottom:14px">
+          <button class="chip" data-f="60">60</button>
+          <button class="chip" data-f="210">210</button>
+          <button class="chip" data-f="1000000000000">10¹²</button>
+          <button class="chip" data-f="999966000289">999983²</button>
+          <button class="chip" data-f="999999999989">a prime</button>
+        </div>
+        <div class="readout">
+          <div class="stat"><div class="lab">Factorization</div><div class="val" id="fres">—</div></div>
+        </div>
+        <div class="readout">
+          <div class="stat"><div class="lab">Iterations up to √n</div><div class="val" id="fiter">—</div></div>
+          <div class="stat bad"><div class="lab">Iterations if up to n</div><div class="val" id="fnaive">—</div></div>
+        </div>
+        <div id="ftrap" class="trap" style="margin-top:14px;display:none"></div>
+        <div class="steps" style="margin-top:14px"><table><thead><tr><th class="n">divisor</th><th class="n">n left</th><th>factors so far</th></tr></thead><tbody id="fsteps"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="beat" id="b8">
+  <div class="beat-head">
+    <div class="beat-n">08</div>
+    <div>
+      <h2>Stack, Queue, Deque</h2>
+      <div class="sub"><span>20 min</span><span>demo: playground</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li><strong>Stack — LIFO.</strong> A stack of plates: you can only add to and take from the top. Every operation is O(1).</li>
+        <li><strong>Queue — FIFO.</strong> A cafeteria line: people join at the back and are served from the front.</li>
+        <li><strong>Deque</strong> gives you both ends. Use the playground to show that a stack and a queue are just special cases of it.</li>
+        <li>Name the operations and note they are all <strong>O(1)</strong>: <code>push</code>, <code>pop</code>, <code>top</code>/<code>front</code>, <code>empty</code>, <code>size</code>.</li>
+        <li>Warn them explicitly: <code>pop()</code> and <code>top()</code> on an empty container are <strong>undefined behaviour, not an exception</strong>. Always check <code>empty()</code> first — this is what breaks submissions in the lab.</li>
+      </ul>
+    </div>
+    <div class="card pad demo">
+      <h4>Demo · playground</h4>
+      <div class="ctl">
+        <div class="seg" id="dsmode">
+          <button data-m="stack" class="on">Stack</button>
+          <button data-m="queue">Queue</button>
+          <button data-m="deque">Deque</button>
+        </div>
+        <button id="dspf">push_front</button>
+        <button id="dspb">push_back</button>
+        <button id="dsppf">pop_front</button>
+        <button id="dsppb">pop_back</button>
+        <button id="dsclear">Clear</button>
+      </div>
+      <div class="track" id="dstrack"></div>
+      <div class="log" id="dslog">The stack is empty. Press push to add an element.</div>
+      <div class="tw" style="margin-top:16px">
+        <table>
+          <thead><tr><th>Structure</th><th>Rule</th><th>Insert at</th><th>Remove from</th><th>STL</th></tr></thead>
+          <tbody>
+            <tr><td class="k">Stack</td><td>LIFO</td><td>top</td><td>top</td><td class="mono">std::stack</td></tr>
+            <tr><td class="k">Queue</td><td>FIFO</td><td>back</td><td>front</td><td class="mono">std::queue</td></tr>
+            <tr><td class="k">Deque</td><td>both ends</td><td>front and back</td><td>front and back</td><td class="mono">std::deque</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card pad board">
+      <h4>For the board</h4>
+      <pre><span class="k">stack</span>&lt;<span class="k">int</span>&gt; st;
+st.push(10); st.push(20); st.push(15);
+cout &lt;&lt; st.top();   <span class="c">// 15</span>
+st.pop();
+cout &lt;&lt; st.top();   <span class="c">// 20</span>
+cout &lt;&lt; st.size() &lt;&lt; st.empty();</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section class="beat" id="b9">
+  <div class="beat-head">
+    <div class="beat-n">09</div>
+    <div>
+      <h2>Lab 1 — how it maps onto today</h2>
+      <div class="sub"><span>10 min</span><span>ADS-Lab-01</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>The problems follow the <strong>same order as the lecture</strong>: A–B are Euclid and binpow, C–E are primes, F–H are the stack, I–J are the queue and the deque.</li>
+        <li>A, B and E are solvable straight from the code on the board. That is deliberate — the entry cost should be low.</li>
+        <li>H is the hard one: a monotonic stack. Say plainly that it is an <strong>application</strong> of the stack, and hand out the idea if the group is struggling.</li>
+        <li>Repeat the limits: <strong>1 second and 256 MB</strong> almost everywhere.</li>
+      </ul>
+    </div>
+    <div class="card pad board">
+      <h4>Problem to topic</h4>
+      <div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Greatest Common Divisor</span><span class="pill new">new</span><div class="map-why">Beat 04 · Euclidean algorithm, a, b ≤ 10¹⁸</div></div></div>
+      <div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Binary Exponentiation</span><span class="pill new">new</span><div class="map-why">Beat 05 · aⁿ mod m, n ≤ 10¹⁸</div></div></div>
+      <div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Prime or Not</span><div class="map-why">Beat 06 · primality by trial division up to √a</div></div></div>
+      <div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Prime Numbers</span><div class="map-why">Beat 06 · the n-th prime via a sieve, answer ≤ 7919</div></div></div>
+      <div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Prime Factorization</span><span class="pill new">new</span><div class="map-why">Beat 07 · factorize n ≤ 10¹², the leftover trap</div></div></div>
+      <div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Equal Strings</span><div class="map-why">Beat 08 · stack, backspace characters</div></div></div>
+      <div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Balanced Sequence of Letters</span><div class="map-why">Beat 08 · stack, collapsing equal pairs</div></div></div>
+      <div class="map-row"><span class="map-idx">H</span><div><span class="map-name">Nugman and Stack</span><div class="map-why">Beat 08 · monotonic stack, nearest strictly smaller to the left</div></div></div>
+      <div class="map-row"><span class="map-idx">I</span><div><span class="map-name">Royal Flush</span><div class="map-why">Beat 08 · queue, simulating the card trick</div></div></div>
+      <div class="map-row"><span class="map-idx">J</span><div><span class="map-name">Boris vs Nursik</span><div class="map-why">Beat 08 · deque, simulating the "drunkard" game</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="beat" id="b10">
+  <div class="beat-head">
+    <div class="beat-n">10</div>
+    <div>
+      <h2>Defence and scoring</h2>
+      <div class="sub"><span>5 min</span><span>demo: score calculator</span><span>for the students</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Give the timeline first: the lab contest opens today, and <strong>two weeks later</strong> a separate defence contest runs with <strong>2 problems taken from this same list</strong>.</li>
+        <li>Say plainly why the defence <strong>multiplies</strong> instead of adding: an accepted submission you cannot reproduce is worth nothing. This is the anti-plagiarism mechanism, and it should not come as a surprise in week 5.</li>
+        <li>Point out the practical consequence: <strong>solving 5 problems honestly beats copying 10</strong>. Five solved with a clean defence gives 1.50; ten copied with a failed defence gives 0.</li>
+        <li>Warn them the two defence problems come from the whole list, not from what they happened to solve — so leaving half the lab untouched is a gamble on both counts.</li>
+        <li>Let them play with the calculator for a minute — it answers "what do I get if…" faster than you can.</li>
+      </ul>
+    </div>
+
+    <div class="card pad board">
+      <h4>The rule</h4>
+      <p>LabContest 1 contains <strong>10 problems</strong>, A to J, and is worth <strong>3 points</strong>. Solve as many as you can on ejudge.</p>
+      <p><strong>Two weeks after the lab opens</strong> a separate defence contest runs. It holds <strong>2 problems taken from this same list of 10</strong> — the same two for everyone — and you solve them there, on the spot, from scratch.</p>
+      <p>Your result on the defence contest, as a percentage, is <strong>multiplied</strong> by the percentage of the lab you solved.</p>
+
+      <h4 style="margin-top:22px">Formula</h4>
+      <div class="formula" style="font-size:1.05rem;text-align:center;padding:20px 16px">
+        score = L × R<sub>lab</sub> × R<sub>def</sub>
+      </div>
+      <div class="tw" style="margin-top:14px">
+        <table>
+          <thead><tr><th class="n">Symbol</th><th>Meaning</th><th class="n">LabContest 1</th></tr></thead>
+          <tbody>
+            <tr><td class="n k">L</td><td>points this lab contest is worth (from the syllabus)</td><td class="n">3</td></tr>
+            <tr><td class="n k">R<sub>lab</sub></td><td>share of the lab you solved — solved ÷ total</td><td class="n">S / 10</td></tr>
+            <tr><td class="n k">R<sub>def</sub></td><td>your result on the 2-problem defence contest, as a share</td><td class="n">0 … 100 %</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:14px">Rounded to two decimals. The same formula applies to every lab contest — only <code>L</code> and the number of problems change.</p>
+      <div class="trap" style="margin-top:14px"><b>The defence multiplies, it does not add.</b> Ten accepted problems with a zero on the defence contest give <code>3 × 1.00 × 0 = 0</code>. And it cuts the other way too: acing the defence without having solved the lab gives <code>3 × 0 × 1.00 = 0</code>. Both halves are required.</div>
+    </div>
+
+    <div class="card pad demo">
+      <h4>Demo · what will I get?</h4>
+      <div class="ctl" style="align-items:stretch">
+        <label class="f" style="flex:1 1 180px">
+          <span>Contest worth — L = <span id="lv" class="mono" style="color:var(--accent);font-size:.95rem;text-transform:none;letter-spacing:0">3</span> points</span>
+          <input type="range" id="lsl" min="1" max="5" value="3" step="1">
+        </label>
+        <label class="f" style="flex:1 1 240px">
+          <span>Solved in the lab — <span id="sv" class="mono" style="color:var(--accent);font-size:.95rem;text-transform:none;letter-spacing:0">10</span> of 10 = <span id="rlv" class="mono" style="text-transform:none;letter-spacing:0">100%</span></span>
+          <input type="range" id="ssl" min="0" max="10" value="10" step="1">
+        </label>
+        <label class="f" style="flex:1 1 240px">
+          <span>Defence contest result — <span id="dv" class="mono" style="color:var(--accent);font-size:.95rem;text-transform:none;letter-spacing:0">100%</span></span>
+          <input type="range" id="dsl" min="0" max="100" value="100" step="5">
+        </label>
+      </div>
+      <div class="readout">
+        <div class="stat good" style="flex:1 1 100%"><div class="lab">Points earned</div><div class="val" id="scoreval" style="font-size:2rem">3.00</div></div>
+      </div>
+      <div class="formula" id="scoreexpr" style="margin-top:12px;font-size:.9rem">3 × 1.00 × 1.00 = 3.00</div>
+      <p id="scorenote" style="margin-top:12px;font-size:.86rem;color:var(--ink-3)">Full marks — the whole lab solved and the defence contest passed in full.</p>
+      <div class="tw" style="margin-top:18px">
+        <table>
+          <thead><tr><th class="n">Lab</th><th class="n">Defence</th><th class="n">Points</th><th>What it means</th></tr></thead>
+          <tbody>
+            <tr><td class="n">10 / 10</td><td class="n">100 %</td><td class="n k">3.00</td><td>everything solved, defence clean</td></tr>
+            <tr><td class="n">10 / 10</td><td class="n">70 %</td><td class="n k">2.10</td><td>whole lab solved, defence partly</td></tr>
+            <tr><td class="n">8 / 10</td><td class="n">70 %</td><td class="n k">1.68</td><td>80 % of the lab × 70 % of the defence</td></tr>
+            <tr><td class="n">10 / 10</td><td class="n">50 %</td><td class="n k">1.50</td><td>one defence problem out of two</td></tr>
+            <tr><td class="n">5 / 10</td><td class="n">100 %</td><td class="n k">1.50</td><td>half the lab, defence clean</td></tr>
+            <tr><td class="n">5 / 10</td><td class="n">70 %</td><td class="n k">1.05</td><td></td></tr>
+            <tr><td class="n">10 / 10</td><td class="n">0 %</td><td class="n k">0.00</td><td>defence failed — the lab does not count</td></tr>
+            <tr><td class="n">0 / 10</td><td class="n">100 %</td><td class="n k">0.00</td><td>lab not done — the defence does not count</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 ============ -->
+<section class="beat" id="b11">
+  <div class="beat-head">
+    <div class="beat-n">11</div>
+    <div>
+      <h2>What comes next</h2>
+      <div class="sub"><span>2 min</span></div>
+    </div>
+  </div>
+  <div class="card pad board">
+    <p>Lecture 2 takes the same linear structures apart <strong>from the inside</strong>: linked lists, doubly-linked lists, and how <code>std::stack</code> and <code>std::deque</code> are built underneath. Homework is Lab 1; announce the deadline separately.</p>
+    <p style="margin-top:12px">Ask them to do one thing before the next class: log in to ejudge and submit <strong>at least problem A</strong>, so access problems surface now rather than on the deadline.</p>
+  </div>
+</section>
+
+</main>
+</div>
+
+<footer>
+  <span>ADS 2026 · KBTU · Lecture 1 — Complexity and Memory</span>
+  <span><a href="index.html" style="color:var(--accent)">All lectures</a></span>
+</footer>
+</div>
+
+<button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- theme ---------- */
+var root=document.documentElement;
+document.getElementById('themeBtn').addEventListener('click',function(){
+  var cur=root.getAttribute('data-theme');
+  if(!cur){
+    var darkNow=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+    cur=darkNow?'dark':'light';
+  }
+  root.setAttribute('data-theme',cur==='dark'?'light':'dark');
+});
+
+/* ---------- scroll spy ---------- */
+var links={};
+Array.prototype.forEach.call(document.querySelectorAll('.rail a'),function(a){
+  links[a.getAttribute('href').slice(1)]=a;
+});
+if('IntersectionObserver' in window){
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      var a=links[e.target.id];
+      if(!a)return;
+      if(e.isIntersecting){
+        Object.keys(links).forEach(function(k){links[k].classList.remove('on');});
+        a.classList.add('on');
+      }
+    });
+  },{rootMargin:'-15% 0px -70% 0px',threshold:0});
+  Array.prototype.forEach.call(document.querySelectorAll('.beat'),function(s){io.observe(s);});
+}
+
+/* ---------- formatting helpers ---------- */
+function grp(x){ return x.toLocaleString('en-US').replace(/,/g,' '); }
+function sci(x){
+  if(!isFinite(x))return'∞';
+  if(x<1e6)return grp(Math.round(x));
+  var e=Math.floor(Math.log10(x));
+  var m=x/Math.pow(10,e);
+  return m.toFixed(2)+' × 10^'+e;
+}
+function dur(sec){
+  if(!isFinite(sec))return'forever';
+  if(sec<1e-6)return (sec*1e9).toFixed(1)+' ns';
+  if(sec<1e-3)return (sec*1e6).toFixed(1)+' µs';
+  if(sec<1)    return (sec*1e3).toFixed(1)+' ms';
+  if(sec<60)   return sec.toFixed(2)+' s';
+  if(sec<3600) return (sec/60).toFixed(1)+' min';
+  if(sec<86400)return (sec/3600).toFixed(1)+' h';
+  if(sec<3.15e7)return (sec/86400).toFixed(1)+' days';
+  return sci(sec/3.15e7)+' years';
+}
+
+/* ---------- 02 growth calculator ---------- */
+var GN=[10,20,50,100,200,500,1000,2000,5000,1e4,2e4,5e4,1e5,2e5,5e5,1e6,2e6,5e6,1e7,2e7,5e7,1e8,2e8,5e8,1e9,1e10,1e11,1e12,1e13,1e14,1e15,1e16,1e17,1e18,1e19,1e20,1e21];
+var gslider=document.getElementById('gslider'),gnEl=document.getElementById('gn'),gbody=document.getElementById('gbody');
+function growth(){
+  var n=GN[+gslider.value];
+  gnEl.textContent=n<1e7?grp(n):sci(n);
+  var rows=[
+    ['O(1)','hash table, index access',1],
+    ['O(log n)','binary search, Euclid, binpow',Math.log2(n)],
+    ['O(√n)','factorization, primality test',Math.sqrt(n)],
+    ['O(n)','a single pass',n],
+    ['O(n log n)','sorting',n*Math.log2(n)],
+    ['O(n²)','nested loops',n*n],
+    ['O(2ⁿ)','naive Fibonacci',n<=1024?Math.pow(2,n):Infinity]
+  ];
+  gbody.innerHTML=rows.map(function(r){
+    var ops=r[2],sec=ops/1e9,ok=sec<=1;
+    var col=ok?'var(--prime)':'var(--mark)';
+    return '<tr><td class="k mono">'+r[0]+'</td><td>'+r[1]+'</td>'+
+           '<td class="n">'+sci(ops)+'</td>'+
+           '<td class="n" style="color:'+col+';font-weight:600">'+dur(sec)+'</td></tr>';
+  }).join('');
+}
+gslider.addEventListener('input',growth); growth();
+
+/* ---------- 04 gcd ---------- */
+function parseBig(s){ try{ var v=BigInt(String(s).replace(/[\s_]/g,'')); return v>0n?v:null; }catch(e){ return null; } }
+function runGcd(){
+  var a=parseBig(document.getElementById('ga').value),
+      b=parseBig(document.getElementById('gb').value);
+  var st=document.getElementById('gsteps');
+  if(!a||!b){ st.innerHTML='<tr><td colspan="4" style="color:var(--mark)">Enter two integers greater than zero.</td></tr>'; return; }
+  var x=a,y=b,rows=[],i=0;
+  while(y>0n&&i<200){ var r=x%y; rows.push([++i,x,y,r]); x=y; y=r; }
+  var g=x;
+  document.getElementById('geuc').textContent=rows.length;
+  var naive=(a<b?a:b)-g+1n;
+  document.getElementById('gnaive').textContent=naive>1000000n?sci(Number(naive)):grp(Number(naive));
+  document.getElementById('gres').textContent=g.toString();
+  st.innerHTML=rows.map(function(r){
+    return '<tr><td class="n">'+r[0]+'</td><td class="n">'+r[1]+'</td><td class="n">'+r[2]+'</td><td class="n">'+r[3]+'</td></tr>';
+  }).join('');
+}
+document.getElementById('grun').addEventListener('click',runGcd);
+Array.prototype.forEach.call(document.querySelectorAll('[data-gcd]'),function(c){
+  c.addEventListener('click',function(){
+    var p=c.getAttribute('data-gcd').split(',');
+    document.getElementById('ga').value=p[0];
+    document.getElementById('gb').value=p[1];
+    runGcd();
+  });
+});
+runGcd();
+
+/* ---------- 05 binpow ---------- */
+function runBin(){
+  var a=parseBig(document.getElementById('ba').value),
+      m=parseBig(document.getElementById('bm').value),
+      nRaw=String(document.getElementById('bn').value).replace(/[\s_]/g,''),
+      n;
+  try{ n=BigInt(nRaw); }catch(e){ n=null; }
+  var st=document.getElementById('bsteps');
+  if(a===null||m===null||n===null||n<0n){
+    st.innerHTML='<tr><td colspan="4" style="color:var(--mark)">a and m must be positive integers, n must be zero or greater.</td></tr>'; return;
+  }
+  document.getElementById('bbin').textContent=n.toString(2);
+  var res=1n%m,base=a%m,k=n,rows=[],mult=0;
+  while(k>0n){
+    var bit=k%2n;
+    if(bit===1n){ res=res*base%m; mult++; }
+    rows.push([k.toString(),bit===1n?'1':'0',res.toString(),base.toString()]);
+    base=base*base%m; mult++;
+    k/=2n;
+  }
+  document.getElementById('bfast').textContent=mult;
+  document.getElementById('bslow').textContent=n>1000000n?sci(Number(n)):grp(Number(n));
+  document.getElementById('bres').textContent=res.toString();
+  st.innerHTML=rows.length?rows.map(function(r){
+    return '<tr'+(r[1]==='1'?' class="cur"':'')+'><td class="n">'+r[0]+'</td><td class="n">'+r[1]+'</td><td class="n">'+r[2]+'</td><td class="n">'+r[3]+'</td></tr>';
+  }).join(''):'<tr><td colspan="4">n = 0, the loop never runs — the answer is 1 mod m.</td></tr>';
+}
+document.getElementById('brun').addEventListener('click',runBin);
+Array.prototype.forEach.call(document.querySelectorAll('[data-bp]'),function(c){
+  c.addEventListener('click',function(){
+    var p=c.getAttribute('data-bp').split(',');
+    document.getElementById('ba').value=p[0];
+    document.getElementById('bn').value=p[1];
+    document.getElementById('bm').value=p[2];
+    runBin();
+  });
+});
+runBin();
+
+/* ---------- 06 sieve ---------- */
+var SG=document.getElementById('sgrid'),SN=100,state=[],cells=[],
+    sp=2,sj=0,sphase='pick',sops=0,scount=0,timer=null;
+function sieveReset(n){
+  SN=n||SN; state=new Array(SN+1); cells=[];
+  SG.style.setProperty('--cell', SN<=50?'46px':SN<=100?'38px':SN<=200?'30px':'24px');
+  var html='';
+  for(var i=1;i<=SN;i++){ state[i]='u'; html+='<div class="cell'+(i===1?' one':'')+'">'+i+'</div>'; }
+  SG.innerHTML=html;
+  cells=SG.querySelectorAll('.cell');
+  state[1]='one';
+  sp=2; sj=0; sphase='pick'; sops=0; scount=0;
+  paint(); upd();
+}
+function cellOf(i){ return cells[i-1]; }
+function paint(){
+  for(var i=1;i<=SN;i++){
+    var c=cellOf(i);
+    c.className='cell'+(state[i]==='p'?' prime':state[i]==='c'?' comp':i===1?' one':'');
+  }
+}
+function upd(){
+  document.getElementById('scur').textContent=sphase==='done'?'done':sp;
+  document.getElementById('scount').textContent=scount;
+  document.getElementById('sops').textContent=grp(sops);
+  var nv=0; for(var i=2;i<=SN;i++){ for(var d=2;d*d<=i;d++){ nv++; if(i%d===0)break; } }
+  document.getElementById('snaive').textContent=grp(nv);
+}
+function sieveStep(){
+  if(sphase==='done')return false;
+  if(sphase==='pick'){
+    while(sp<=SN&&state[sp]==='c')sp++;
+    if(sp>SN){ for(var i=2;i<=SN;i++) if(state[i]==='u'){state[i]='p';scount++;} sphase='done'; paint(); upd(); return false; }
+    state[sp]='p'; scount++;
+    paint(); cellOf(sp).classList.add('p');
+    if(sp*sp>SN){
+      for(var q=2;q<=SN;q++) if(state[q]==='u'){state[q]='p';scount++;}
+      sphase='done'; paint(); upd(); return false;
+    }
+    sj=sp*sp; sphase='cross'; upd(); return true;
+  }
+  if(sphase==='cross'){
+    if(sj>SN){ sp++; sphase='pick'; paint(); upd(); return true; }
+    if(state[sj]!=='c'){ state[sj]='c'; }
+    sops++;
+    paint();
+    cellOf(sp).classList.add('p');
+    cellOf(sj).classList.add('hit');
+    sj+=sp; upd(); return true;
+  }
+  return false;
+}
+function stopSieve(){ if(timer){clearInterval(timer);timer=null;} document.getElementById('splay').textContent='▶ Play'; }
+document.getElementById('splay').addEventListener('click',function(){
+  if(timer){ stopSieve(); return; }
+  if(sphase==='done')sieveReset(SN);
+  this.textContent='⏸ Pause';
+  var v=+document.getElementById('sspeed').value;
+  timer=setInterval(function(){ if(!sieveStep())stopSieve(); }, Math.max(18, 420/v));
+});
+document.getElementById('sstep').addEventListener('click',function(){ stopSieve(); sieveStep(); });
+document.getElementById('sreset').addEventListener('click',function(){ stopSieve(); sieveReset(SN); });
+document.getElementById('sspeed').addEventListener('input',function(){
+  if(timer){ stopSieve(); document.getElementById('splay').click(); }
+});
+Array.prototype.forEach.call(document.querySelectorAll('#ssize button'),function(b){
+  b.addEventListener('click',function(){
+    Array.prototype.forEach.call(document.querySelectorAll('#ssize button'),function(x){x.classList.remove('on');});
+    b.classList.add('on'); stopSieve(); sieveReset(+b.getAttribute('data-n'));
+  });
+});
+sieveReset(100);
+
+/* ---------- 07 factorization ---------- */
+function runFact(){
+  var raw=String(document.getElementById('fn').value).replace(/[\s_]/g,''),n;
+  try{ n=BigInt(raw); }catch(e){ n=null; }
+  var st=document.getElementById('fsteps'),trap=document.getElementById('ftrap');
+  if(n===null||n<2n||n>1000000000000n){
+    st.innerHTML='<tr><td colspan="3" style="color:var(--mark)">Enter an integer between 2 and 10¹².</td></tr>';
+    trap.style.display='none'; return;
+  }
+  var cur=n,i=2n,factors=[],rows=[],iter=0;
+  while(i*i<=cur){
+    iter++;
+    if(cur%i===0n){
+      while(cur%i===0n){ factors.push(i.toString()); cur/=i; }
+      rows.push([i.toString(),cur.toString(),factors.join(' · ')]);
+    }
+    i++;
+  }
+  var leftover=cur>1n;
+  if(leftover){ factors.push(cur.toString()); rows.push(['leftover',cur.toString(),factors.join(' · ')]); }
+  document.getElementById('fres').textContent=factors.join(' · ');
+  document.getElementById('fiter').textContent=grp(iter);
+  document.getElementById('fnaive').textContent=n>1000000n?sci(Number(n)):grp(Number(n));
+  trap.style.display='block';
+  if(leftover){
+    trap.innerHTML='<b>There it is.</b> The loop reached √n and stopped, but <span class="mono">'+cur.toString()+
+      '</span> &gt; 1 is left over — and that is a prime factor too. Without the <code>if (n &gt; 1)</code> line it is lost and the answer is incomplete'+
+      (factors.length===1?', and for a prime n the output is empty altogether':'')+'.';
+  } else {
+    trap.innerHTML='Here the leftover is 1 — every factor was found inside the loop. Do not rely on that: try <span class="mono">999999999989</span>.';
+  }
+  st.innerHTML=rows.map(function(r,k){
+    return '<tr'+(k===rows.length-1&&leftover?' class="cur"':'')+'><td class="n">'+r[0]+'</td><td class="n">'+r[1]+'</td><td class="mono">'+r[2]+'</td></tr>';
+  }).join('');
+}
+document.getElementById('frun').addEventListener('click',runFact);
+Array.prototype.forEach.call(document.querySelectorAll('[data-f]'),function(c){
+  c.addEventListener('click',function(){ document.getElementById('fn').value=c.getAttribute('data-f'); runFact(); });
+});
+runFact();
+
+/* ---------- 10 defence score ---------- */
+var LSL=document.getElementById('lsl'),SSL=document.getElementById('ssl'),DSL=document.getElementById('dsl');
+function score(){
+  var L=+LSL.value, N=10, S=+SSL.value, P=+DSL.value;
+  var rlab=S/N, rdef=P/100;
+  var pts=L*rlab*rdef;
+  document.getElementById('lv').textContent=L;
+  document.getElementById('sv').textContent=S;
+  document.getElementById('rlv').textContent=Math.round(rlab*100)+'%';
+  document.getElementById('dv').textContent=P+'%';
+  document.getElementById('scoreval').textContent=pts.toFixed(2);
+  document.getElementById('scoreval').parentElement.className='stat '+(pts<=0?'bad':'good');
+  document.getElementById('scoreexpr').textContent=
+    L+' × '+rlab.toFixed(2)+' × '+rdef.toFixed(2)+' = '+pts.toFixed(2);
+  var note;
+  if(S===0&&P===0) note='Neither half was done — no points.';
+  else if(S===0) note='The lab itself was not solved, so the defence result has nothing to multiply. Both halves are required.';
+  else if(P===0) note='The defence contest was failed. However much of the lab was solved, the result is zero — that is what the multiplier is for.';
+  else if(S===N&&P===100) note='Full marks — the whole lab solved and the defence contest passed in full.';
+  else if(P===100) note='Defence clean. The missing points are the '+(N-S)+' unsolved problem'+((N-S)===1?'':'s')+' in the lab.';
+  else if(S===N) note='The whole lab is solved, so the score is exactly the defence result: '+P+'% of '+L+'.';
+  else note='Both halves are partial: '+Math.round(rlab*100)+'% of the lab times '+P+'% of the defence.';
+  document.getElementById('scorenote').textContent=note;
+}
+[LSL,SSL,DSL].forEach(function(el){ el.addEventListener('input',score); });
+score();
+
+/* ---------- 08 stack / queue / deque ---------- */
+var dq=[],mode='stack',next=1;
+var track=document.getElementById('dstrack'),dlog=document.getElementById('dslog');
+var BTN={pf:document.getElementById('dspf'),pb:document.getElementById('dspb'),
+         ppf:document.getElementById('dsppf'),ppb:document.getElementById('dsppb')};
+function dsRender(){
+  if(!dq.length){ track.innerHTML='<span class="empty">empty</span>'; }
+  else{
+    var h='<span class="endcap">'+(mode==='stack'?'bottom':'front')+'</span>';
+    h+=dq.map(function(v){return '<div class="box">'+v+'</div>';}).join('');
+    h+='<span class="endcap">'+(mode==='stack'?'top':'back')+'</span>';
+    track.innerHTML=h;
+  }
+  if(mode==='stack'){
+    BTN.pf.style.display='none'; BTN.ppf.style.display='none';
+    BTN.pb.style.display=''; BTN.ppb.style.display='';
+    BTN.pb.textContent='push'; BTN.ppb.textContent='pop';
+  }else if(mode==='queue'){
+    BTN.pf.style.display='none'; BTN.ppb.style.display='none';
+    BTN.pb.style.display=''; BTN.ppf.style.display='';
+    BTN.pb.textContent='push (enqueue)'; BTN.ppf.textContent='pop (dequeue)';
+  }else{
+    BTN.pf.style.display=''; BTN.pb.style.display='';
+    BTN.ppf.style.display=''; BTN.ppb.style.display='';
+    BTN.pf.textContent='push_front'; BTN.pb.textContent='push_back';
+    BTN.ppf.textContent='pop_front'; BTN.ppb.textContent='pop_back';
+  }
+  BTN.ppf.disabled=!dq.length; BTN.ppb.disabled=!dq.length;
+}
+function say(t){ dlog.textContent=t; }
+BTN.pb.addEventListener('click',function(){ var v=next++; dq.push(v); say((mode==='stack'?'push('+v+') — placed on the top':'push('+v+') — joined the back')+', size = '+dq.length); dsRender(); });
+BTN.pf.addEventListener('click',function(){ var v=next++; dq.unshift(v); say('push_front('+v+') — placed at the front, size = '+dq.length); dsRender(); });
+BTN.ppb.addEventListener('click',function(){ if(!dq.length)return; var v=dq.pop(); say((mode==='stack'?'pop() → '+v+' — taken off the top':'pop_back() → '+v)+', size = '+dq.length); dsRender(); });
+BTN.ppf.addEventListener('click',function(){ if(!dq.length)return; var v=dq.shift(); say((mode==='queue'?'pop() → '+v+' — the first to arrive leaves first':'pop_front() → '+v)+', size = '+dq.length); dsRender(); });
+document.getElementById('dsclear').addEventListener('click',function(){ dq=[];next=1; say('Cleared. empty() = true'); dsRender(); });
+Array.prototype.forEach.call(document.querySelectorAll('#dsmode button'),function(b){
+  b.addEventListener('click',function(){
+    Array.prototype.forEach.call(document.querySelectorAll('#dsmode button'),function(x){x.classList.remove('on');});
+    b.classList.add('on'); mode=b.getAttribute('data-m'); dq=[]; next=1;
+    say(mode==='stack'?'Stack — LIFO. Only the top is reachable.':mode==='queue'?'Queue — FIFO. Insert at the back, remove from the front.':'Deque — both ends are reachable.');
+    dsRender();
+  });
+});
+dsRender();
+
+})();
+</script>
+
+</body></html>
