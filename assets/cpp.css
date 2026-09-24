@@ -53,6 +53,7 @@ body.ed-on{overflow:hidden}
 /* кнопка «в редактор» на блоках кода лекции */
 .card pre{position:relative}
 .pre-run{position:absolute;top:6px;right:6px;z-index:2;opacity:0;transition:opacity .15s;
+  user-select:none;-webkit-user-select:none;
   height:26px;padding:0 10px;border-radius:7px;border:1px solid var(--line);
   background:var(--surface);color:var(--ink-2);cursor:pointer;font:inherit;font-size:.72rem}
 .card pre:hover .pre-run,.pre-run:focus{opacity:1}

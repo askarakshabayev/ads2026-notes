@@ -413,23 +413,27 @@ function build(){
   var opts='<option value="">— код со страницы —</option>';
   Object.keys(STARTERS).forEach(function(k,i){ opts+='<option value="s'+i+'">'+k+'</option>'; });
   var pres=[].slice.call(document.querySelectorAll('.card pre'));
+  /* Текст снимаем ДО того, как внутрь <pre> попадёт кнопка, иначе её подпись
+     "▶ edit & run" уезжает в редактор вместе с кодом. */
+  var preCode=pres.map(function(pre){ return pre.textContent||''; });
   pres.forEach(function(pre,i){
-    var first=(pre.textContent||'').split('\n').filter(function(l){return l.trim();})[0]||'code';
+    var first=preCode[i].split('\n').filter(function(l){return l.trim();})[0]||'code';
     opts+='<option value="p'+i+'">'+(i+1)+'. '+first.trim().slice(0,46).replace(/</g,'&lt;')+'</option>';
   });
   sel.innerHTML=opts;
   sel.onchange=function(){
     var v=sel.value; if(!v) return;
     if(v[0]==='s'){ var k=Object.keys(STARTERS)[+v.slice(1)]; load(STARTERS[k],k); }
-    else { var pre=pres[+v.slice(1)]; load(wrap(pre.textContent),'блок '+(+v.slice(1)+1)+' со страницы'); }
+    else { var i=+v.slice(1); load(wrap(preCode[i]),'блок '+(i+1)+' со страницы'); }
     sel.value='';
   };
 
   /* кнопка на каждом блоке кода */
-  pres.forEach(function(pre){
+  pres.forEach(function(pre,i){
     var b=document.createElement('button');
     b.className='pre-run'; b.type='button'; b.textContent='▶ edit & run';
-    b.onclick=function(e){ e.stopPropagation(); load(wrap(pre.textContent),'блок со страницы'); toggle(true); };
+    b.setAttribute('aria-label','Открыть этот код в редакторе');
+    b.onclick=function(e){ e.stopPropagation(); load(wrap(preCode[i]),'блок со страницы'); toggle(true); };
     pre.appendChild(b);
   });
 
