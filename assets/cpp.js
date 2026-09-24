@@ -88,6 +88,7 @@ function ensureMonaco(){
       scrollBeyondLastLine:false, tabSize:4, insertSpaces:true, renderWhitespace:'none',
       smoothScrolling:true, cursorBlinking:'smooth', padding:{top:10,bottom:10},
       suggestOnTriggerCharacters:true, quickSuggestions:{other:true,comments:false,strings:false},
+      acceptSuggestionOnEnter:'off', tabCompletion:'on',
       bracketPairColorization:{enabled:true}, scrollbar:{verticalScrollbarSize:10}
     });
     MON.ed.addCommand(monaco.KeyMod.CtrlCmd|monaco.KeyCode.Enter, run);
@@ -188,6 +189,17 @@ function registerCpp(monaco){
                  startColumn:w.startColumn,endColumn:w.endColumn};
       var K=monaco.languages.CompletionItemKind, R=monaco.languages.CompletionItemInsertTextRule;
       var out=[];
+      /* Если тип уже напечатан ("int ma|") или идёт обращение к члену ("v.pu|"),
+         целые объявления предлагать нельзя — получится "int int main()". */
+      var before=model.getValueInRange({startLineNumber:pos.lineNumber,startColumn:1,
+                                        endLineNumber:pos.lineNumber,endColumn:w.startColumn});
+      var afterType=/\b(int|long|short|char|bool|float|double|void|unsigned|signed|auto|const)\s+$/.test(before);
+      var afterMember=/(\.|->|::)\s*$/.test(before);
+      if(afterType||afterMember){
+        WORDS.forEach(function(k){ out.push({label:k,kind:K.Method,insertText:k,range:range,sortText:'0'+k}); });
+        if(!afterMember) KW.forEach(function(k){ out.push({label:k,kind:K.Keyword,insertText:k,range:range,sortText:'1'+k}); });
+        return {suggestions:out};
+      }
       T.forEach(function(t,i){
         out.push({label:t[1], filterText:t[0], kind:K.Snippet, insertText:t[2],
                   insertTextRules:R.InsertAsSnippet, detail:t[3],
