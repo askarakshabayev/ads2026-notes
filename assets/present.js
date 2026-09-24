@@ -93,11 +93,7 @@ function wbBuild(){
     if(b.id==='wb-erase'){ WB.erase=!WB.erase; b.classList.toggle('on',WB.erase); }
     if(b.id==='wb-undo'){ WB.strokes.pop(); wbRedraw(); }
     if(b.id==='wb-clear'){ WB.strokes=[]; wbRedraw(); }
-    if(b.id==='wb-blank'){ WB.blank=!WB.blank; body.classList.toggle('wb-blank',WB.blank);
-      b.classList.toggle('on',WB.blank);
-      document.getElementById('wb-hint').textContent = WB.blank
-        ? 'Blank board. Esc to close.'
-        : 'Drawing over the page — scrolling is paused. Esc to close.'; }
+    if(b.id==='wb-blank'){ WB.blank=!WB.blank; wbApplyBlank(); }
     if(b.id==='wb-close'){ wbToggle(false); }
   });
   document.getElementById('wb-size').addEventListener('input',function(){ WB.width=+this.value; });
@@ -127,15 +123,24 @@ function wbDown(e){ cv.setPointerCapture&&cv.setPointerCapture(e.pointerId);
   WB.strokes.push(WB.cur); wbRedraw(); }
 function wbMove(e){ if(!WB.cur) return; WB.cur.pts.push(pt(e)); wbRedraw(); }
 function wbUp(){ WB.cur=null; }
+function wbApplyBlank(){
+  /* wb-blank держим на body только пока доска открыта, но сам флаг WB.blank
+     переживает закрытие — иначе режим слетал на каждом D. */
+  body.classList.toggle('wb-blank', WB.open && WB.blank);
+  var bb=document.getElementById('wb-blank'); if(bb) bb.classList.toggle('on',WB.blank);
+  var h=document.getElementById('wb-hint');
+  if(h) h.textContent = WB.blank
+    ? 'Blank board. Esc to close.'
+    : 'Drawing over the page — scrolling is paused. Esc to close.';
+}
 function wbToggle(on){
   WB.open = (on===undefined) ? !WB.open : on;
   body.classList.toggle('wb-on',WB.open);
   document.getElementById('wb-tools').style.display=WB.open?'flex':'none';
   document.getElementById('wb-hint').style.display=WB.open?'block':'none';
   var b=document.getElementById('pb-draw'); if(b) b.classList.toggle('on',WB.open);
+  wbApplyBlank();
   if(WB.open) wbResize();
-  else { body.classList.remove('wb-blank'); WB.blank=false;
-    var bb=document.getElementById('wb-blank'); if(bb) bb.classList.remove('on'); }
 }
 
 /* ---------- панель ---------- */
