@@ -6,9 +6,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
-<link rel="stylesheet" href="assets/notes.css?v=202609242204">
-<link rel="stylesheet" href="assets/present.css?v=202609242204">
-<link rel="stylesheet" href="assets/cpp.css?v=202609242204">
+<link rel="stylesheet" href="assets/notes.css?v=202609250818">
+<link rel="stylesheet" href="assets/present.css?v=202609250818">
+<link rel="stylesheet" href="assets/cpp.css?v=202609250818">
 </head><body>
 <div class="wrap">
 
@@ -99,7 +99,7 @@ Node* insert(Node* t, <span class="k">int</span> k) {
         <li>Name the fix without teaching it: <strong>AVL and red-black trees</strong> rebalance on insert to keep h ≈ log n. <code>std::set</code> and <code>std::map</code> are red-black trees. That is why they never degrade the way today's code does.</li>
       </ul>
     </div>
-    <div class="card pad demo"><h4>Demo · build a BST and watch its height</h4><div class="ctl"><label class="f" style="flex:1 1 260px"><span>keys, in insertion order</span><input type="text" id="bta" value="20 8 22 4 12 10 14"></label><button class="pri" id="btrun">Build</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-bt="20 8 22 4 12 10 14">balanced-ish</button><button class="chip" data-bt="1 2 3 4 5 6 7 8 9 10 11 12">sorted 1…12</button><button class="chip" data-bt="8 4 12 2 6 10 14 1 3 5 7 9 11 13 15">perfect</button><button class="chip" data-bt="50 30 70 20 40 60 80 10">random</button></div><div class="readout" style="margin-top:0"><div class="stat"><div class="lab">nodes</div><div class="val" id="btn">—</div></div><div class="stat"><div class="lab">height h</div><div class="val" id="bth">—</div></div><div class="stat good"><div class="lab">log₂n (ideal)</div><div class="val" id="btlog">—</div></div><div class="stat"><div class="lab">worst search</div><div class="val" id="btw">—</div></div></div><div id="bttree" style="margin-top:16px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.5;color:var(--ink-2)"></div><div class="log" id="btlog2"></div></div>
+    <div class="card pad demo"><h4>Demo · the tree, live</h4><div class="ctl"><label class="f" style="flex:0 0 110px"><span>key</span><input type="number" id="bsv" value="35"></label><button class="pri" id="bsins">insert</button><button id="bssearch">search</button><button id="bsdel">delete</button><button id="bsmin">min</button><button id="bsmax">max</button><button id="bsrand">random</button><button id="bssorted">sorted 1…10</button><button id="bsclear">clear</button></div><div class="ctl"><div class="seg" id="bstrav"><button data-t="in">in-order</button><button data-t="pre">pre-order</button><button data-t="post">post-order</button><button data-t="level">level</button></div><button class="pri" id="bsplay">▶ Play</button><button id="bsstep">Step</button><label class="f" style="flex:1 1 130px"><span>speed</span><input type="range" id="bsspeed" min="1" max="10" value="6"></label></div><div class="readout" style="margin-top:0;margin-bottom:12px"><div class="stat"><div class="lab">nodes</div><div class="val" id="bsn">0</div></div><div class="stat"><div class="lab">height h</div><div class="val" id="bsh">0</div></div><div class="stat good"><div class="lab">⌈log₂(n+1)⌉ ideal</div><div class="val" id="bsideal">0</div></div><div class="stat"><div class="lab">comparisons, last op</div><div class="val" id="bscmp">—</div></div></div><div id="bswrap" style="overflow:auto;border:1px solid var(--line-soft);border-radius:8px;background:var(--surface-2);padding:6px"><svg id="bssvg" style="display:block"></svg></div><div class="log" id="bslog">Type a key and press insert. The walk down is animated — that walk is the algorithm.</div><div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:14px 0 6px">visit order</div><div class="track" id="bsout" style="flex-wrap:wrap;min-height:58px"></div></div>
   </div>
 </section>
 
@@ -138,7 +138,7 @@ queue&lt;Node*&gt; q; q.push(root);
         <span class="k">if</span> (v-&gt;right) q.push(v-&gt;right);
     }
 }</pre><div class="trap" style="margin-top:14px"><b>The <code>int sz = q.size()</code> line</b> is what separates levels. Without it you get one flat list and problems D and E both fail.</div></div>
-      <div class="card pad demo"><h4>Demo · the same tree, four readings</h4><div class="ctl"><div class="seg" id="tvmode"><button data-t="in" class="on">in-order</button><button data-t="pre">pre-order</button><button data-t="post">post-order</button><button data-t="level">level</button></div></div><div class="track" id="tvtrack"></div><div class="log" id="tvlog"></div><p style="margin-top:12px;font-size:.83rem;color:var(--ink-3)">Uses the tree from the beat above — rebuild it there and this follows.</p></div>
+      <div class="card pad board"><h4>The four readings, side by side</h4><div class="tw"><table><thead><tr><th>Order</th><th>Where the visit happens</th><th>What it is for</th></tr></thead><tbody><tr><td class="k">pre-order</td><td>before both children</td><td>copy the tree — replay it into an empty BST</td></tr><tr><td class="k">in-order</td><td>between the children</td><td><strong>sorted output</strong></td></tr><tr><td class="k">post-order</td><td>after both children</td><td>free the tree — children before the parent</td></tr><tr><td class="k">level</td><td>queue, not recursion</td><td>per-level questions — problems D and E</td></tr></tbody></table></div><p style="margin-top:13px">Run all four in the demo of beat 02 on the same tree and read the output row out loud. In-order is the only one that comes out sorted, and that is the invariant of the structure, not a property of the traversal.</p><div class="trap" style="margin-top:14px"><b>Switch the demo to <em>sorted 1…10</em> first,</b> then run in-order. The output is identical to a degenerate tree and to a balanced one — which is exactly why in-order cannot tell you anything about the shape.</div></div>
     </div>
   </div>
 </section>
@@ -197,71 +197,267 @@ queue&lt;Node*&gt; q; q.push(root);
 </div>
 
 <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-<script src="assets/notes.js?v=202609242204"></script>
-<script src="assets/present.js?v=202609242204"></script>
-<script src="assets/cpp.js?v=202609242204"></script>
+<script src="assets/notes.js?v=202609250818"></script>
+<script src="assets/present.js?v=202609250818"></script>
+<script src="assets/cpp.js?v=202609250818"></script>
 <script>
 
 (function(){
 var N=window.NOTES, el=N.el, on=N.on, each=N.each;
-var TREE=null, ORDER=[];
 
-function ins(t,k){ if(!t) return {k:k,l:null,r:null};
-  if(k<t.k) t.l=ins(t.l,k); else if(k>t.k) t.r=ins(t.r,k); return t; }
+/* ---------- дерево ---------- */
+var root=null, seq=0, cmp=0;
+function mk(k){ return {k:k,l:null,r:null,id:++seq,x:0,y:0,cx:null,cy:null,st:null}; }
 function height(t){ return t?1+Math.max(height(t.l),height(t.r)):0; }
 function count(t){ return t?1+count(t.l)+count(t.r):0; }
-function walk(t,mode,out){
-  if(!t) return out;
-  if(mode==='pre') out.push(t.k);
-  walk(t.l,mode,out);
-  if(mode==='in') out.push(t.k);
-  walk(t.r,mode,out);
-  if(mode==='post') out.push(t.k);
-  return out;
-}
-function level(t){ var out=[],q=t?[t]:[]; while(q.length){ var v=q.shift(); out.push(v.k);
-  if(v.l)q.push(v.l); if(v.r)q.push(v.r);} return out; }
-function render(t,pad,out){
-  if(!t) return out;
-  render(t.r,pad+'      ',out);
-  out.push(pad+'── '+t.k);
-  render(t.l,pad+'      ',out);
-  return out;
-}
-function btRun(){
-  var ks=(el('bta').value||'').trim().split(/\s+/).map(Number).filter(function(v){return !isNaN(v);});
-  TREE=null; ks.forEach(function(k){ TREE=ins(TREE,k); });
-  var n=count(TREE), h=height(TREE);
-  el('btn').textContent=n; el('bth').textContent=h;
-  el('btlog').textContent=n?Math.ceil(Math.log2(n+1)):0;
-  el('btw').textContent=h+' comparisons';
-  el('bttree').innerHTML=render(TREE,'',[]).map(function(s){return s.replace(/ /g,'&nbsp;');}).join('<br>');
-  var ideal=n?Math.ceil(Math.log2(n+1)):0;
-  el('btlog2').textContent = h>ideal*1.7
-    ? 'Degenerate: height '+h+' against an ideal of '+ideal+'. Search here is linear, not logarithmic.'
-    : 'Height '+h+', ideal '+ideal+'. This tree behaves.';
-  tvRun();
-}
-on('btrun','click',btRun);
-on('bta','change',btRun);
-each('[data-bt]',function(b){ b.addEventListener('click',function(){ el('bta').value=b.getAttribute('data-bt'); btRun(); }); });
 
-var tvmode='in';
-function tvRun(){
-  var seq = tvmode==='level' ? level(TREE) : walk(TREE,tvmode,[]);
-  el('tvtrack').innerHTML = seq.length
-    ? seq.map(function(v){return '<div class="box">'+v+'</div>';}).join('')
-    : '<span class="empty">empty tree</span>';
-  var msg={in:'In-order — sorted, always. This is the BST invariant read aloud.',
-           pre:'Pre-order — root first. Replay this sequence into an empty tree and you get the same tree back.',
-           post:'Post-order — children before the parent. This is the only safe order to delete in.',
-           level:'Level order — BFS with a queue. Problems D and E are exactly this loop.'};
-  el('tvlog').textContent=msg[tvmode];
+/* ---------- раскладка: x по порядку in-order, y по глубине ---------- */
+var GX=46, GY=68, PAD=28, R=18;
+function layout(){
+  var i=0;
+  (function walk(t,d){ if(!t)return; walk(t.l,d+1); t.x=PAD+(i++)*GX; t.y=PAD+d*GY; walk(t.r,d+1); })(root,0);
+  var n=count(root), h=height(root);
+  var svg=el('bssvg');
+  svg.setAttribute('width',  Math.max(320, PAD*2+Math.max(0,n-1)*GX));
+  svg.setAttribute('height', Math.max(90,  PAD*2+Math.max(0,h-1)*GY));
 }
-each('#tvmode button',function(b){ b.addEventListener('click',function(){
-  each('#tvmode button',function(x){x.classList.remove('on');});
-  b.classList.add('on'); tvmode=b.getAttribute('data-t'); tvRun(); }); });
-btRun();
+
+/* ---------- отрисовка с плавным движением ---------- */
+var raf=null;
+function nodes(){ var out=[]; (function w(t){ if(!t)return; out.push(t); w(t.l); w(t.r); })(root); return out; }
+function draw(){
+  var all=nodes(), svg=el('bssvg'), s='';
+  all.forEach(function(t){
+    if(t.cx===null){ t.cx=t.x; t.cy=t.y; }
+    [['l',t.l],['r',t.r]].forEach(function(p){
+      var c=p[1]; if(!c) return;
+      if(c.cx===null){ c.cx=c.x; c.cy=c.y; }
+      var active=(t.st==='path'&&c.st)||c.st==='path'||c.st==='active';
+      s+='<line x1="'+t.cx+'" y1="'+t.cy+'" x2="'+c.cx+'" y2="'+c.cy+'" '+
+         'stroke="'+(active?'var(--accent)':'var(--line)')+'" stroke-width="'+(active?2.5:1.5)+'"/>';
+    });
+  });
+  all.forEach(function(t){
+    var fill='var(--surface)', stroke='var(--line)', tc='var(--ink)', rr=R;
+    if(t.st==='path'){ fill='var(--accent-soft)'; stroke='var(--accent)'; tc='var(--accent-ink)'; }
+    if(t.st==='active'){ fill='var(--accent)'; stroke='var(--accent)'; tc='#fff'; rr=R+2; }
+    if(t.st==='found'){ fill='var(--prime-soft)'; stroke='var(--prime)'; tc='var(--prime)'; rr=R+2; }
+    if(t.st==='new'){ fill='var(--prime)'; stroke='var(--prime)'; tc='#fff'; rr=R+2; }
+    if(t.st==='doomed'){ fill='var(--mark-soft)'; stroke='var(--mark)'; tc='var(--mark)'; }
+    s+='<circle cx="'+t.cx+'" cy="'+t.cy+'" r="'+rr+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="2"/>'+
+       '<text x="'+t.cx+'" y="'+(t.cy+4.5)+'" text-anchor="middle" '+
+       'font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="'+tc+'">'+t.k+'</text>';
+  });
+  svg.innerHTML = s || '<text x="14" y="34" font-size="13" fill="var(--ink-3)" font-style="italic">пусто — дерева ещё нет</text>';
+  el('bsn').textContent=count(root);
+  var h=height(root), n=count(root);
+  el('bsh').textContent=h;
+  el('bsideal').textContent=n?Math.ceil(Math.log2(n+1)):0;
+}
+function animate(){
+  if(raf) return;
+  var t0=null;
+  function frame(ts){
+    if(!t0) t0=ts;
+    var done=true;
+    nodes().forEach(function(t){
+      if(t.cx===null){ t.cx=t.x; t.cy=t.y; return; }
+      var dx=t.x-t.cx, dy=t.y-t.cy;
+      if(Math.abs(dx)>0.4||Math.abs(dy)>0.4){ t.cx+=dx*0.22; t.cy+=dy*0.22; done=false; }
+      else { t.cx=t.x; t.cy=t.y; }
+    });
+    draw();
+    if(done){ raf=null; } else { raf=requestAnimationFrame(frame); }
+  }
+  raf=requestAnimationFrame(frame);
+}
+function refresh(){ layout(); animate(); draw(); }
+function clearStates(){ nodes().forEach(function(t){ t.st=null; }); }
+
+/* ---------- очередь шагов ---------- */
+var steps=[], si=0, timer=null;
+function queue(list,msg){ stop(); steps=list; si=0; if(msg) el('bslog').textContent=msg; }
+function stepOnce(){
+  if(si>=steps.length){ stop(); return false; }
+  var s=steps[si++];
+  clearStates();
+  if(s.path) s.path.forEach(function(t){ t.st='path'; });
+  if(s.node) s.node.st=s.state||'active';
+  if(s.run) s.run();
+  if(s.msg) el('bslog').textContent=s.msg;
+  if(s.out!==undefined) pushOut(s.out);
+  refresh();
+  if(si>=steps.length) setTimeout(function(){ clearStates(); refresh(); }, 700);
+  return true;
+}
+function play(){
+  if(timer){ stop(); return; }
+  if(si>=steps.length) si=0;
+  el('bsplay').textContent='❚❚ Pause';
+  var sp=11-(parseInt(el('bsspeed').value)||6);
+  timer=setInterval(function(){ if(!stepOnce()) stop(); }, sp*90+140);
+}
+function stop(){ if(timer){ clearInterval(timer); timer=null; } el('bsplay').textContent='▶ Play'; }
+
+/* ---------- вывод обхода ---------- */
+function clearOut(){ el('bsout').innerHTML='<span class="empty">—</span>'; }
+function pushOut(v){
+  var t=el('bsout');
+  if(t.querySelector('.empty')) t.innerHTML='';
+  t.innerHTML+='<div class="box">'+v+'</div>';
+}
+
+/* ---------- операции ---------- */
+function opInsert(k){
+  var list=[], path=[];
+  if(!root){
+    list.push({run:function(){ root=mk(k); root.st='new'; }, msg:'Дерево пустое — '+k+' становится корнем.'});
+    cmp=0; el('bscmp').textContent=0; queue(list); clearOut(); return list.length;
+  }
+  var t=root, c=0;
+  while(true){
+    c++;
+    var cur=t, snap=path.slice();
+    if(k===t.k){
+      list.push({node:cur,path:snap,state:'found',msg:k+' уже есть в дереве — BST не хранит дубликаты.'});
+      break;
+    }
+    var goLeft=k<t.k;
+    list.push({node:cur,path:snap,msg:k+(goLeft?' < ':' > ')+t.k+' → идём '+(goLeft?'влево':'вправо')});
+    path.push(t);
+    var nx=goLeft?t.l:t.r;
+    if(!nx){
+      (function(parent,left){
+        list.push({path:path.slice(),run:function(){
+          var nn=mk(k); if(left) parent.l=nn; else parent.r=nn; nn.st='new';
+        },msg:'Свободное место найдено — вставляем '+k+' как '+(left?'левого':'правого')+' потомка '+parent.k+'.'});
+      })(t,goLeft);
+      break;
+    }
+    t=nx;
+  }
+  cmp=c; el('bscmp').textContent=c;
+  queue(list); clearOut();
+  return c;
+}
+function opSearch(k){
+  var list=[], path=[], t=root, c=0;
+  if(!root){ el('bslog').textContent='Дерево пустое.'; return; }
+  while(t){
+    c++;
+    var cur=t, snap=path.slice();
+    if(k===t.k){ list.push({node:cur,path:snap,state:'found',msg:'Нашли '+k+' за '+c+' сравнени'+(c===1?'е':'я')+'.'}); t=null; break; }
+    var goLeft=k<t.k;
+    list.push({node:cur,path:snap,msg:k+(goLeft?' < ':' > ')+t.k+' → '+(goLeft?'влево':'вправо')});
+    path.push(t); t=goLeft?t.l:t.r;
+  }
+  if(t===null && (!list.length || list[list.length-1].state!=='found'))
+    list.push({path:path.slice(),msg:'Дошли до пустой ссылки — '+k+' в дереве нет. '+c+' сравнений.'});
+  cmp=c; el('bscmp').textContent=c;
+  queue(list); clearOut();
+}
+function opEdge(dir){
+  if(!root){ el('bslog').textContent='Дерево пустое.'; return; }
+  var list=[], path=[], t=root, c=0;
+  while(t){
+    c++;
+    var nx=dir==='min'?t.l:t.r, cur=t, snap=path.slice();
+    if(!nx) list.push({node:cur,path:snap,state:'found',msg:(dir==='min'?'Минимум':'Максимум')+' = '+t.k+' — '+(dir==='min'?'самый левый':'самый правый')+' узел, '+c+' шагов.'});
+    else list.push({node:cur,path:snap,msg:'идём '+(dir==='min'?'влево':'вправо')+' от '+t.k});
+    path.push(t); t=nx;
+  }
+  cmp=c; el('bscmp').textContent=c;
+  queue(list); clearOut();
+}
+function opDelete(k){
+  if(!root){ el('bslog').textContent='Дерево пустое.'; return; }
+  var list=[], path=[], t=root, par=null, c=0;
+  while(t && t.k!==k){
+    c++;
+    var goLeft=k<t.k, cur=t, snap=path.slice();
+    list.push({node:cur,path:snap,msg:k+(goLeft?' < ':' > ')+t.k+' → '+(goLeft?'влево':'вправо')});
+    path.push(t); par=t; t=goLeft?t.l:t.r;
+  }
+  if(!t){ list.push({path:path.slice(),msg:k+' в дереве нет — удалять нечего.'}); queue(list); clearOut(); return; }
+  c++;
+  var node=t, parent=par, snap=path.slice();
+  if(!node.l && !node.r){
+    list.push({node:node,path:snap,state:'doomed',msg:'Случай 1: лист. Просто отцепляем '+k+'.'});
+    list.push({run:function(){ if(!parent) root=null; else if(parent.l===node) parent.l=null; else parent.r=null; },
+               msg:'Готово — '+k+' удалён.'});
+  } else if(!node.l || !node.r){
+    var ch=node.l||node.r;
+    list.push({node:node,path:snap,state:'doomed',msg:'Случай 2: один потомок ('+ch.k+'). Он занимает место родителя.'});
+    list.push({run:function(){ if(!parent) root=ch; else if(parent.l===node) parent.l=ch; else parent.r=ch; },
+               msg:'Готово — '+ch.k+' поднялся на место '+k+'.'});
+  } else {
+    list.push({node:node,path:snap,state:'doomed',msg:'Случай 3: два потомка. Ищем преемника — самый левый узел правого поддерева.'});
+    var sp=node.r, spPar=node, sPath=snap.concat([node]);
+    list.push({node:sp,path:sPath.slice(),msg:'шаг вправо: '+sp.k});
+    while(sp.l){ sPath.push(sp); spPar=sp; sp=sp.l; list.push({node:sp,path:sPath.slice(),msg:'идём влево: '+sp.k}); }
+    var succ=sp, succPar=spPar;
+    list.push({node:succ,path:sPath.slice(),state:'found',msg:'Преемник = '+succ.k+'. Копируем его ключ в '+k+' и удаляем преемника.'});
+    list.push({run:function(){
+      node.k=succ.k;
+      if(succPar.l===succ) succPar.l=succ.r; else succPar.r=succ.r;
+    },msg:'Готово — на месте '+k+' теперь '+succ.k+', дерево осталось корректным BST.'});
+  }
+  cmp=c; el('bscmp').textContent=c;
+  queue(list); clearOut();
+}
+function opTraverse(mode){
+  if(!root){ el('bslog').textContent='Дерево пустое.'; return; }
+  var list=[];
+  var names={in:'in-order — выходит отсортированно',pre:'pre-order — корень первым',
+             post:'post-order — потомки раньше родителя',level:'level order — очередь, не рекурсия'};
+  if(mode==='level'){
+    var q=[root];
+    while(q.length){ var v=q.shift();
+      (function(v){ list.push({node:v,out:v.k,msg:'уровень: '+v.k}); })(v);
+      if(v.l)q.push(v.l); if(v.r)q.push(v.r); }
+  } else {
+    (function w(t,path){
+      if(!t) return;
+      if(mode==='pre') list.push({node:t,path:path.slice(),out:t.k,msg:'посетили '+t.k});
+      w(t.l,path.concat([t]));
+      if(mode==='in') list.push({node:t,path:path.slice(),out:t.k,msg:'посетили '+t.k});
+      w(t.r,path.concat([t]));
+      if(mode==='post') list.push({node:t,path:path.slice(),out:t.k,msg:'посетили '+t.k});
+    })(root,[]);
+  }
+  el('bscmp').textContent='—';
+  queue(list,names[mode]); clearOut();
+}
+
+/* ---------- построение дерева ---------- */
+function insertNow(k){ var t=root; if(!root){ root=mk(k); return; }
+  while(true){ if(k===t.k) return; if(k<t.k){ if(!t.l){ t.l=mk(k); return; } t=t.l; } else { if(!t.r){ t.r=mk(k); return; } t=t.r; } } }
+function build(keys){ stop(); root=null; seq=0; keys.forEach(insertNow); clearOut();
+  nodes().forEach(function(t){ t.cx=t.x; t.cy=t.y; }); refresh(); }
+
+/* ---------- кнопки ---------- */
+function val(){ var v=parseInt(el('bsv').value); return isNaN(v)?Math.floor(Math.random()*99)+1:v; }
+on('bsins','click',function(){ opInsert(val()); el('bsv').value=Math.floor(Math.random()*99)+1; play(); });
+on('bssearch','click',function(){ opSearch(val()); play(); });
+on('bsdel','click',function(){ opDelete(val()); play(); });
+on('bsmin','click',function(){ opEdge('min'); play(); });
+on('bsmax','click',function(){ opEdge('max'); play(); });
+on('bsstep','click',function(){ stop(); stepOnce(); });
+on('bsplay','click',play);
+on('bsclear','click',function(){ build([]); el('bslog').textContent='Дерево очищено.'; el('bscmp').textContent='—'; });
+on('bsrand','click',function(){
+  var ks=[],used={};
+  while(ks.length<9){ var v=Math.floor(Math.random()*90)+10; if(!used[v]){used[v]=1;ks.push(v);} }
+  build(ks); el('bslog').textContent='Случайное дерево из девяти ключей.'; });
+on('bssorted','click',function(){
+  build([1,2,3,4,5,6,7,8,9,10]);
+  el('bslog').textContent='Вставили 1…10 по порядку — дерево выродилось в список. Высота равна числу узлов, поиск стал линейным.'; });
+each('#bstrav button',function(b){ b.addEventListener('click',function(){
+  each('#bstrav button',function(x){x.classList.remove('on');});
+  b.classList.add('on'); opTraverse(b.getAttribute('data-t')); play(); }); });
+
+build([50,30,70,20,40,60,80]);
+clearOut();
 })();
 
 </script>
