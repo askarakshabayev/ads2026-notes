@@ -71,3 +71,40 @@ body.wb-blank .wb-canvas{ background:var(--surface) }
 }
 
 @media print{ .pbar,.wb-wrap,.wb-tools,.wb-hint{ display:none !important } }
+
+/* ---------- слайды ---------- */
+body.sl .rail, body.sl footer, body.sl .masthead{ display:none }
+body.sl.sl-title .masthead{ display:block; border-bottom:0 }
+body.sl .cols{ display:block; margin-top:0 }
+body.sl .wrap{ max-width:1500px; padding-bottom:0 }
+body.sl main{ min-height:100vh; display:flex; flex-direction:column; justify-content:center;
+  padding-block:clamp(24px,5vh,56px) 110px }
+body.sl.sl-title main{ display:none }
+body.sl.sl-title .wrap{ min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding-bottom:80px }
+body.sl .beat{ display:none; margin:0 }
+body.sl .beat.sl-cur{ display:block }
+body.sl .beat.sl-cur .card{ display:none }
+body.sl .beat.sl-cur .card.sl-cur{ display:block }
+body.sl .two{ display:block }
+body.sl .say{ display:none }
+body.sl.sl-notes .say, body.sl.sl-nocard .say{ display:block }
+body.sl.sl-notes .say{ order:2; border-style:dashed; opacity:.9 }
+body.sl .stack{ gap:14px }
+
+.sl-bar{ position:fixed; left:18px; bottom:18px; z-index:40; display:none; align-items:center; gap:6px;
+  max-width:calc(100vw - 440px); background:var(--surface); border:1px solid var(--line);
+  border-radius:999px; padding:5px 12px 5px 7px; box-shadow:var(--shadow); overflow:hidden }
+.sl-bar button{ width:34px; height:34px; flex:none; border-radius:999px; border:1px solid transparent;
+  background:transparent; color:var(--ink-2); cursor:pointer; font:inherit; font-size:1.2rem; line-height:1 }
+.sl-bar button.txt{ width:auto; padding:0 10px; font-size:.75rem; letter-spacing:.06em }
+.sl-bar button:hover{ background:var(--surface-2); color:var(--accent); border-color:var(--line) }
+.sl-bar button.on{ background:var(--accent); border-color:var(--accent); color:#fff }
+:root[data-theme="dark"] .sl-bar button.on{ color:#0d121a }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .sl-bar button.on{ color:#0d121a } }
+.sl-bar .pos{ font-family:"IBM Plex Mono",monospace; font-size:.78rem; color:var(--ink-2); min-width:4.2em; text-align:center; user-select:none }
+.sl-bar .lbl{ flex:1; min-width:0; font-size:.8rem; color:var(--ink-3); white-space:nowrap; overflow:hidden;
+  text-overflow:ellipsis; padding:0 6px; user-select:none }
+.sl-prog{ position:absolute; left:0; right:0; bottom:0; height:2px; background:transparent }
+.sl-prog i{ display:block; height:100%; background:var(--accent); transition:width .2s }
+@media(max-width:760px){ .sl-bar{ max-width:calc(100vw - 36px); bottom:74px } .sl-bar .lbl{ display:none } }
+@media print{ .sl-bar{ display:none !important } }

@@ -611,7 +611,7 @@ function build(){
   /* список: стартовые заготовки + все блоки кода этой страницы */
   var opts='<option value="">— код со страницы —</option>';
   Object.keys(STARTERS).forEach(function(k,i){ opts+='<option value="s'+i+'">'+k+'</option>'; });
-  var pres=[].slice.call(document.querySelectorAll('.card pre'));
+  var pres=[].slice.call(document.querySelectorAll('.card pre:not(.out)'));
   /* Текст снимаем ДО того, как внутрь <pre> попадёт кнопка, иначе её подпись
      "▶ edit & run" уезжает в редактор вместе с кодом. */
   var preCode=pres.map(function(pre){ return pre.textContent||''; });

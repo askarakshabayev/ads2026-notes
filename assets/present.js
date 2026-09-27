@@ -143,6 +143,100 @@ function wbToggle(on){
   if(WB.open) wbResize();
 }
 
+
+/* ---------- слайды ----------
+   Страница остаётся той же — ничего не клонируется, поэтому демо и редактор
+   работают прямо на слайде. Слайд = титул или одна карточка бита; «What to say»
+   — заметки докладчика, по умолчанию скрыты (N). Кликер шлёт PageUp/PageDown. */
+var SL={on:false,i:0,list:[],notes:false};
+var SL_KEY='ads-sl-i:'+location.pathname;
+function slBuild(){
+  var mast=document.querySelector('.masthead');
+  if(mast) SL.list.push({title:true,label:'Title'});
+  [].forEach.call(document.querySelectorAll('section.beat'),function(sec){
+    var h=sec.querySelector('.beat-head h2'), n=sec.querySelector('.beat-n');
+    var label=(n?n.textContent+' · ':'')+(h?h.textContent:'');
+    var cards=[].filter.call(sec.querySelectorAll('.stack .card'),function(c){ return !c.parentNode.closest('.card'); });
+    if(!cards.length) SL.list.push({sec:sec,card:null,label:label});
+    cards.forEach(function(c,k){ SL.list.push({sec:sec,card:c,label:label+(cards.length>1?' ('+(k+1)+'/'+cards.length+')':'')}); });
+  });
+}
+function slClear(){
+  [].forEach.call(document.querySelectorAll('.sl-cur'),function(x){ x.classList.remove('sl-cur'); });
+}
+function slShow(i){
+  SL.i=Math.max(0,Math.min(SL.list.length-1,i));
+  var s=SL.list[SL.i];
+  slClear();
+  body.classList.toggle('sl-title',!!s.title);
+  if(s.sec) s.sec.classList.add('sl-cur');
+  if(s.card) s.card.classList.add('sl-cur');
+  body.classList.toggle('sl-nocard',!!s.sec&&!s.card);
+  document.getElementById('sl-pos').textContent=(SL.i+1)+' / '+SL.list.length;
+  document.getElementById('sl-lbl').textContent=s.label;
+  document.getElementById('sl-prog').style.width=((SL.i+1)/SL.list.length*100)+'%';
+  window.scrollTo(0,0);
+  try{ localStorage.setItem(SL_KEY,SL.i); }catch(e){}
+}
+/* вход с того места, которое сейчас на экране */
+function slFromScroll(){
+  var best=0;
+  SL.list.forEach(function(s,k){
+    var el=s.card||s.sec; if(!el) return;
+    if(el.getBoundingClientRect().top<window.innerHeight*0.4) best=k;
+  });
+  return best;
+}
+function slToggle(on,idx){
+  if(!SL.list.length) return;
+  var start = idx!==undefined ? idx : (on===undefined?!SL.on:on) ? slFromScroll() : 0;
+  SL.on = on===undefined ? !SL.on : on;
+  body.classList.toggle('sl',SL.on);
+  document.getElementById('sl-bar').style.display=SL.on?'flex':'none';
+  var b=document.getElementById('pb-slides'); if(b) b.classList.toggle('on',SL.on);
+  try{ localStorage.setItem('ads-sl',SL.on?'1':'0'); }catch(e){}
+  if(SL.on) slShow(start);
+  else {
+    /* выходим туда же, где были на слайде */
+    var s=SL.list[SL.i]; slClear(); body.classList.remove('sl-title','sl-nocard');
+    var el=s&&(s.card||s.sec); if(el) el.scrollIntoView({block:'start'});
+  }
+  if(WB.open) wbResize();
+}
+function slNotes(){
+  SL.notes=!SL.notes; body.classList.toggle('sl-notes',SL.notes);
+  var b=document.getElementById('sl-notes'); if(b) b.classList.toggle('on',SL.notes);
+  try{ localStorage.setItem('ads-sl-notes',SL.notes?'1':'0'); }catch(e){}
+}
+function slBar(){
+  var bar=document.createElement('div'); bar.className='sl-bar'; bar.id='sl-bar';
+  bar.innerHTML='<button id="sl-prev" title="Previous (←, PgUp)">‹</button>'+
+    '<span class="pos" id="sl-pos"></span>'+
+    '<button id="sl-next" title="Next (→, Space, PgDn)">›</button>'+
+    '<span class="lbl" id="sl-lbl"></span>'+
+    '<button id="sl-notes" class="txt" title="Speaker notes (N)">notes</button>'+
+    '<button id="sl-exit" class="txt" title="Back to the page (P, Esc)">exit</button>';
+  body.appendChild(bar);
+  var prog=document.createElement('div'); prog.className='sl-prog'; prog.innerHTML='<i id="sl-prog"></i>';
+  bar.appendChild(prog);
+  document.getElementById('sl-prev').onclick=function(){ slShow(SL.i-1); };
+  document.getElementById('sl-next').onclick=function(){ slShow(SL.i+1); };
+  document.getElementById('sl-notes').onclick=slNotes;
+  document.getElementById('sl-exit').onclick=function(){ slToggle(false); };
+}
+function slInit(){
+  slBuild();
+  if(!SL.list.length) return;
+  slBar();
+  try{
+    if(localStorage.getItem('ads-sl-notes')==='1') slNotes();
+    if(localStorage.getItem('ads-sl')==='1'){
+      var i=parseInt(localStorage.getItem(SL_KEY),10);
+      slToggle(true,isNaN(i)?0:i);
+    }
+  }catch(e){}
+}
+
 /* ---------- панель ---------- */
 function buildBar(){
   var hasRail=!!document.querySelector('.rail');
@@ -153,6 +247,7 @@ function buildBar(){
     '<button id="pb-plus" title="Bigger text (+)">A+</button>'+
     '<span class="sep"></span>'+
     (hasRail?'<button id="pb-rail" title="Hide the menu (M)">☰</button>':'')+
+    (document.querySelector('section.beat')?'<button id="pb-slides" title="Slides (P)">▭</button>':'')+
     '<button id="pb-draw" title="Whiteboard (D)">✎</button>'+
     '<button id="pb-full" title="Fullscreen (F)">⛶</button>'+
     '<button id="pb-theme" title="Light / dark">◐</button>';
@@ -162,6 +257,7 @@ function buildBar(){
   document.getElementById('pb-draw').onclick=function(){wbToggle();};
   document.getElementById('pb-full').onclick=toggleFull;
   document.getElementById('pb-theme').onclick=toggleTheme;
+  var sb=document.getElementById('pb-slides'); if(sb) sb.onclick=function(){ slToggle(); };
   if(hasRail){
     document.getElementById('pb-rail').onclick=toggleRail;
     if(body.classList.contains('rail-off')) document.getElementById('pb-rail').classList.add('on');
@@ -174,6 +270,18 @@ document.addEventListener('keydown',function(e){
   if(t==='INPUT'||t==='TEXTAREA'||t==='SELECT'||e.metaKey||e.ctrlKey||e.altKey) return;
   var k=e.key;
   if(k==='Escape'&&WB.open){ wbToggle(false); e.preventDefault(); return; }
+  /* листание — только когда поверх слайда ничего не открыто */
+  if(SL.on&&!WB.open&&!body.classList.contains('ed-on')){
+    var nx=k==='ArrowRight'||k==='PageDown'||(k===' '&&!e.shiftKey&&t!=='BUTTON');
+    var pv=k==='ArrowLeft'||k==='PageUp'||(k===' '&&e.shiftKey&&t!=='BUTTON');
+    if(nx){ slShow(SL.i+1); e.preventDefault(); return; }
+    if(pv){ slShow(SL.i-1); e.preventDefault(); return; }
+    if(k==='Home'){ slShow(0); e.preventDefault(); return; }
+    if(k==='End'){ slShow(SL.list.length-1); e.preventDefault(); return; }
+    if(k==='Escape'){ slToggle(false); e.preventDefault(); return; }
+    if(k==='n'||k==='N'){ slNotes(); e.preventDefault(); return; }
+  }
+  if((k==='p'||k==='P')&&SL.list.length){ slToggle(); e.preventDefault(); return; }
   if(k==='+'||k==='='){ bumpFs(1); e.preventDefault(); }
   else if(k==='-'||k==='_'){ bumpFs(-1); e.preventDefault(); }
   else if(k==='f'||k==='F'){ toggleFull(); e.preventDefault(); }
@@ -181,6 +289,6 @@ document.addEventListener('keydown',function(e){
   else if((k==='m'||k==='M')&&document.querySelector('.rail')){ toggleRail(); e.preventDefault(); }
 });
 
-function init(){ wbBuild(); buildBar(); applyFs(); }
+function init(){ wbBuild(); buildBar(); applyFs(); slInit(); }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
 })();

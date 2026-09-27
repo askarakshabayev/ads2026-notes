@@ -6,9 +6,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
-<link rel="stylesheet" href="assets/notes.css?v=202609272014">
-<link rel="stylesheet" href="assets/present.css?v=202609272014">
-<link rel="stylesheet" href="assets/cpp.css?v=202609272014">
+<link rel="stylesheet" href="assets/notes.css?v=202609272207">
+<link rel="stylesheet" href="assets/present.css?v=202609272207">
+<link rel="stylesheet" href="assets/cpp.css?v=202609272207">
 </head><body>
 <div class="wrap">
 
@@ -16,7 +16,7 @@
   <div class="eyebrow">ADS 2026 · KBTU · Lecture 4 · Lab 4</div>
   <h1>Binary Search <em>Tree</em></h1>
   <p class="dek">Last week binary search needed a sorted array, and a sorted array is expensive to insert into. The tree fixes that — and then immediately introduces the failure mode that the rest of the lecture is about: a tree that has quietly become a list.</p>
-  <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>6</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 4 · 10 problems</b></span></div>
+  <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>5</b></span><span class="fact">Live demos <b>1</b></span><span class="fact">Reference <b>2025 code</b></span><span class="fact">Practice <b>Lab 4 · 10 problems</b></span></div>
 </header>
 
 <div class="cols">
@@ -39,6 +39,12 @@
   <ol>
     <li><a href="#b4"><span class="n">04</span><span>Lab 4 walkthrough</span><span class="t">14′</span></a></li>
     <li><a href="#b5"><span class="n">05</span><span>What comes next</span><span class="t">3′</span></a></li>
+  </ol>
+  <div class="part">V · Reference</div>
+  <ol>
+    <li><a href="#b6"><span class="n">06</span><span>Full BST · 2025 notes</span><span class="t">ref</span></a></li>
+    <li><a href="#b7"><span class="n">07</span><span>Live code · week 4, 2025</span><span class="t">ref</span></a></li>
+    <li><a href="#b8"><span class="n">08</span><span>BST against the rest</span><span class="t">ref</span></a></li>
   </ol>
 </nav>
 
@@ -187,6 +193,483 @@ queue&lt;Node*&gt; q; q.push(root);
     <div class="card pad board"><p>Lecture 5 is the <strong>heap</strong> — a tree that gives up total order and keeps only one guarantee: the smallest element is at the root. Set it up with the contrast: today's tree can answer "is 47 here", the heap cannot — but it never degenerates into a list, because it is stored in an array and is balanced by construction.</p><p style="margin-top:12px">Homework is Lab 4. Ask for <strong>B and J</strong> before the next class — the first is the bare skeleton, the second is that skeleton plus one counter.</p></div>
   </div>
 </section>
+
+<section class="beat" id="b6">
+  <div class="beat-head">
+    <div class="beat-n">06</div>
+    <div>
+      <h2>The complete implementation</h2>
+      <div class="sub"><span>reference</span> <span>lecture04.md · ADS2025FALL</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>One program, every operation</h4><p>The reference program from last year's <span class="mono">lecture04.md</span>, unchanged: insert, the three depth-first traversals, min, max, search, delete with all cases, height and node count, and a <span class="mono">main</span> that exercises each of them. Open it and press <strong>▶ edit &amp; run</strong>.</p><div style="margin-top:13px"><details class="code"><summary>lecture04.md — class BST<span class="lines">201 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">class</span> Node {
+    <span class="k">public</span>:
+    <span class="k">int</span> data;
+    Node *left, *right;
+
+    Node(<span class="k">int</span> data) {
+        <span class="k">this</span>-&gt;data = data;
+        left = <span class="k">NULL</span>;
+        right = <span class="k">NULL</span>;
+    }
+};
+
+<span class="k">class</span> BST {
+    <span class="k">public</span>:
+    Node *root;
+
+    BST() {
+        root = <span class="k">NULL</span>;
+    }
+
+    <span class="c">// Insert operation - O(log n) average, O(n) worst case</span>
+    Node *insert(Node *node, <span class="k">int</span> data) {
+        <span class="k">if</span> (node == <span class="k">NULL</span>) {
+            node = <span class="k">new</span> Node(data);
+            <span class="k">return</span> node;
+        }
+
+        <span class="k">if</span> (data &lt;= node-&gt;data) 
+            node-&gt;left = insert(node-&gt;left, data);
+        <span class="k">else</span>
+            node-&gt;right = insert(node-&gt;right, data);
+
+        <span class="k">return</span> node;
+    }
+
+    <span class="c">// In-order traversal - gives sorted output</span>
+    <span class="k">void</span> inOrder(Node *node) {
+        <span class="k">if</span> (node == <span class="k">NULL</span>)
+            <span class="k">return</span>;
+        inOrder(node-&gt;left);
+        cout &lt;&lt; node-&gt;data &lt;&lt; <span class="s">" "</span>;
+        inOrder(node-&gt;right);
+    }
+
+    <span class="c">// Pre-order traversal</span>
+    <span class="k">void</span> preOrder(Node *node) {
+        <span class="k">if</span> (node == <span class="k">NULL</span>)
+            <span class="k">return</span>;
+        cout &lt;&lt; node-&gt;data &lt;&lt; <span class="s">" "</span>;
+        preOrder(node-&gt;left);
+        preOrder(node-&gt;right);
+    }
+
+    <span class="c">// Post-order traversal</span>
+    <span class="k">void</span> postOrder(Node *node) {
+        <span class="k">if</span> (node == <span class="k">NULL</span>)
+            <span class="k">return</span>;
+        postOrder(node-&gt;left);
+        postOrder(node-&gt;right);
+        cout &lt;&lt; node-&gt;data &lt;&lt; <span class="s">" "</span>;
+    }
+
+    <span class="c">// Find minimum element - leftmost node</span>
+    Node *findMin(Node *node) {
+        <span class="k">if</span> (node == <span class="k">NULL</span>)
+            <span class="k">return</span> <span class="k">NULL</span>;
+        <span class="k">while</span> (node-&gt;left != <span class="k">NULL</span>)
+            node = node-&gt;left;
+        <span class="k">return</span> node;
+    }
+
+    <span class="c">// Find maximum element - rightmost node</span>
+    Node *findMax(Node *node) {
+        <span class="k">if</span> (node == <span class="k">NULL</span>)
+            <span class="k">return</span> <span class="k">NULL</span>;
+        <span class="k">while</span> (node-&gt;right != <span class="k">NULL</span>)
+            node = node-&gt;right;
+        <span class="k">return</span> node;
+    }
+
+    <span class="c">// Search for a value</span>
+    Node *search(Node *node, <span class="k">int</span> data) {
+        <span class="k">if</span> (node == <span class="k">NULL</span> || node-&gt;data == data)
+            <span class="k">return</span> node;
+        
+        <span class="k">if</span> (data &lt; node-&gt;data)
+            <span class="k">return</span> search(node-&gt;left, data);
+        <span class="k">else</span>
+            <span class="k">return</span> search(node-&gt;right, data);
+    }
+
+    <span class="c">// Delete operation - most complex</span>
+    Node *deleteNode(Node *node, <span class="k">int</span> data) {
+        <span class="k">if</span> (node == <span class="k">NULL</span>)
+            <span class="k">return</span> <span class="k">NULL</span>;
+            
+        <span class="k">if</span> (data &lt; node-&gt;data)
+            node-&gt;left = deleteNode(node-&gt;left, data);
+        <span class="k">else</span> <span class="k">if</span> (data &gt; node-&gt;data)
+            node-&gt;right = deleteNode(node-&gt;right, data);
+        <span class="k">else</span> {
+            <span class="c">// Node to be deleted found</span>
+            
+            <span class="c">// Case 1: Node has no children (leaf node)</span>
+            <span class="k">if</span> (node-&gt;right == <span class="k">NULL</span> &amp;&amp; node-&gt;left == <span class="k">NULL</span>) {
+                <span class="k">delete</span> node;
+                node = <span class="k">NULL</span>;
+            }
+            <span class="c">// Case 2: Node has only right child</span>
+            <span class="k">else</span> <span class="k">if</span> (node-&gt;left == <span class="k">NULL</span>) {
+                Node *temp = node;
+                node = node-&gt;right;
+                <span class="k">delete</span> temp;
+            }
+            <span class="c">// Case 3: Node has only left child</span>
+            <span class="k">else</span> <span class="k">if</span> (node-&gt;right == <span class="k">NULL</span>) {
+                Node *temp = node;
+                node = node-&gt;left;
+                <span class="k">delete</span> temp;
+            }
+            <span class="c">// Case 4: Node has both children</span>
+            <span class="k">else</span> {
+                Node *tmp = findMax(node-&gt;left);  <span class="c">// Find inorder predecessor</span>
+                node-&gt;data = tmp-&gt;data;           <span class="c">// Replace data</span>
+                node-&gt;left = deleteNode(node-&gt;left, tmp-&gt;data);  <span class="c">// Delete predecessor</span>
+            }
+        }
+        <span class="k">return</span> node;
+    }
+
+    <span class="c">// Helper function to get height of tree</span>
+    <span class="k">int</span> getHeight(Node *node) {
+        <span class="k">if</span> (node == <span class="k">NULL</span>)
+            <span class="k">return</span> 0;
+        <span class="k">return</span> 1 + max(getHeight(node-&gt;left), getHeight(node-&gt;right));
+    }
+
+    <span class="c">// Count total nodes in tree</span>
+    <span class="k">int</span> countNodes(Node *node) {
+        <span class="k">if</span> (node == <span class="k">NULL</span>)
+            <span class="k">return</span> 0;
+        <span class="k">return</span> 1 + countNodes(node-&gt;left) + countNodes(node-&gt;right);
+    }
+};
+
+<span class="k">int</span> main() {
+    BST *bst = <span class="k">new</span> BST();
+    
+    <span class="c">// Insert nodes</span>
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 10);
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 15);
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 16);
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 13);
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 12);
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 14);
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 9);
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 8);
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 10);  <span class="c">// Duplicate - goes to left</span>
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 10);  <span class="c">// Another duplicate</span>
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 17);
+
+    cout &lt;&lt; <span class="s">"In-order traversal (sorted): "</span>;
+    bst-&gt;inOrder(bst-&gt;root);
+    cout &lt;&lt; endl;
+
+    cout &lt;&lt; <span class="s">"Pre-order traversal: "</span>;
+    bst-&gt;preOrder(bst-&gt;root);
+    cout &lt;&lt; endl;
+
+    cout &lt;&lt; <span class="s">"Post-order traversal: "</span>;
+    bst-&gt;postOrder(bst-&gt;root);
+    cout &lt;&lt; endl;
+
+    <span class="c">// Find min and max</span>
+    Node *node_min = bst-&gt;findMin(bst-&gt;root);
+    Node *node_max = bst-&gt;findMax(bst-&gt;root);
+    cout &lt;&lt; <span class="s">"Min: "</span> &lt;&lt; node_min-&gt;data &lt;&lt; <span class="s">", Max: "</span> &lt;&lt; node_max-&gt;data &lt;&lt; endl;
+
+    <span class="c">// Search for a value</span>
+    Node *found = bst-&gt;search(bst-&gt;root, 13);
+    <span class="k">if</span> (found)
+        cout &lt;&lt; <span class="s">"Found: "</span> &lt;&lt; found-&gt;data &lt;&lt; endl;
+    <span class="k">else</span>
+        cout &lt;&lt; <span class="s">"Not found"</span> &lt;&lt; endl;
+
+    <span class="c">// Tree statistics</span>
+    cout &lt;&lt; <span class="s">"Tree height: "</span> &lt;&lt; bst-&gt;getHeight(bst-&gt;root) &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"Total nodes: "</span> &lt;&lt; bst-&gt;countNodes(bst-&gt;root) &lt;&lt; endl;
+
+    <span class="c">// Delete a node</span>
+    cout &lt;&lt; <span class="s">"Deleting node 13..."</span> &lt;&lt; endl;
+    bst-&gt;root = bst-&gt;deleteNode(bst-&gt;root, 13);
+    cout &lt;&lt; <span class="s">"In-order after deletion: "</span>;
+    bst-&gt;inOrder(bst-&gt;root);
+    cout &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">output</div><pre class="out">In-order traversal (sorted): 8 9 10 10 10 12 13 14 15 16 17
+Pre-order traversal: 10 9 8 10 10 15 13 12 14 16 17
+Post-order traversal: 8 10 10 9 12 14 13 17 16 15 10
+Min: 8, Max: 17
+Found: 13
+Tree height: 4
+Total nodes: 11
+Deleting node 13...
+In-order after deletion: 8 9 10 10 10 12 14 15 16 17</pre><div class="trap" style="margin-top:14px"><b>Duplicates go left here.</b> <code>data &lt;= node-&gt;data</code> keeps repeated keys, which is why 10 is printed three times. The board code of beat 01 and the demo of beat 02 <em>skip</em> a key that is already present. Both are legitimate — say which one a problem needs, because it changes the answer to every "count" question.</div></div>
+    <div class="card pad board"><h4>What the tree in that main looks like</h4><pre class="out">          10
+        /    \
+       9      15
+      / \    /  \
+     8  10  13   16
+        /   / \    \
+      10  12  14   17</pre><p style="margin-top:12px">Both extra 10s walk left at the root, then right at 9. That is why the height is 4, not 3, and why the pre-order starts <span class="mono">10 9 8 10 10</span>.</p><div class="trap" style="margin-top:14px"><b>The notes' own example is wrong for this tree.</b> <span class="mono">lecture04.md</span> says "delete 9 — it has only the left child 8". With the duplicates inserted, 9 has <strong>two</strong> children, 8 and 10. Use <strong>16</strong> (only the right child 17) for the one-child case, and <strong>8, 12, 14, 17</strong> for leaves.</div></div>
+    <div class="card pad board"><h4>Deleting — the three cases</h4><div class="tw"><table><thead><tr><th>Case</th><th>What happens</th><th>Example on this tree</th></tr></thead><tbody><tr><td class="k">leaf</td><td>unlink it, free it</td><td>8, 12, 14, 17</td></tr><tr><td class="k">one child</td><td>the child takes the node's place</td><td>16 → 17 moves up</td></tr><tr><td class="k">two children</td><td>copy in the predecessor <em>or</em> the successor, then delete that one</td><td>13, 15, 10 (root)</td></tr></tbody></table></div><p style="margin-top:13px">The 2025 code takes the <strong>in-order predecessor</strong> — the maximum of the left subtree. The demo of beat 02 and the week-4 files take the <strong>successor</strong> — the minimum of the right subtree. They are mirror images; either keeps the invariant. The one that matters is that the replacement has <strong>at most one child</strong>, so deleting it is case 1 or 2 and the recursion stops there.</p></div>
+    <div class="card pad board"><h4>Cost of each operation</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Best</th><th class="n">Average</th><th class="n">Worst</th></tr></thead><tbody><tr><td class="k">Search</td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td></tr><tr><td class="k">Insert</td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td></tr><tr><td class="k">Delete</td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td></tr><tr><td class="k">Find min / max</td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td></tr><tr><td class="k">Any traversal</td><td class="n">O(n)</td><td class="n">O(n)</td><td class="n">O(n)</td></tr></tbody></table></div><p style="margin-top:12px">Every non-traversal row is really <strong>O(h)</strong>. Best is the key at the root, average is a tree built from random order, worst is the degenerate list — press <em>sorted 1…10</em> in the demo. Memory is O(n) for the nodes, plus O(h) of call stack for the recursive versions.</p></div>
+  </div>
+</section>
+
+<section class="beat" id="b7">
+  <div class="beat-head">
+    <div class="beat-n">07</div>
+    <div>
+      <h2>Written live last year</h2>
+      <div class="sub"><span>reference</span> <span>week4/1.cpp</span> <span>week4/2.cpp</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Pair 1 — recursion and the loop, side by side</h4><p>Written during the lecture, so it keeps both versions of each step: <span class="mono">insert_node</span> (recursive, returns the new subtree) next to <span class="mono">insert_node2</span> (a loop that looks for a free slot), and <span class="mono">find_min</span> next to <span class="mono">find_min2</span>. It is the same walk down both times — good for showing that recursion here is only a way to write the loop.</p><div style="margin-top:13px"><details class="code"><summary>week4/1.cpp<span class="lines">122 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">class</span> Node {
+    <span class="k">public</span>:
+    <span class="k">int</span> data;
+    Node *left;
+    Node *right;
+    Node *parent;
+    Node(<span class="k">int</span> data) {
+        <span class="k">this</span>-&gt;data = data;
+        left = <span class="k">NULL</span>;
+        right = <span class="k">NULL</span>;
+    }
+};
+
+<span class="k">class</span> Tree {
+    <span class="k">public</span>:
+    Node *root;
+
+    Node* insert_node(Node *node, <span class="k">int</span> data) {
+        <span class="k">if</span> (node == <span class="k">NULL</span>) {
+            Node *node = <span class="k">new</span> Node(data);
+            <span class="k">return</span> node;
+        }
+        <span class="k">if</span> (node-&gt;data &lt; data) 
+            node-&gt;right = insert_node(node-&gt;right, data);
+        <span class="k">else</span>
+            node-&gt;left = insert_node(node-&gt;left, data);
+        <span class="k">return</span> node;
+    }
+
+    <span class="k">void</span> insert_node2(<span class="k">int</span> data) {
+        <span class="k">if</span> (<span class="k">this</span>-&gt;root == <span class="k">NULL</span>) {
+            <span class="k">this</span>-&gt;root = <span class="k">new</span> Node(data);
+            <span class="k">return</span>;
+        }
+        Node *cur = root;
+        <span class="k">while</span> (cur != <span class="k">NULL</span>) {
+            <span class="k">if</span> (data &gt; cur-&gt;data) {
+                <span class="k">if</span> (cur-&gt;right == <span class="k">NULL</span>) {
+                    cur-&gt;right = <span class="k">new</span> Node(data);
+                    break;
+                } <span class="k">else</span>
+                    cur = cur-&gt;right;
+            } <span class="k">else</span> {
+                <span class="k">if</span> (cur-&gt;left == <span class="k">NULL</span>) {
+                    cur-&gt;left = <span class="k">new</span> Node(data);
+                    break;
+                } <span class="k">else</span> 
+                    cur = cur-&gt;left;
+            }
+        }
+    }
+
+    <span class="k">void</span> in_order(Node *node) {
+        <span class="k">if</span> (node == <span class="k">NULL</span>)
+            <span class="k">return</span>;
+        in_order(node-&gt;left);
+        cout &lt;&lt; node-&gt;data &lt;&lt; <span class="s">" "</span>;
+        in_order(node-&gt;right);
+    }
+
+    Node* find_min(Node *node) {
+        <span class="k">if</span> (node-&gt;left == <span class="k">NULL</span>)
+            <span class="k">return</span> node;
+        <span class="k">return</span> find_min(node-&gt;left);
+    }
+
+    Node *find_min2(Node *node) {
+        <span class="k">while</span> (node-&gt;left != <span class="k">NULL</span>)
+            node = node-&gt;left;
+        <span class="k">return</span> node;
+    }
+
+    Node *delete_node(Node *node, <span class="k">int</span> data) {
+        <span class="k">if</span> (node == <span class="k">NULL</span>)
+            <span class="k">return</span> <span class="k">NULL</span>;
+        <span class="k">if</span> (data &lt; node-&gt;data)
+            node-&gt;left = delete_node(node-&gt;left, data);
+        <span class="k">else</span> <span class="k">if</span> (data &gt; node-&gt;data)
+            node-&gt;right = delete_node(node-&gt;right, data);
+        <span class="k">else</span> {
+            <span class="k">if</span> (node-&gt;right == <span class="k">NULL</span> <span class="k">and</span> node-&gt;left == <span class="k">NULL</span>)
+                node = <span class="k">NULL</span>;
+            <span class="k">else</span> <span class="k">if</span> (node-&gt;left == <span class="k">NULL</span>) 
+                node = node-&gt;right;
+            <span class="k">else</span> <span class="k">if</span> (node-&gt;right == <span class="k">NULL</span>)
+                node = node-&gt;left;
+            <span class="k">else</span> {
+                Node *tmp = find_min(node-&gt;right);
+                node-&gt;data = tmp-&gt;data;
+                node-&gt;right = delete_node(node-&gt;right, tmp-&gt;data);
+            }
+        }
+        <span class="k">return</span> node;
+    }
+};
+
+<span class="k">int</span> main() {
+    Tree *tree = <span class="k">new</span> Tree();
+    <span class="c">// tree-&gt;root = tree-&gt;insert_node(NULL, 10);</span>
+    <span class="c">// tree-&gt;root = tree-&gt;insert_node(tree-&gt;root, 8);</span>
+    <span class="c">// tree-&gt;root = tree-&gt;insert_node(tree-&gt;root, 20);</span>
+    <span class="c">// tree-&gt;root = tree-&gt;insert_node(tree-&gt;root, 7);</span>
+    <span class="c">// tree-&gt;root = tree-&gt;insert_node(tree-&gt;root, 9);</span>
+    tree-&gt;insert_node2(10);
+    tree-&gt;insert_node2(8);
+    tree-&gt;insert_node2(20);
+    tree-&gt;insert_node2(7);
+    tree-&gt;insert_node2(9);
+
+    <span class="c">// cout &lt;&lt; tree-&gt;root-&gt;left-&gt;right-&gt;data;</span>
+    <span class="c">// tree-&gt;in_order(tree-&gt;root);</span>
+    Node *node = tree-&gt;find_min(tree-&gt;root);
+    cout &lt;&lt; node-&gt;data;
+    
+    
+
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">output</div><pre class="out">7</pre></div>
+    <div class="card pad board"><h4>Pair 2 — the tidied-up version</h4><p>A constructor for <span class="mono">Tree</span>, one recursive insert, <span class="mono">find_min</span> and <span class="mono">find_max</span>, and delete with the successor. <span class="mono">main</span> builds <span class="mono">30 20 40 10 26 34 45 9 12</span> — a balanced tree of height 4 — and prints the maximum.</p><div style="margin-top:13px"><details class="code"><summary>week4/2.cpp<span class="lines">97 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">class</span> Node {
+    <span class="k">public</span>:
+    <span class="k">int</span> data;
+    Node *left;
+    Node *right;
+    <span class="c">// Node *parent;</span>
+    Node(<span class="k">int</span> data) {
+        <span class="k">this</span>-&gt;data = data;
+        <span class="k">this</span>-&gt;left = <span class="k">NULL</span>;
+        <span class="k">this</span>-&gt;right = <span class="k">NULL</span>;
+    }
+};
+
+<span class="k">class</span> Tree {
+    <span class="k">public</span>:
+    Node *root;
+    Tree() {
+        <span class="k">this</span>-&gt;root = <span class="k">NULL</span>;
+    }
+
+    Node* insert(Node *node, <span class="k">int</span> data) {
+        <span class="k">if</span> (node == <span class="k">NULL</span>) {
+            node = <span class="k">new</span> Node(data);
+            <span class="k">return</span> node;
+        }
+        <span class="k">if</span> (data &gt; node-&gt;data) 
+            node-&gt;right = insert(node-&gt;right, data);
+        <span class="k">else</span> 
+            node-&gt;left = insert(node-&gt;left, data);
+        <span class="k">return</span> node;
+    }
+
+    <span class="k">void</span> in_order(Node *node) {
+        <span class="k">if</span> (node == <span class="k">NULL</span>)
+            <span class="k">return</span>;
+        in_order(node-&gt;left);
+        cout &lt;&lt; node-&gt;data &lt;&lt; <span class="s">" "</span>;
+        in_order(node-&gt;right);
+    }
+
+    Node* find_min(Node *node) {
+        <span class="k">if</span> (node-&gt;left == <span class="k">NULL</span>)
+            <span class="k">return</span> node;            
+        <span class="k">return</span> find_min(node-&gt;left);
+    }
+    Node* find_max(Node *node) {
+        <span class="k">if</span> (node-&gt;right == <span class="k">NULL</span>)
+            <span class="k">return</span> node;
+        <span class="k">return</span> find_max(node-&gt;right);
+    }
+
+    Node* delete_node(Node *node, <span class="k">int</span> data) {
+        <span class="k">if</span> (node == <span class="k">NULL</span>)
+            <span class="k">return</span> <span class="k">NULL</span>;
+        <span class="k">if</span> (data &gt; node-&gt;data) 
+            node-&gt;right = delete_node(node-&gt;right, data);
+        <span class="k">else</span> <span class="k">if</span> (data &lt; node-&gt;data)
+            node-&gt;left = delete_node(node-&gt;left, data);
+        <span class="k">else</span> {
+            <span class="c">// node-&gt;data = data</span>
+            <span class="k">if</span> (node-&gt;left == <span class="k">NULL</span> &amp;&amp; node-&gt;right == <span class="k">NULL</span>)
+                <span class="k">return</span> <span class="k">NULL</span>;
+            <span class="k">else</span> <span class="k">if</span> (node-&gt;left == <span class="k">NULL</span>)
+                node = node-&gt;right;
+            <span class="k">else</span> <span class="k">if</span> (node-&gt;right == <span class="k">NULL</span>)
+                node = node-&gt;left;
+            <span class="k">else</span> {
+                Node *tmp = find_min(node-&gt;right);
+                node-&gt;data = tmp-&gt;data;
+                node-&gt;right = delete_node(node-&gt;right, tmp-&gt;data);
+            }
+        }
+    }
+};
+
+<span class="k">int</span> main() {
+    Tree *tree = <span class="k">new</span> Tree();
+    tree-&gt;root = tree-&gt;insert(tree-&gt;root, 30);
+    tree-&gt;root = tree-&gt;insert(tree-&gt;root, 20);
+    tree-&gt;root = tree-&gt;insert(tree-&gt;root, 40);
+    tree-&gt;root = tree-&gt;insert(tree-&gt;root, 10);
+    tree-&gt;root = tree-&gt;insert(tree-&gt;root, 26);
+    tree-&gt;root = tree-&gt;insert(tree-&gt;root, 34);
+    tree-&gt;root = tree-&gt;insert(tree-&gt;root, 45);
+    tree-&gt;root = tree-&gt;insert(tree-&gt;root, 9);
+    tree-&gt;root = tree-&gt;insert(tree-&gt;root, 12);
+    <span class="c">// cout &lt;&lt; tree-&gt;root-&gt;left-&gt;right-&gt;data;</span>
+    <span class="c">// tree-&gt;in_order(tree-&gt;root);</span>
+    <span class="c">// Node *node = tree-&gt;find_min(tree-&gt;root);</span>
+    Node *node = tree-&gt;find_max(tree-&gt;root);
+    cout &lt;&lt; node-&gt;data;
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">output</div><pre class="out">45</pre></div>
+    <div class="card pad board"><h4>Four things to fix before showing it</h4><div class="trap"><b>2.cpp · <code>delete_node</code> never returns the node.</b> The function ends after the <code>else</code> block with no <code>return node;</code>. g++ only warns (<code>-Wreturn-type</code>), and the output above looks fine only because <span class="mono">main</span> never calls delete. Any call is undefined behaviour: the parent gets a garbage pointer. One line fixes it — a good "find the bug" moment.</div><div class="trap" style="margin-top:12px"><b>1.cpp · <code>Tree</code> has no constructor.</b> <code>root</code> is <span class="mono">NULL</span> only because <code>new Tree()</code> — with the parentheses — value-initialises it. Write <code>new Tree</code> or <code>Tree t;</code> and <code>root</code> is garbage, so <code>insert_node2</code> dereferences it on the first call. 2.cpp adds the constructor; say why.</div><div class="trap" style="margin-top:12px"><b>1.cpp · <code>parent</code> is declared and never set.</b> The field stays uninitialised and nothing reads it. Either drop it (2.cpp comments it out) or maintain it on every insert and delete — half-done is worse than absent.</div><div class="trap" style="margin-top:12px"><b>Both files · deleted nodes are never freed.</b> The node is unlinked but not <code>delete</code>d. On a lab-sized input nobody notices; the lecture04.md version does free them, with a <code>temp</code> pointer in the one-child cases.</div></div>
+  </div>
+</section>
+
+<section class="beat" id="b8">
+  <div class="beat-head">
+    <div class="beat-n">08</div>
+    <div>
+      <h2>Where the BST fits</h2>
+      <div class="sub"><span>reference</span> <span>lecture04.md</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Against the other structures</h4><div class="tw"><table><thead><tr><th>Structure</th><th class="n">Search</th><th class="n">Insert</th><th class="n">Delete</th><th class="n">Memory</th></tr></thead><tbody><tr><td class="k">Array, unsorted</td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">Array, sorted</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">Linked list</td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">BST, balanced</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">Hash table</td><td class="n"><span style="color:var(--prime)">O(1)*</span></td><td class="n"><span style="color:var(--prime)">O(1)*</span></td><td class="n"><span style="color:var(--prime)">O(1)*</span></td><td class="n">O(n)</td></tr></tbody></table></div><p style="margin-top:11px;font-size:.85rem;color:var(--ink-3)">* on average — lecture 8. A hash table is faster, but it has no order: no min, no "next larger", no range, no sorted output.</p></div>
+    <div class="card pad board"><h4>Strengths and weaknesses</h4><div class="tw"><table><thead><tr><th>Good at</th><th>Bad at</th></tr></thead><tbody><tr><td class="k">search in O(log n) on average</td><td>can degenerate — O(n) on sorted input</td></tr><tr><td class="k">sorted output for free — in-order</td><td>no O(1) operations, unlike a hash table</td></tr><tr><td class="k">grows and shrinks at runtime</td><td>no access by index — no <span class="mono">a[i]</span></td></tr><tr><td class="k">range queries: every key between x and y</td><td>more code than an array for simple jobs</td></tr></tbody></table></div><p style="margin-top:13px"><strong>Reach for it</strong> when the data changes and you keep needing order: frequent search, min/max, "the next key after x", everything in a range. <strong>Do not</strong> when access is mostly sequential, when you need the i-th element, or when only exact lookup matters — that is a hash table.</p></div>
+    <div class="card pad board"><h4>Five things to leave with</h4><ol style="margin:0;padding-left:1.3em;line-height:1.7"><li>The order lives in the <strong>structure</strong>: left subtree smaller, right subtree larger — at every node.</li><li>Speed depends on <strong>balance</strong>: O(log n) when balanced, O(n) when it has become a list.</li><li><strong>In-order</strong> traversal always prints the keys sorted.</li><li><strong>Delete</strong> is the hard operation — three cases, and the third reduces to the first two.</li><li>The BST is the base of <strong>AVL and red-black trees</strong> — and red-black is what <code>std::set</code> and <code>std::map</code> are.</li></ol></div>
+  </div>
+</section>
 </main>
 </div>
 
@@ -197,9 +680,9 @@ queue&lt;Node*&gt; q; q.push(root);
 </div>
 
 <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-<script src="assets/notes.js?v=202609272014"></script>
-<script src="assets/present.js?v=202609272014"></script>
-<script src="assets/cpp.js?v=202609272014"></script>
+<script src="assets/notes.js?v=202609272207"></script>
+<script src="assets/present.js?v=202609272207"></script>
+<script src="assets/cpp.js?v=202609272207"></script>
 <script>
 
 (function(){

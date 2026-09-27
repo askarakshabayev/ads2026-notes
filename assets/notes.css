@@ -228,3 +228,17 @@ footer a{color:var(--accent)}
 .idx h3{font-family:Newsreader,serif;font-weight:500;font-size:1.3rem;margin:6px 0 6px;color:var(--ink)}
 .idx p{font-size:.86rem;color:var(--ink-2)}
 .idx .meta{margin-top:11px;font-family:"IBM Plex Mono",monospace;font-size:.74rem;color:var(--ink-3)}
+
+/* длинный код — свёрнут, раскрывается по клику */
+details.code{border:1px solid var(--line-soft);border-radius:8px;background:var(--surface-2)}
+details.code>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;
+  padding:10px 14px;font-family:"IBM Plex Mono",monospace;font-size:.85rem;color:var(--ink)}
+details.code>summary::-webkit-details-marker{display:none}
+details.code>summary::before{content:"▸";color:var(--accent);transition:transform .15s}
+details.code[open]>summary::before{transform:rotate(90deg)}
+details.code>summary .lines{margin-left:auto;font-size:.72rem;color:var(--ink-3)}
+details.code>summary:hover{color:var(--accent)}
+details.code>pre{border:0;border-top:1px solid var(--line-soft);border-radius:0 0 8px 8px}
+/* вывод программы */
+.out-lbl{font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:13px 0 6px}
+pre.out{color:var(--ink-2)}
