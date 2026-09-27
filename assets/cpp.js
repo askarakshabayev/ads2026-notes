@@ -236,6 +236,122 @@ function restoreState(){
 }
 function wasOpen(){ try{ return localStorage.getItem(KEY.open)==='1'; }catch(e){ return false; } }
 
+/* ---------- именованные сохранения ----------
+   Отдельно от черновика: черновик один и перезаписывается, сохранения копятся.
+   Живут в localStorage этого браузера; для переноса — .cpp-файл или ссылка. */
+var SAVES_KEY='ads-cpp-saves';
+function pageName(){ return (location.pathname.split('/').pop()||'').replace(/\.html?$/,'')||'index'; }
+function readSaves(){
+  try{ var a=JSON.parse(localStorage.getItem(SAVES_KEY)||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; }
+}
+function writeSaves(a){
+  try{ localStorage.setItem(SAVES_KEY,JSON.stringify(a)); return true; }catch(e){ return false; }
+}
+function stamp(t){
+  var d=new Date(t);
+  function p(n){ return String(n).padStart(2,'0'); }
+  return p(d.getDate())+'.'+p(d.getMonth()+1)+' '+p(d.getHours())+':'+p(d.getMinutes());
+}
+function defaultName(){
+  var d=new Date();
+  return pageName()+' · '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+}
+/* одноимённое сохранение перезаписывается — так «сохранить ещё раз» не плодит копии */
+function addSave(name,code,inp){
+  name=(name||'').trim()||defaultName();
+  var a=readSaves(), i=-1;
+  for(var k=0;k<a.length;k++) if(a[k].name===name){ i=k; break; }
+  var rec={id:i>=0?a[i].id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+           name:name,code:code,stdin:inp||'',page:pageName(),t:Date.now()};
+  if(i>=0) a.splice(i,1);
+  a.unshift(rec);
+  if(!writeSaves(a)) return null;
+  return {rec:rec,updated:i>=0};
+}
+function findSave(id){ var a=readSaves(); for(var k=0;k<a.length;k++) if(a[k].id===id) return a[k]; return null; }
+function delSave(id){ writeSaves(readSaves().filter(function(r){ return r.id!==id; })); }
+
+/* ---------- файл .cpp ---------- */
+function fileName(){
+  var d=new Date();
+  function p(n){ return String(n).padStart(2,'0'); }
+  return pageName()+'-'+d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+'.cpp';
+}
+function download(){
+  var url=URL.createObjectURL(new Blob([getCode()],{type:'text/x-c++src;charset=utf-8'}));
+  var a=document.createElement('a'), fn=fileName();
+  a.href=url; a.download=fn; body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); },1000);
+  setStatus('скачан '+fn);
+}
+function openFile(f){
+  if(!f) return;
+  var r=new FileReader();
+  r.onload=function(){ load(String(r.result).replace(/\r\n/g,'\n'),f.name); };
+  r.onerror=function(){ setStatus('не удалось прочитать '+f.name); };
+  r.readAsText(f);
+}
+
+/* ---------- ссылка с кодом ----------
+   Код и stdin сжимаются (deflate) и кладутся после #cpp= — сервер не нужен,
+   а часть после # вообще не уходит на GitHub. Префикс: z — сжато, u — как есть
+   (браузер без CompressionStream). */
+var HASH='#cpp=';
+function b64url(bytes){
+  var s='';
+  for(var i=0;i<bytes.length;i+=0x8000) s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));
+  return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function unb64url(s){
+  var b=atob(s.replace(/-/g,'+').replace(/_/g,'/')), u=new Uint8Array(b.length);
+  for(var i=0;i<b.length;i++) u[i]=b.charCodeAt(i);
+  return u;
+}
+function pack(obj){
+  var raw=new TextEncoder().encode(JSON.stringify(obj));
+  if(!window.CompressionStream) return Promise.resolve('u'+b64url(raw));
+  var st=new Blob([raw]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+  return new Response(st).arrayBuffer().then(function(buf){ return 'z'+b64url(new Uint8Array(buf)); });
+}
+function unpack(s){
+  return Promise.resolve().then(function(){
+    var bytes=unb64url(s.slice(1));
+    if(s[0]==='u') return bytes;
+    if(s[0]!=='z') throw new Error('неизвестный формат');
+    if(!window.DecompressionStream) throw new Error('браузер не умеет распаковывать');
+    var st=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+    return new Response(st).arrayBuffer().then(function(b){ return new Uint8Array(b); });
+  }).then(function(bytes){ return JSON.parse(new TextDecoder().decode(bytes)); });
+}
+function shareLink(){
+  pack({c:getCode(),i:stdin.value}).then(function(p){
+    var url=location.href.split('#')[0]+HASH+p;
+    var done=function(){ setStatus('ссылка скопирована · '+url.length+' символов'); };
+    if(navigator.clipboard&&navigator.clipboard.writeText)
+      navigator.clipboard.writeText(url).then(done,function(){ showLink(url); });
+    else showLink(url);
+  }).catch(function(e){ setStatus('не удалось собрать ссылку: '+e.message); });
+}
+/* буфер недоступен (file://, запрет браузера) — показываем ссылку, чтобы скопировать руками */
+function showLink(url){
+  say('<span class="dim">Ссылка на этот код (скопируй вручную):</span>\n'+esc(url));
+  setStatus('буфер обмена недоступен — ссылка в окне вывода');
+}
+/* пришли по ссылке: текущий черновик не теряем, а откладываем в сохранения */
+function openFromHash(){
+  if(location.hash.indexOf(HASH)!==0) return;
+  var p=location.hash.slice(HASH.length);
+  history.replaceState(null,'',location.href.split('#')[0]);
+  unpack(p).then(function(d){
+    var cur=getCode();
+    if(cur.trim()&&cur!==SKELETON&&cur!==d.c) addSave('черновик до ссылки · '+stamp(Date.now()),cur,stdin.value);
+    load(d.c||SKELETON,'по ссылке');
+    stdin.value=d.i||'';
+    saveState(); renderSaves();
+    toggle(true);
+  }).catch(function(e){ toggle(true); setStatus('ссылка повреждена: '+e.message); });
+}
+
 function getCode(){ return MON.ed ? MON.ed.getValue() : ta.value; }
 function setCode(c){ if(MON.ed) MON.ed.setValue(c); else { ta.value=c; renumber(); } }
 function syncMonaco(){
@@ -345,7 +461,7 @@ function keyHandler(e){
 }
 
 function load(code,label){
-  setCode(code);
+  setCode(code); saveState();
   setStatus(label?('загружено: '+label):'готово');
   say('<span class="dim">Ctrl+Enter или кнопку Run — чтобы скомпилировать и запустить.</span>');
 }
@@ -361,6 +477,34 @@ function toggle(on){
   }
 }
 
+/* ---------- список сохранений: во всплывашке и в выпадающем списке ---------- */
+var baseOpts='';
+function escAttr(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+function renderSaves(){
+  var a=readSaves(), list=document.getElementById('ed-saves-list');
+  if(list){
+    list.innerHTML=a.length? a.map(function(r){
+      var lines=r.code.split('\n').length;
+      return '<div class="it"><button type="button" class="open" data-id="'+escAttr(r.id)+'">'+escAttr(r.name)+
+             '<small>'+escAttr(r.page)+' · '+stamp(r.t)+' · '+lines+' стр.</small></button>'+
+             '<button type="button" class="del" data-id="'+escAttr(r.id)+'" title="Удалить">×</button></div>';
+    }).join('') : '<div class="empty">Пока пусто. Сохранения живут в этом браузере — для переноса на другой компьютер есть ⬇ .cpp и 🔗 Link.</div>';
+  }
+  if(sel){
+    var g=a.length? '<optgroup label="мои сохранения">'+a.map(function(r){
+      return '<option value="v'+escAttr(r.id)+'">'+escAttr(r.name.slice(0,46))+'</option>';
+    }).join('')+'</optgroup>' : '';
+    sel.innerHTML=baseOpts+g;
+  }
+  var b=document.getElementById('ed-saves'); if(b) b.textContent='💾 Saved'+(a.length?' · '+a.length:'');
+}
+function togglePop(on){
+  var pop=document.getElementById('ed-pop');
+  pop.hidden = on===undefined ? !pop.hidden : !on;
+  document.getElementById('ed-saves').classList.toggle('on',!pop.hidden);
+  if(!pop.hidden){ pop.style.top=(document.querySelector('.ed-head').offsetHeight+6)+'px'; renderSaves(); var n=document.getElementById('ed-save-name'); n.placeholder=defaultName(); n.focus(); }
+}
+
 /* ---------- сборка интерфейса ---------- */
 function build(){
   var w=document.createElement('div'); w.className='ed-wrap';
@@ -372,8 +516,20 @@ function build(){
       '<select id="ed-snip"><option value="">— код со страницы —</option></select>'+
       '<button id="ed-reset">Skeleton</button>'+
       '<button id="ed-copy">Copy</button>'+
+      '<button id="ed-saves" title="Сохранить под именем / открыть сохранённое">💾 Saved</button>'+
+      '<button id="ed-dl" title="Скачать как .cpp">⬇ .cpp</button>'+
+      '<button id="ed-up" title="Открыть .cpp с диска">⬆ Open</button>'+
+      '<button id="ed-link" title="Скопировать ссылку с этим кодом">🔗 Link</button>'+
+      '<input type="file" id="ed-file" accept=".cpp,.cc,.cxx,.h,.hpp,.txt" hidden>'+
       '<span class="grow"></span>'+
       '<button id="ed-close">✕ Close</button>'+
+    '</div>'+
+    '<div class="ed-pop" id="ed-pop" hidden>'+
+      '<form class="ed-pop-form" id="ed-save-form">'+
+        '<input id="ed-save-name" type="text" autocomplete="off" placeholder="название, например: BST delete">'+
+        '<button class="pri" type="submit">Сохранить</button>'+
+      '</form>'+
+      '<div class="ed-pop-list" id="ed-saves-list"></div>'+
     '</div>'+
     '<div class="ed-body">'+
       '<div class="ed-col">'+
@@ -409,6 +565,49 @@ function build(){
   };
   document.getElementById('ed-reset').onclick=function(){ load(SKELETON,'skeleton'); };
 
+  /* файл и ссылка */
+  var file=document.getElementById('ed-file');
+  document.getElementById('ed-dl').onclick=download;
+  document.getElementById('ed-up').onclick=function(){ file.value=''; file.click(); };
+  file.onchange=function(){ openFile(file.files[0]); };
+  document.getElementById('ed-link').onclick=shareLink;
+
+  /* сохранения: всплывающий список под шапкой */
+  var pop=document.getElementById('ed-pop'), nameIn=document.getElementById('ed-save-name');
+  var savesBtn=document.getElementById('ed-saves');
+  savesBtn.onclick=function(e){ e.stopPropagation(); togglePop(); };
+  document.getElementById('ed-save-form').onsubmit=function(e){
+    e.preventDefault();
+    var r=addSave(nameIn.value,getCode(),stdin.value);
+    if(!r){ setStatus('не удалось сохранить — хранилище браузера переполнено или запрещено'); return; }
+    nameIn.value='';
+    renderSaves();
+    setStatus((r.updated?'обновлено: ':'сохранено: ')+r.rec.name);
+  };
+  nameIn.addEventListener('keydown',function(e){ if(e.key==='Escape'){ e.preventDefault(); togglePop(false); } });
+  document.getElementById('ed-saves-list').onclick=function(e){
+    /* список перерисовывается, e.target отцепляется — не даём клику закрыть всплывашку */
+    e.stopPropagation();
+    var b=e.target.closest('button'); if(!b) return;
+    var id=b.getAttribute('data-id');
+    if(b.classList.contains('del')){
+      /* удаление в два клика: первый — «точно?», через 3 с сбрасывается */
+      if(!b.classList.contains('arm')){
+        b.classList.add('arm'); b.textContent='удалить?';
+        setTimeout(function(){ if(b.isConnected){ b.classList.remove('arm'); b.textContent='×'; } },3000);
+        return;
+      }
+      delSave(id); renderSaves(); setStatus('удалено');
+      return;
+    }
+    var r=findSave(id); if(!r) return;
+    load(r.code,r.name); stdin.value=r.stdin||''; saveState();
+    togglePop(false);
+  };
+  document.querySelector('.ed-panel').addEventListener('click',function(e){
+    if(!pop.hidden&&!pop.contains(e.target)&&e.target!==savesBtn) togglePop(false);
+  });
+
   /* список: стартовые заготовки + все блоки кода этой страницы */
   var opts='<option value="">— код со страницы —</option>';
   Object.keys(STARTERS).forEach(function(k,i){ opts+='<option value="s'+i+'">'+k+'</option>'; });
@@ -420,10 +619,11 @@ function build(){
     var first=preCode[i].split('\n').filter(function(l){return l.trim();})[0]||'code';
     opts+='<option value="p'+i+'">'+(i+1)+'. '+first.trim().slice(0,46).replace(/</g,'&lt;')+'</option>';
   });
-  sel.innerHTML=opts;
+  baseOpts=opts;
   sel.onchange=function(){
     var v=sel.value; if(!v) return;
-    if(v[0]==='s'){ var k=Object.keys(STARTERS)[+v.slice(1)]; load(STARTERS[k],k); }
+    if(v[0]==='v'){ var r=findSave(v.slice(1)); if(r){ load(r.code,r.name); stdin.value=r.stdin||''; saveState(); } }
+    else if(v[0]==='s'){ var k=Object.keys(STARTERS)[+v.slice(1)]; load(STARTERS[k],k); }
     else { var i=+v.slice(1); load(wrap(preCode[i]),'блок '+(i+1)+' со страницы'); }
     sel.value='';
   };
@@ -437,6 +637,7 @@ function build(){
     pre.appendChild(b);
   });
 
+  renderSaves();
   var restored=restoreState();
   say(restored
     ? '<span class="dim">Код восстановлен после перезагрузки. Ctrl+Enter — запустить.</span>'
@@ -458,7 +659,11 @@ function addButton(){
 document.addEventListener('keydown',function(e){
   var t=e.target.tagName;
   if(t==='INPUT'||t==='TEXTAREA'||t==='SELECT'||e.metaKey||e.ctrlKey||e.altKey) return;
-  if(e.key==='Escape'&&ED.open){ toggle(false); e.preventDefault(); return; }
+  if(e.key==='Escape'&&ED.open){
+    var pop=document.getElementById('ed-pop');
+    if(pop&&!pop.hidden) togglePop(false); else toggle(false);
+    e.preventDefault(); return;
+  }
   if(e.key==='c'||e.key==='C'){ toggle(); e.preventDefault(); }
 });
 
@@ -474,7 +679,12 @@ document.addEventListener('keydown',function(e){
   if(window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',syncMonaco);
 })();
 
-function init(){ build(); addButton(); if(wasOpen()) toggle(true); }
+function init(){
+  build(); addButton();
+  if(location.hash.indexOf(HASH)===0) openFromHash();
+  else if(wasOpen()) toggle(true);
+}
+window.addEventListener('hashchange',openFromHash);
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
 else setTimeout(init,0);
 })();

@@ -60,3 +60,31 @@ body.ed-on{overflow:hidden}
 .pre-run:hover{border-color:var(--accent);color:var(--accent)}
 
 @media print{.ed-wrap,.pre-run{display:none !important}}
+
+/* сохранения: всплывающий список под шапкой редактора */
+.ed-panel{position:relative}
+.ed-head button.on{border-color:var(--accent);color:var(--accent)}
+.ed-pop{position:absolute;z-index:5;top:52px;left:12px;width:min(420px,calc(100% - 24px));
+  max-height:min(60vh,520px);display:flex;flex-direction:column;
+  background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  box-shadow:0 18px 50px -18px rgba(0,0,0,.55);overflow:hidden}
+.ed-pop[hidden]{display:none}
+.ed-pop-form{display:flex;gap:8px;padding:10px;border-bottom:1px solid var(--line-soft);background:var(--surface-2)}
+.ed-pop-form input{flex:1;min-width:0;height:32px;padding:0 10px;border-radius:8px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);font:inherit;font-size:.85rem}
+.ed-pop-form input:focus{outline:none;border-color:var(--accent)}
+.ed-pop-form button{height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--accent);
+  background:var(--accent);color:#fff;cursor:pointer;font:inherit;font-size:.82rem}
+:root[data-theme="dark"] .ed-pop-form button{color:#0d121a}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ed-pop-form button{color:#0d121a}}
+.ed-pop-list{overflow:auto;padding:4px 0}
+.ed-pop-list .it{display:flex;align-items:stretch}
+.ed-pop-list .it+.it{border-top:1px solid var(--line-soft)}
+.ed-pop-list button{border:0;background:none;color:var(--ink);cursor:pointer;font:inherit;text-align:left}
+.ed-pop-list .open{flex:1;min-width:0;padding:8px 12px;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ed-pop-list .open small{display:block;margin-top:2px;font-family:"IBM Plex Mono",monospace;font-size:.7rem;color:var(--ink-3)}
+.ed-pop-list .open:hover{background:var(--surface-2);color:var(--accent)}
+.ed-pop-list .del{flex:none;padding:0 14px;color:var(--ink-3);font-size:1rem}
+.ed-pop-list .del:hover{color:var(--mark)}
+.ed-pop-list .del.arm{color:var(--mark);font-size:.75rem}
+.ed-pop-list .empty{padding:14px 12px;font-size:.84rem;color:var(--ink-3);line-height:1.5}
