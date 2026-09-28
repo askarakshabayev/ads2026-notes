@@ -2,44 +2,55 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Linked Lists</title>
+<title>Linear Data Structures</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
-<link rel="stylesheet" href="assets/notes.css?v=202609281239">
-<link rel="stylesheet" href="assets/present.css?v=202609281239">
-<link rel="stylesheet" href="assets/cpp.css?v=202609281239">
+<link rel="stylesheet" href="assets/notes.css?v=202609281805">
+<link rel="stylesheet" href="assets/present.css?v=202609281805">
+<link rel="stylesheet" href="assets/cpp.css?v=202609281805">
 </head><body>
 <div class="wrap">
 
 <header class="masthead">
   <div class="eyebrow">ADS 2026 · KBTU · Lecture 2 · Lab 2</div>
-  <h1>Linked <em>Lists</em></h1>
-  <p class="dek">The week where a data structure stops being a black box. We open up what <code>std::stack</code> and <code>std::deque</code> stand on, build a singly linked list by hand, do the three interview classics on it, and finish with the doubly linked one. Each beat carries what to say, what to write on the board, and a demo to project.</p>
-  <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>6</b></span><span class="fact">Live demos <b>3</b></span><span class="fact">Practice <b>Lab 2 · 10 problems</b></span></div>
+  <h1>Linear Data <em>Structures</em></h1>
+  <p class="dek">Nodes and pointers, and the structures built from them: the stack, the queue, the deque and the linked list. Two classic stack problems, two breadth-first searches with a queue, and a doubly linked list written by hand.</p>
+  <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>11</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 2 · 10 problems</b></span></div>
 </header>
 
 <div class="cols">
 
 <nav class="rail" aria-label="Running order">
   <div class="rail-h">Running order</div>
-  <div class="part">I · The node</div>
+  <div class="part">I · Nodes</div>
   <ol>
-    <li><a href="#b1"><span class="n">01</span><span>Array vs node</span><span class="t">14′</span></a></li>
+    <li><a href="#b1"><span class="n">01</span><span>Node implementation</span><span class="t">8′</span></a></li>
   </ol>
-  <div class="part">II · Singly linked</div>
+  <div class="part">II · Stack</div>
   <ol>
-    <li><a href="#b2"><span class="n">02</span><span>The four operations</span><span class="t">18′</span></a></li>
-    <li><a href="#b3"><span class="n">03</span><span>Reverse · middle · merge</span><span class="t">22′</span></a></li>
+    <li><a href="#b2"><span class="n">02</span><span>Stack — LIFO</span><span class="t">12′</span></a></li>
+    <li><a href="#b3"><span class="n">03</span><span>Stack problems</span><span class="t">12′</span></a></li>
   </ol>
-  <div class="part">III · Doubly linked</div>
+  <div class="part">III · Queue and deque</div>
   <ol>
-    <li><a href="#b4"><span class="n">04</span><span>Doubly linked list</span><span class="t">16′</span></a></li>
+    <li><a href="#b4"><span class="n">04</span><span>Queue — FIFO</span><span class="t">8′</span></a></li>
+    <li><a href="#b5"><span class="n">05</span><span>Deque</span><span class="t">5′</span></a></li>
   </ol>
-  <div class="part">IV · Practice</div>
+  <div class="part">IV · BFS with a queue</div>
   <ol>
-    <li><a href="#b5"><span class="n">05</span><span>Lab 2 walkthrough</span><span class="t">14′</span></a></li>
-    <li><a href="#b6"><span class="n">06</span><span>What comes next</span><span class="t">4′</span></a></li>
+    <li><a href="#b6"><span class="n">06</span><span>Minimum operations</span><span class="t">12′</span></a></li>
+    <li><a href="#b7"><span class="n">07</span><span>Knight's shortest path</span><span class="t">10′</span></a></li>
+  </ol>
+  <div class="part">V · Linked list</div>
+  <ol>
+    <li><a href="#b8"><span class="n">08</span><span>Doubly linked list</span><span class="t">25′</span></a></li>
+  </ol>
+  <div class="part">VI · Wrap-up</div>
+  <ol>
+    <li><a href="#b9"><span class="n">09</span><span>Summary</span><span class="t">4′</span></a></li>
+    <li><a href="#b10"><span class="n">10</span><span>Key takeaways</span><span class="t">3′</span></a></li>
+    <li><a href="#b11"><span class="n">11</span><span>Lab 2</span><span class="t">10′</span></a></li>
   </ol>
 </nav>
 
@@ -48,32 +59,82 @@
   <div class="beat-head">
     <div class="beat-n">01</div>
     <div>
-      <h2>Why a list at all</h2>
-      <div class="sub"><span>14 min</span> <span>demo: cost table</span></div>
+      <h2>Node Implementation</h2>
+      <div class="sub"><span>8 min</span> <span>code</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Last week the stack and the queue were <strong>STL boxes</strong>. Today we open them: underneath there is either an array or a chain of nodes, and the choice decides what is cheap.</li>
-        <li>The one sentence that carries the lecture: <strong>an array owns a contiguous block, a list owns only pointers</strong>. Everything else follows from that.</li>
-        <li>Insert in the middle of an array of a million elements moves half a million of them. In a list it is <strong>two assignments</strong> — but only once you already hold the node.</li>
-        <li>And that "only once you hold it" is the catch: <strong>getting to position i costs O(i)</strong>. Make the room say out loud that a list has no random access.</li>
+        <li>Every structure today is made of <strong>nodes</strong>: a value and a pointer to the next node. The last node points to <span class="mono">NULL</span>.</li>
+        <li>Write the class, create a few nodes with <code>new</code>, link them by hand, and walk the chain with <code>-&gt;next-&gt;next</code>.</li>
+        <li>The template version is the same node for any type — <span class="mono">Node&lt;string&gt;</span>, <span class="mono">Node&lt;int&gt;</span>.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>Cost, side by side</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Array</th><th class="n">Linked list</th></tr></thead><tbody><tr><td class="k">Access i-th</td><td class="n" style="color:var(--prime)">O(1)</td><td class="n" style="color:var(--mark)">O(n)</td></tr><tr><td class="k">Insert at front</td><td class="n" style="color:var(--mark)">O(n)</td><td class="n" style="color:var(--prime)">O(1)</td></tr><tr><td class="k">Insert after a held node</td><td class="n" style="color:var(--mark)">O(n)</td><td class="n" style="color:var(--prime)">O(1)</td></tr><tr><td class="k">Delete a held node</td><td class="n" style="color:var(--mark)">O(n)</td><td class="n" style="color:var(--prime)">O(1)</td></tr><tr><td class="k">Memory per element</td><td class="n">value</td><td class="n">value + pointer</td></tr><tr><td class="k">Cache behaviour</td><td class="n" style="color:var(--prime)">contiguous</td><td class="n" style="color:var(--mark)">scattered</td></tr></tbody></table></div><div class="trap" style="margin-top:14px"><b>Say the unpopular half too:</b> on modern hardware an array beats a list even at things the table calls O(n), because it walks memory in order. The list wins when you hold the node already and the data is huge.</div></div>
-      <div class="card pad board"><h4>For the board</h4><pre><span class="k">struct</span> Node {
+    <div class="card pad board"><h4>Basic node structure</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">class</span> Node {
+    <span class="k">public</span>:
     <span class="k">int</span> data;
-    Node* next;
-    Node(<span class="k">int</span> d) : data(d), next(<span class="k">nullptr</span>) {}
+    Node *next;
+
+    Node(<span class="k">int</span> data) {
+        <span class="k">this</span>-&gt;data = data;
+        <span class="k">this</span>-&gt;next = <span class="k">NULL</span>;
+    }
+};</pre><p style="margin-top:12px">A value and one pointer. A new node points nowhere yet, so <span class="mono">next</span> starts as <span class="mono">NULL</span>.</p><div class="formula" style="margin-top:13px">n1 → [10|•] → [20|•] → [30|✕]</div></div>
+    <div class="card pad board"><h4>Template node for generic types</h4><pre>template&lt;typename T&gt;
+<span class="k">class</span> Node {
+    <span class="k">public</span>:
+    T data;
+    Node&lt;T&gt; *next;
+
+    Node(T data) {
+        <span class="k">this</span>-&gt;data = data;
+        <span class="k">this</span>-&gt;next = <span class="k">NULL</span>;
+    }
 };
 
-Node* head = <span class="k">new</span> Node(10);
-head-&gt;next = <span class="k">new</span> Node(20);
-head-&gt;next-&gt;next = <span class="k">new</span> Node(30);</pre><p style="margin-top:13px">Draw these three boxes on the board and keep them there for the whole lecture — every later beat is a redrawing of this picture.</p><div class="formula" style="margin-top:13px">head → [10|•] → [20|•] → [30|✕]</div></div>
-    </div>
+<span class="k">int</span> main() {
+    Node&lt;string&gt; *n1 = <span class="k">new</span> Node&lt;string&gt;(<span class="s">"hello"</span>);
+    Node&lt;string&gt; *n2 = <span class="k">new</span> Node&lt;string&gt;(<span class="s">"world"</span>);
+    Node&lt;string&gt; *n3 = <span class="k">new</span> Node&lt;string&gt;(<span class="s">"test"</span>);
+    n1-&gt;next = n2;
+    n2-&gt;next = n3;
+    cout &lt;&lt; n1-&gt;next-&gt;next-&gt;data;
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">test</pre><p style="margin-top:12px"><span class="mono">n1-&gt;next-&gt;next</span> is the third node, so the program prints its value.</p></div>
+    <div class="card pad board"><h4>Another version · five nodes linked by hand</h4><p>Five nodes, four links, and one long walk: <span class="mono">node1-&gt;next-&gt;next-&gt;next</span> is the fourth node.</p><div style="margin-top:12px"><details class="code"><summary>nodes — the full program<span class="lines">29 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">class</span> Node {
+    <span class="k">public</span>:
+    <span class="k">int</span> data;
+    Node *next;
+
+    Node(<span class="k">int</span> data){
+        <span class="k">this</span>-&gt;data = data;
+        next = <span class="k">NULL</span>;
+    }
+};
+
+<span class="k">int</span> main() {
+    Node *node1 = <span class="k">new</span> Node(10);
+    Node *node2 = <span class="k">new</span> Node(20);
+    Node *node3 = <span class="k">new</span> Node(30);
+    Node *node4 = <span class="k">new</span> Node(40);
+    Node *node5 = <span class="k">new</span> Node(50);
+    node1-&gt;next = node2;
+    node2-&gt;next = node3;
+    node3-&gt;next = node4;
+    node4-&gt;next = node5;
+    <span class="c">// cout &lt;&lt; node1 &lt;&lt; " " &lt;&lt; node1-&gt;data &lt;&lt; " " &lt;&lt; node1-&gt;next &lt;&lt; " " &lt;&lt; node2;</span>
+    cout &lt;&lt; node1-&gt;next-&gt;next-&gt;next-&gt;data;
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">output</div><pre class="out">40</pre></div>
   </div>
 </section>
 
@@ -81,22 +142,134 @@ head-&gt;next-&gt;next = <span class="k">new</span> Node(30);</pre><p style="mar
   <div class="beat-head">
     <div class="beat-n">02</div>
     <div>
-      <h2>Walk, insert, delete</h2>
-      <div class="sub"><span>18 min</span> <span>demo: playground</span></div>
+      <h2>Stack — LIFO (Last In, First Out)</h2>
+      <div class="sub"><span>12 min</span> <span>code</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Traversal is the only way in: <code>for (Node* p = head; p; p = p-&gt;next)</code>. Write it once and reuse it all lecture.</li>
-        <li><strong>Insert after p</strong> is two lines, and the order matters: first hang the tail on the new node, only then rewire <code>p-&gt;next</code>. Do it in the wrong order on the board and lose the rest of the list on purpose.</li>
-        <li><strong>Delete after p</strong> needs a saved pointer, otherwise the node leaks. Show <code>Node* dead = p-&gt;next; p-&gt;next = dead-&gt;next; delete dead;</code>.</li>
-        <li>Deleting the <strong>head</strong> is the special case every student forgets. Use the playground: pop_front and watch <code>head</code> itself move.</li>
-        <li>Mention the trick that removes the special case entirely — a <strong>dummy head</strong> node. It is the single best habit from this lecture.</li>
+        <li>A stack of plates: you only add to the top and take from the top. <strong>Last in, first out.</strong></li>
+        <li>Every operation is O(1) — push, pop, top, empty, size.</li>
+        <li>First the STL <code>stack</code>, then the same thing on nodes: the top of the stack is the head of the chain, push puts a new node in front of it.</li>
       </ul>
     </div>
-    <div class="card pad demo"><h4>Demo · list playground</h4><div class="ctl"><button id="llpf">push_front</button><button id="llpb">push_back</button><button id="llppf">pop_front</button><button id="llppb">pop_back</button><button id="llins">insert after #2</button><button id="lldel">erase #2</button><button id="llclr">Clear</button></div><div class="track" id="lltrack"></div><div class="log" id="lllog">Empty list. head = nullptr.</div><div class="readout"><div class="stat"><div class="lab">size</div><div class="val" id="llsize">0</div></div><div class="stat"><div class="lab">pointer writes</div><div class="val" id="llops">0</div></div><div class="stat"><div class="lab">nodes walked</div><div class="val" id="llwalk">0</div></div></div><p style="margin-top:12px;font-size:.83rem;color:var(--ink-3)">Watch the two counters: push_front never walks, insert in the middle always does. That gap is the whole lecture.</p></div>
+    <div class="card pad board"><h4>Core operations</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><code>push(item)</code> — add an item to the top — O(1)</li><li><code>pop()</code> — remove the top item — O(1)</li><li><code>top()</code> / <code>peek()</code> — view the top item without removing it — O(1)</li><li><code>empty()</code> — check if the stack is empty — O(1)</li><li><code>size()</code> — get the number of elements — O(1)</li></ul></div>
+    <div class="card pad board"><h4>C++ implementation using STL</h4><pre><span class="c">// C++ built-in stack</span>
+<span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;stack&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">int</span> main() {
+   stack&lt;<span class="k">int</span>&gt; st;
+   st.push(10);
+   st.push(20);
+   st.push(15);
+   st.push(1);
+
+   cout &lt;&lt; st.top() &lt;&lt; endl; <span class="c">// 1</span>
+   st.pop();
+   st.pop();
+   cout &lt;&lt; st.top() &lt;&lt; endl; <span class="c">// 20</span>
+   cout &lt;&lt; st.size() &lt;&lt; endl;
+   cout &lt;&lt; st.empty();
+   <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">1
+20
+2
+0</pre><p style="margin-top:12px">After pushing 10, 20, 15, 1 the top is 1; two pops remove 1 and 15, so the top is 20 and two elements are left. <code>empty()</code> prints as 0 — false.</p></div>
+    <div class="card pad board"><h4>Custom stack implementation</h4><pre><span class="k">class</span> Stack {
+    <span class="k">public</span>:
+    Node *top;
+    <span class="k">int</span> sz;
+
+    Stack() {
+        top = <span class="k">NULL</span>;
+        sz = 0;
+    }
+
+    <span class="k">void</span> push(<span class="k">int</span> data) {
+        Node *node = <span class="k">new</span> Node(data);
+        node-&gt;next = top;
+        top = node;
+        sz++;
+    }
+
+    <span class="k">void</span> pop() {
+        <span class="k">if</span> (top != <span class="k">NULL</span>) {
+            top = top-&gt;next;
+            sz--;
+        }
+    }
+
+    <span class="k">int</span> size() {
+        <span class="k">return</span> <span class="k">this</span>-&gt;sz;
+    }
+
+    <span class="k">bool</span> empty() {
+        <span class="k">return</span> (sz == 0);
+    }
+};</pre><p style="margin-top:12px">push: the new node points at the old top and becomes the top. pop: the top moves one node down.</p></div>
+    <div class="card pad board"><h4>Another version · stack with a test</h4><p>The same stack with a <span class="mono">main</span>: push 10, 20, 30, pop once — two elements left, 20 on top.</p><div style="margin-top:12px"><details class="code"><summary>stack — the full program<span class="lines">59 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">class</span> Node {
+    <span class="k">public</span>:
+    <span class="k">int</span> data;
+    Node *next;
+
+    Node(<span class="k">int</span> data){
+        <span class="k">this</span>-&gt;data = data;
+        next = <span class="k">NULL</span>;
+    }
+};
+
+<span class="k">class</span> Stack {
+    <span class="k">public</span>:
+    Node *top;
+    <span class="k">int</span> sz;
+
+    Stack() {
+        top = <span class="k">NULL</span>;
+        sz = 0;
+    }
+
+    <span class="k">void</span> push(<span class="k">int</span> data) {
+        Node *new_node = <span class="k">new</span> Node(data);
+        new_node-&gt;next = top;
+        top = new_node;
+        sz++;
+    }
+
+    <span class="k">void</span> pop() {
+        <span class="k">if</span> (top == <span class="k">NULL</span>)
+            <span class="k">return</span>;
+        Node *old = top;
+        top = top-&gt;next;
+        <span class="k">delete</span> old;   <span class="c">// added: free the removed node</span>
+        sz--;
+    }
+
+    <span class="k">bool</span> empty() {
+        <span class="k">return</span> sz == 0;
+    }
+
+    <span class="k">int</span> size() {
+        <span class="k">return</span> sz;
+    }
+};
+
+<span class="k">int</span> main() {
+    Stack *st = <span class="k">new</span> Stack();
+    st-&gt;push(10);
+    st-&gt;push(20);
+    st-&gt;push(30);
+    st-&gt;pop();
+    cout &lt;&lt; st-&gt;size() &lt;&lt; <span class="s">" "</span> &lt;&lt; st-&gt;top-&gt;data;
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">output</div><pre class="out">2 20</pre></div>
   </div>
 </section>
 
@@ -104,39 +277,86 @@ head-&gt;next-&gt;next = <span class="k">new</span> Node(30);</pre><p style="mar
   <div class="beat-head">
     <div class="beat-n">03</div>
     <div>
-      <h2>The three classics</h2>
-      <div class="sub"><span>22 min</span> <span>demo: reverse, step by step</span></div>
+      <h2>Stack Problems</h2>
+      <div class="sub"><span>12 min</span> <span>code</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li><strong>Reverse.</strong> Three pointers — <code>prev</code>, <code>cur</code>, <code>nxt</code> — and one rule: save the next node <em>before</em> you overwrite the link. Step the demo and read the three values out loud each time.</li>
-        <li><strong>Middle.</strong> Two runners: <code>slow</code> moves one, <code>fast</code> moves two. When fast falls off the end, slow stands in the middle. One pass, no counting, no second traversal.</li>
-        <li>Ask which middle you get for an even length — the demo answers it. That ambiguity is exactly what problem E pins down in its statement.</li>
-        <li><strong>Merge.</strong> Two sorted lists, one output: compare heads, take the smaller, advance. The tail that is left over is <strong>appended whole</strong>, not copied element by element — that is the point of using lists.</li>
-        <li>All three are <strong>O(n) time, O(1) extra memory</strong>. Say that out loud: no arrays, no vectors, no copying.</li>
+        <li>Start with only <strong>round brackets</strong> and no stack: a counter goes up on <code>(</code> and down on <code>)</code>. It must never go negative and must end at zero.</li>
+        <li>Then ask what breaks with three kinds of brackets. A counter cannot tell <code>(</code> from <code>[</code> — we need to remember <strong>which</strong> bracket was opened last. That is exactly a stack.</li>
+        <li>The stack version: push every opening bracket; on a closing one, the top must be its pair — pop it. At the end the stack must be empty.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre><span class="c">// reverse</span>
-Node* prev = <span class="k">nullptr</span>;
-Node* cur  = head;
-<span class="k">while</span> (cur) {
-    Node* nxt = cur-&gt;next;   <span class="c">// save first!</span>
-    cur-&gt;next = prev;
-    prev = cur;
-    cur  = nxt;
+    <div class="card pad board"><h4>Simple problem · basic parentheses balance</h4><p>Check if only <code>()</code> brackets are properly balanced. <strong>Try solving without a stack first:</strong></p><div style="margin-top:12px"></div><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="c">// Simple counter approach - works only for () brackets</span>
+<span class="k">bool</span> simple_balance(string s) {
+    <span class="k">int</span> counter = 0;
+    
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++) {
+        <span class="k">if</span> (s[i] == '(') {
+            counter++;
+        } <span class="k">else</span> <span class="k">if</span> (s[i] == ')') {
+            counter--;
+            <span class="c">// If counter goes negative, we have ')' before '('</span>
+            <span class="k">if</span> (counter &lt; 0) {
+                <span class="k">return</span> <span class="k">false</span>;
+            }
+        }
+    }
+    
+    <span class="c">// Should end with counter = 0</span>
+    <span class="k">return</span> (counter == 0);
 }
-head = prev;</pre><pre style="margin-top:13px"><span class="c">// middle</span>
-Node *slow = head, *fast = head;
-<span class="k">while</span> (fast &amp;&amp; fast-&gt;next) {
-    slow = slow-&gt;next;
-    fast = fast-&gt;next-&gt;next;
-}</pre><div class="trap" style="margin-top:14px"><b>The line everyone drops:</b> <code>head = prev</code> at the end of reverse. Without it <code>head</code> still points at what is now the last node, and the list looks empty from outside.</div></div>
-      <div class="card pad demo"><h4>Demo · reverse, one step at a time</h4><div class="ctl"><button class="pri" id="rvstep">Step</button><button id="rvauto">▶ Play</button><button id="rvreset">Reset</button><label class="f" style="flex:1 1 130px"><span>length</span><input type="number" id="rvn" value="5" min="2" max="9"></label></div><div class="track" id="rvtrack"></div><div class="readout"><div class="stat"><div class="lab">prev</div><div class="val" id="rvprev">null</div></div><div class="stat"><div class="lab">cur</div><div class="val" id="rvcur">—</div></div><div class="stat"><div class="lab">nxt</div><div class="val" id="rvnxt">—</div></div></div><div class="log" id="rvlog">Press Step. Green is the part already reversed.</div></div>
-    </div>
+
+<span class="k">int</span> main() {
+    string s;
+    cin &gt;&gt; s;
+    <span class="k">if</span> (simple_balance(s))
+        cout &lt;&lt; <span class="s">"YES"</span>;
+    <span class="k">else</span>
+        cout &lt;&lt; <span class="s">"NO"</span>;
+    <span class="k">return</span> 0;
+}</pre><p style="margin-top:14px"><strong>Examples:</strong></p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><span class="mono">"()"</span> → <strong>True</strong></li><li><span class="mono">"(())"</span> → <strong>True</strong></li><li><span class="mono">"((("</span> → <strong>False</strong></li><li><span class="mono">")))"</span> → <strong>False</strong></li><li><span class="mono">"()("</span> → <strong>False</strong></li></ul></div>
+    <div class="card pad board"><h4>Why this approach fails for multiple bracket types</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>A counter cannot distinguish between different bracket types</li><li>Count every opening bracket as +1 and every closing one as −1, and <span class="mono">"(]"</span> or <span class="mono">"([)]"</span> come out balanced — both are accepted, which is wrong</li><li>We need to remember <strong>which</strong> opening bracket we saw</li></ul></div>
+    <div class="card pad board"><h4>Classic problem · balanced brackets</h4><p>Check if brackets are properly balanced: <code>()</code>, <code>[]</code>, <code>{}</code>.</p><div style="margin-top:12px"></div><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;stack&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">bool</span> is_ok(string s) {
+    stack&lt;<span class="k">char</span>&gt; st;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++) {
+        <span class="k">if</span> (s[i] == '(' || s[i] == '{' || s[i] == '[')
+            st.push(s[i]);
+        <span class="k">else</span> {
+            <span class="k">if</span> (st.empty())
+                <span class="k">return</span> <span class="k">false</span>;
+            <span class="k">if</span> (s[i] == '}' &amp;&amp; st.top() != '{')
+                <span class="k">return</span> <span class="k">false</span>;
+            <span class="k">if</span> (s[i] == ']' &amp;&amp; st.top() != '[')
+                <span class="k">return</span> <span class="k">false</span>;
+            <span class="k">if</span> (s[i] == ')' &amp;&amp; st.top() != '(')
+                <span class="k">return</span> <span class="k">false</span>;
+            st.pop();                
+        }
+    }
+    <span class="k">return</span> (st.empty());
+}
+
+<span class="k">int</span> main() {
+    string s;
+    cin &gt;&gt; s;
+    <span class="k">if</span> (is_ok(s))
+        cout &lt;&lt; <span class="s">"YES"</span>;
+    <span class="k">else</span>
+        cout &lt;&lt; <span class="s">"NO"</span>;
+    <span class="k">return</span> 0;
+}</pre><p style="margin-top:14px"><strong>Examples:</strong></p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><span class="mono">"()"</span> → <strong>True</strong></li><li><span class="mono">"([{}])"</span> → <strong>True</strong></li><li><span class="mono">"([)]"</span> → <strong>False</strong></li><li><span class="mono">"((("</span> → <strong>False</strong></li></ul><p style="margin-top:13px"><strong>Applications:</strong> function call management, expression evaluation, undo operations, browser history.</p></div>
   </div>
 </section>
 
@@ -144,34 +364,91 @@ Node *slow = head, *fast = head;
   <div class="beat-head">
     <div class="beat-n">04</div>
     <div>
-      <h2>Two pointers per node</h2>
-      <div class="sub"><span>16 min</span> <span>board</span></div>
+      <h2>Queue — FIFO (First In, First Out)</h2>
+      <div class="sub"><span>8 min</span> <span>code</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Add <code>prev</code> to the node and two things become possible: walking backwards, and <strong>deleting a node you hold without knowing its predecessor</strong>. That second one is why <code>std::list</code> is doubly linked.</li>
-        <li>Deletion becomes symmetric — <code>a-&gt;next = b-&gt;next; b-&gt;next-&gt;prev = a;</code> — and the price is one extra pointer per element plus twice the rewiring on every insert.</li>
-        <li>Now close the loop with last week: <strong><code>std::deque</code> is not this</strong>. It is a table of fixed blocks, which is why it has O(1) random access and a list does not. Students conflate the two every year.</li>
-        <li>Sketch where each one actually shows up: an LRU cache is a hash map plus a doubly linked list, a text editor undo stack is a list, a music player playlist is a circular one.</li>
+        <li>A line at a store: the first person in line is served first. <strong>First in, first out.</strong></li>
+        <li>Elements come in at the rear and leave from the front; all operations are O(1).</li>
+        <li>The queue is what breadth-first search runs on — the two problems after the deque are both BFS.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre><span class="k">struct</span> Node {
-    <span class="k">int</span> data;
-    Node *prev, *next;
-};
+    <div class="card pad board"><h4>Core operations</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><code>push()</code> / <code>enqueue(item)</code> — add an item to the rear — O(1)</li><li><code>pop()</code> / <code>dequeue()</code> — remove the front item — O(1)</li><li><code>front()</code> — view the front item without removing it — O(1)</li><li><code>empty()</code> — check if the queue is empty — O(1)</li><li><code>size()</code> — get the number of elements — O(1)</li></ul></div>
+    <div class="card pad board"><h4>C++ implementation using STL</h4><pre><span class="k">#include</span> &lt;queue&gt;
+<span class="k">#include</span> &lt;iostream&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
 
-<span class="c">// erase a node we already hold</span>
-<span class="k">if</span> (n-&gt;prev) n-&gt;prev-&gt;next = n-&gt;next;
-<span class="k">else</span>        head       = n-&gt;next;
-<span class="k">if</span> (n-&gt;next) n-&gt;next-&gt;prev = n-&gt;prev;
-<span class="k">else</span>        tail       = n-&gt;prev;
-<span class="k">delete</span> n;</pre><div class="trap" style="margin-top:14px"><b>Four branches, not two.</b> Head and tail are both special. This is the exact shape of problem I, and it is where submissions die.</div></div>
-      <div class="card pad board"><h4>What is built on what</h4><div class="tw"><table><thead><tr><th>STL</th><th>Underneath</th><th>Random access</th></tr></thead><tbody><tr><td class="k mono">std::vector</td><td>one array</td><td style="color:var(--prime)">yes</td></tr><tr><td class="k mono">std::deque</td><td>table of blocks</td><td style="color:var(--prime)">yes</td></tr><tr><td class="k mono">std::list</td><td>doubly linked</td><td style="color:var(--mark)">no</td></tr><tr><td class="k mono">std::forward_list</td><td>singly linked</td><td style="color:var(--mark)">no</td></tr><tr><td class="k mono">std::stack</td><td>deque by default</td><td>—</td></tr><tr><td class="k mono">std::queue</td><td>deque by default</td><td>—</td></tr></tbody></table></div><p style="margin-top:13px">Worth one minute: <code>std::list</code> is the structure you are writing by hand today, and almost the only one in the table you will rarely reach for in a contest.</p></div>
-    </div>
+<span class="k">void</span> demo_stl_queue() {
+    queue&lt;<span class="k">int</span>&gt; q;
+    
+    <span class="c">// Add elements</span>
+    q.push(10);
+    q.push(20);
+    q.push(30);
+    
+    cout &lt;&lt; <span class="s">"Queue size: "</span> &lt;&lt; q.size() &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"Front element: "</span> &lt;&lt; q.front() &lt;&lt; endl;
+    
+    <span class="c">// Remove elements</span>
+    <span class="k">while</span> (!q.empty()) {
+        cout &lt;&lt; <span class="s">"Removing: "</span> &lt;&lt; q.front() &lt;&lt; endl;
+        q.pop();
+    }
+}</pre><p style="margin-top:12px">Called from <span class="mono">main</span>, it prints:</p><div class="out-lbl">output</div><pre class="out">Queue size: 3
+Front element: 10
+Removing: 10
+Removing: 20
+Removing: 30</pre></div>
+    <div class="card pad board"><h4>Applications</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Task scheduling in operating systems</li><li>Breadth-First Search (BFS) in graphs</li><li>Print job management</li><li>Buffer for data streams</li></ul></div>
+    <div class="card pad board"><h4>Another version · queue on nodes</h4><p>The same queue built from nodes: <span class="mono">front</span> is where elements leave, <span class="mono">end</span> is where they arrive. When the last element leaves, both become <span class="mono">NULL</span>.</p><div style="margin-top:12px"></div><pre><span class="k">class</span> Queue {
+    <span class="k">public</span>:
+    Node *front;
+    Node *end;
+    Queue() {
+        front = <span class="k">NULL</span>;
+        end = <span class="k">NULL</span>;
+    }
+    <span class="k">void</span> push(<span class="k">int</span> val) {
+        Node* newNode = <span class="k">new</span> Node(val);
+        <span class="k">if</span> (end == <span class="k">NULL</span>) {
+            front = end = newNode;
+            <span class="k">return</span>;
+        }
+        end-&gt;next = newNode;
+        end = newNode;
+    }
+    <span class="k">void</span> pop() {
+        <span class="k">if</span> (front == <span class="k">NULL</span>) 
+            <span class="k">return</span>;
+        Node* temp = front;
+        front = front-&gt;next;
+        <span class="k">if</span> (front == <span class="k">NULL</span>) 
+            end = <span class="k">NULL</span>;
+        <span class="k">delete</span> temp;
+    }
+    <span class="k">int</span> peek() {
+        <span class="k">if</span> (front == <span class="k">NULL</span>) 
+            <span class="k">return</span> -1; <span class="c">// or throw an exception</span>
+        <span class="k">return</span> front-&gt;data;
+    }
+    <span class="k">int</span> empty() {   
+        <span class="k">return</span> front == <span class="k">NULL</span>;
+    }
+    <span class="k">int</span> size() {
+        <span class="k">int</span> count = 0;
+        Node* current = front;
+        <span class="k">while</span> (current != <span class="k">NULL</span>) {
+            count++;
+            current = current-&gt;next;
+        }
+        <span class="k">return</span> count;
+    }
+
+};</pre></div>
   </div>
 </section>
 
@@ -179,31 +456,23 @@ Node *slow = head, *fast = head;
   <div class="beat-head">
     <div class="beat-n">05</div>
     <div>
-      <h2>Lab 2 — how it maps onto today</h2>
-      <div class="sub"><span>14 min</span> <span>ADS-Lab-02</span></div>
+      <h2>Deque — Double-Ended Queue</h2>
+      <div class="sub"><span>5 min</span> <span>code</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>D, E and F are the three classics from beat 03, one each: <strong>reverse, middle, merge</strong>. They are solvable straight from the board.</li>
-        <li>I is the doubly linked list built by hand — the four-branch erase from beat 04. It is the heaviest problem of the lab, and the only one with a real maximum test.</li>
-        <li><strong>Be honest with them about the rest.</strong> We measured it: every problem except I passes with a plain array or vector, because an array is never asymptotically worse here and is faster in practice.</li>
-        <li>So say where the requirement actually lives: <strong>at the defence</strong>. In D, E and F the notes now say it outright — you will be asked to show the pointers. A vector solution can be accepted by the judge and still score zero on the defence.</li>
-        <li>Repeat the limits: <strong>1 second and 256 MB</strong>, except I at 2 s and J at 1.5 s.</li>
+        <li>A combination of a stack and a queue: add and remove at <strong>both ends</strong>, all in O(1).</li>
+        <li>Trace the four lines on the board: push_front puts the element before everything else.</li>
       </ul>
     </div>
-    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">One-time guests</span><div class="map-why">Queue in disguise — the intended solve is a single pass with a counter, no list needed</div></div></div>
-<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Kuanyshbek</span><div class="map-why">Delete every k-th node while walking the chain</div></div></div>
-<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Database</span><span class="pill fixed">fixed</span><div class="map-why">Beat 02 · delete a node equal to its immediate predecessor</div></div></div>
-<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Reverse the Linked List</span><span class="pill new">new</span><div class="map-why">Beat 03 · reverse — three pointers, O(1) memory</div></div></div>
-<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Delete the Middle Node</span><span class="pill new">new</span><div class="map-why">Beat 03 · middle — slow and fast runners</div></div></div>
-<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Merge Two Sorted Lists</span><span class="pill new">new</span><div class="map-why">Beat 03 · merge two sorted lists by relinking, not copying</div></div></div>
-<div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Jonathan the Poet</span><div class="map-why">Walk the chain and collect; array passes just as well</div></div></div>
-<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">Ragnarok</span><div class="map-why">Kadane with n ≤ 100 — nothing list-specific</div></div></div>
-<div class="map-row"><span class="map-idx">I</span><div><span class="map-name">Doubly linked list</span><span class="pill key">key</span><div class="map-why">Beat 04 · doubly linked list by hand — the one problem a vector cannot carry</div></div></div>
-<div class="map-row"><span class="map-idx">J</span><div><span class="map-name">Zoro and Seven Sword Style.</span><span class="pill fixed">fixed</span><div class="map-why">Full list interface by index; watch the empty-list print case</div></div></div><div class="trap" style="margin-top:16px"><b>Known rough edges, so you are not caught out:</b> in B the jury solution is O(N²) although the editorial promises one pass, and its <code>size</code> field goes stale on a no-op delete — harmless for the output, but do not read that code aloud as exemplary.</div></div>
+    <div class="card pad board"><h4>Core operations</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><code>push_back(item)</code> — add an item to the back — O(1)</li><li><code>push_front(item)</code> — add an item to the front — O(1)</li><li><code>pop_back()</code> — remove the back item — O(1)</li><li><code>pop_front()</code> — remove the front item — O(1)</li></ul><div style="margin-top:14px"></div><pre>deque&lt;<span class="k">int</span>&gt; q;
+q.push_back(10); 
+q.push_back(20);
+q.push_front(30);
+q.push_front(40);</pre><p style="margin-top:12px">Front to back, the deque now holds</p><pre class="out">40 30 10 20</pre></div>
   </div>
 </section>
 
@@ -211,27 +480,831 @@ Node *slow = head, *fast = head;
   <div class="beat-head">
     <div class="beat-n">06</div>
     <div>
-      <h2>What comes next</h2>
-      <div class="sub"><span>4 min</span></div>
+      <h2>Problem: Minimum Operations to Transform Number</h2>
+      <div class="sub"><span>12 min</span> <span>code</span> <span>BFS</span></div>
     </div>
   </div>
   <div class="stack">
-    <div class="card pad board"><p>Lecture 3 is <strong>binary search</strong> — the first time this course trades a linear scan for a logarithmic one. Tell them the prerequisite out loud: it only works on something <strong>sorted and randomly accessible</strong>, which is exactly what a linked list is not. That contrast is the bridge from today.</p><p style="margin-top:12px">Homework is Lab 2. Ask for <strong>problem D submitted before the next class</strong> — it is fifteen lines and it surfaces pointer mistakes early, while there is still time to fix the habit.</p></div>
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Given a and b, the fewest operations +1, ×2, ÷2, −1 that turn a into b.</li>
+        <li>Every number is a state, every operation is a step. <strong>BFS</strong> visits states in order of distance, so the first time it reaches b the distance is minimal.</li>
+        <li><span class="mono">used[x]</span> stores the number we came from — that is how the path is printed backwards from b.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Problem statement</h4><p>Given two positive integers <em>a</em> and <em>b</em>, find the minimum number of operations needed to transform <em>a</em> into <em>b</em>:</p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Add 1: x → x + 1</li><li>Multiply by 2: x → x * 2</li><li>Divide by 2: x → x / 2 (integer division)</li><li>Subtract 1: x → x − 1 (if the result ≥ 0)</li></ul><p style="margin-top:12px"><strong>Example:</strong> a = 2, b = 12 → 3 operations, path 2 → 3 → 6 → 12.</p></div>
+    <div class="card pad board"><h4>Algorithm · BFS guarantees the minimum</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;queue&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+queue&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt; q;
+<span class="k">int</span> used[1000]; 
+
+<span class="k">int</span> f(<span class="k">int</span> a, <span class="k">int</span> b) {
+    q.push(make_pair(a, 0));
+    used[a] = a;
+
+    <span class="k">while</span> (!q.empty()) {
+        <span class="k">int</span> x = q.front().first;
+        <span class="k">int</span> d = q.front().second;
+
+        <span class="k">if</span> (x == b) {
+            <span class="k">return</span> d;
+        }
+
+        <span class="k">if</span> (x + 1 &lt; 1000 &amp;&amp; used[x + 1] == 0) {   <span class="c">// stay inside used[]</span>
+            q.push(make_pair(x + 1, d + 1));
+            used[x + 1] = x;
+        }
+
+        <span class="k">if</span> (x * 2 &lt; 1000 &amp;&amp; used[x * 2] == 0) {   <span class="c">// stay inside used[]</span>
+            q.push(make_pair(x * 2, d + 1));
+            used[x * 2] = x;
+        }
+
+        <span class="k">if</span> (used[x / 2] == 0) {
+            q.push(make_pair(x / 2, d + 1));
+            used[x / 2] = x;
+        }
+
+        <span class="k">if</span> (x - 1 &gt;= 0 &amp;&amp; used[x - 1] == 0) {
+            q.push(make_pair(x - 1, d + 1));
+            used[x - 1] = x;
+        }
+        q.pop();
+    }
+    <span class="k">return</span> 0;
+}
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> a, b;
+    cin &gt;&gt; a &gt;&gt; b;
+    cout &lt;&lt; f(a, b) &lt;&lt; endl;
+
+    vector&lt;<span class="k">int</span>&gt; result;
+    result.push_back(b);
+    <span class="k">int</span> t = b;
+    <span class="k">while</span> (used[t] != t) {
+        t = used[t];
+        result.push_back(t);
+    }
+
+    <span class="k">for</span> (<span class="k">int</span> i = result.size() - 1; i &gt;= 0; i--)
+        cout &lt;&lt; result[i] &lt;&lt; <span class="s">" "</span>;
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">input</div><pre class="out">2 12</pre><div class="out-lbl">output</div><pre class="out">3
+2 3 6 12</pre><p style="margin-top:12px">The first line is the number of operations, the second the path. The two range checks keep <span class="mono">x + 1</span> and <span class="mono">x * 2</span> inside <span class="mono">used[1000]</span>.</p></div>
+  </div>
+</section>
+
+<section class="beat" id="b7">
+  <div class="beat-head">
+    <div class="beat-n">07</div>
+    <div>
+      <h2>Problem: Knight's Shortest Path on Chessboard</h2>
+      <div class="sub"><span>10 min</span> <span>code</span> <span>BFS</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Same BFS, different states: a state is a square, a step is one of the eight knight moves.</li>
+        <li><span class="mono">a[x][y]</span> is both "visited" and the distance (+1, because the start is marked 1); <span class="mono">c[x][y]</span> is the square we came from.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Problem statement</h4><p>On a standard 8×8 chessboard, find the minimum number of moves for a knight to travel from (x1, y1) to (x2, y2).</p></div>
+    <div class="card pad board"><h4>BFS over the board</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;queue&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">int</span> a[10][10];
+pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; c[10][10];
+queue&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt; q;
+
+<span class="k">int</span> dx[8] = {2,  2, -2, -2,  1, 1, -1, -1};
+<span class="k">int</span> dy[8] = {1, -1,  1, -1, -2, 2, -2,  2};
+
+<span class="k">bool</span> check(<span class="k">int</span> x, <span class="k">int</span> y) {
+    <span class="k">return</span> (x &gt;= 1 &amp;&amp; x &lt;= 8 &amp;&amp; y &gt;= 1 &amp;&amp; y &lt;= 8 &amp;&amp; a[x][y] == 0);
+}
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> x1, y1, x2, y2;
+    cin &gt;&gt; x1 &gt;&gt; y1 &gt;&gt; x2 &gt;&gt; y2;
+    a[x1][y1] = 1;
+    q.push(make_pair(x1, y1));
+    c[x1][y1] = make_pair(x1, y1);
+
+    <span class="k">while</span> (!q.empty()) {
+        <span class="k">int</span> x = q.front().first;
+        <span class="k">int</span> y = q.front().second;
+
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; 8; i++) {
+            <span class="k">if</span> (check(x + dx[i], y + dy[i])) {
+                q.push(make_pair(x + dx[i], y + dy[i]));
+                a[x + dx[i]][y + dy[i]] = a[x][y] + 1;
+                c[x + dx[i]][y + dy[i]] = make_pair(x, y);
+            }
+        }
+        q.pop();
+    }
+
+    cout &lt;&lt; a[x2][y2] - 1 &lt;&lt; endl;
+
+    vector&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt; result;
+    result.push_back(make_pair(x2, y2));
+    <span class="k">int</span> x = x2;
+    <span class="k">int</span> y = y2;
+    <span class="k">while</span> (c[x][y] != make_pair(x, y)) {
+        <span class="k">int</span> x_temp = c[x][y].first;
+        <span class="k">int</span> y_temp = c[x][y].second; 
+        result.push_back(make_pair(x_temp, y_temp));
+        x = x_temp;
+        y = y_temp;
+    }
+
+    <span class="k">for</span> (<span class="k">int</span> i = result.size() - 1; i &gt;= 0; i--)
+        cout &lt;&lt; result[i].first &lt;&lt; <span class="s">" "</span> &lt;&lt; result[i].second &lt;&lt; endl;
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">input</div><pre class="out">1 1 8 8</pre><div class="out-lbl">output</div><pre class="out">6
+1 1
+3 2
+5 3
+7 4
+5 5
+7 6
+8 8</pre><p style="margin-top:12px">Six moves from one corner to the opposite one, then the squares of one shortest path.</p></div>
+  </div>
+</section>
+
+<section class="beat" id="b8">
+  <div class="beat-head">
+    <div class="beat-n">08</div>
+    <div>
+      <h2>Linked List</h2>
+      <div class="sub"><span>25 min</span> <span>code</span> <span>demos</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>A <strong>doubly linked list</strong>: every node has <span class="mono">next</span> and <span class="mono">prev</span>, the list keeps <span class="mono">front</span> and <span class="mono">tail</span>.</li>
+        <li>Write it function by function: push_back and push_front, pop_back and pop_front, delete a node you hold, print, find, insert after a node.</li>
+        <li>Each function has an <strong>empty-list case</strong> and a <strong>one-element case</strong> — say them out loud every time.</li>
+        <li>Deleting a node you hold is O(1): its neighbours are one pointer away in both directions.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>1 · The node</h4><pre><span class="k">class</span> Node {
+    <span class="k">public</span>:
+    <span class="k">int</span> data;
+    Node *next, *prev;
+
+    Node(<span class="k">int</span> data) {
+        <span class="k">this</span>-&gt;data = data;
+        <span class="k">this</span>-&gt;next = <span class="k">NULL</span>;
+        <span class="k">this</span>-&gt;prev = <span class="k">NULL</span>;
+    }
+};</pre></div>
+    <div class="card pad board"><h4>2 · The list and push</h4><pre><span class="k">class</span> LinkedList {
+    <span class="k">public</span>:
+    Node *tail, *front;
+    
+    LinkedList() {
+        tail = <span class="k">NULL</span>;
+        front = <span class="k">NULL</span>;
+    }
+
+    ...
+};</pre><div style="margin-top:12px"></div><pre><span class="k">void</span> push_back(<span class="k">int</span> data) {
+    Node *node = <span class="k">new</span> Node(data);
+    <span class="k">if</span> (tail == <span class="k">NULL</span>) {
+        tail = node;
+        front = node;
+    } <span class="k">else</span> {
+        node-&gt;prev = tail;
+        tail-&gt;next = node;
+        tail = node;
+    }
+}
+
+<span class="k">void</span> push_front(<span class="k">int</span> data) {
+    Node *node = <span class="k">new</span> Node(data);
+    <span class="k">if</span> (front == <span class="k">NULL</span>) {
+        tail = node;
+        front = node;
+    } <span class="k">else</span> {
+        front-&gt;prev = node;
+        node-&gt;next = front;
+        front = node;
+    }
+}</pre><p style="margin-top:12px">If the list is empty, the new node is both <span class="mono">front</span> and <span class="mono">tail</span>. Otherwise link it to the end it is added to.</p></div>
+    <div class="card pad board"><h4>3 · pop_back and pop_front</h4><pre><span class="k">void</span> pop_back() {
+    <span class="k">if</span> (tail != <span class="k">NULL</span>) {
+        tail = tail-&gt;prev;
+        <span class="k">if</span> (tail != <span class="k">NULL</span>)
+            tail-&gt;next = <span class="k">NULL</span>;
+        <span class="k">else</span> 
+            front = <span class="k">NULL</span>;
+    }
+}
+
+<span class="k">void</span> pop_front() {
+    <span class="k">if</span> (front != <span class="k">NULL</span>) {
+        front = front-&gt;next;
+        <span class="k">if</span> (front != <span class="k">NULL</span>)
+            front-&gt;prev = <span class="k">NULL</span>;
+        <span class="k">else</span>
+            tail = <span class="k">NULL</span>;
+    }
+}</pre><p style="margin-top:12px">When the last element leaves, <strong>both</strong> ends become <span class="mono">NULL</span>.</p></div>
+    <div class="card pad board"><h4>4 · Delete a node</h4><pre><span class="k">void</span> del_node(Node *node) {
+    <span class="k">if</span> (node == tail)
+        pop_back();
+    <span class="k">else</span> <span class="k">if</span> (node == front) 
+        pop_front();
+    <span class="k">else</span> {
+        Node *a = node-&gt;prev;
+        Node *b = node-&gt;next;
+        a-&gt;next = b;
+        b-&gt;prev = a;
+    }
+}</pre><p style="margin-top:12px">Tail and front are special; any other node is unlinked by joining its two neighbours.</p></div>
+    <div class="card pad board"><h4>5 · print and find_node</h4><pre><span class="k">void</span> print() {
+    Node *node = front;
+    <span class="k">while</span> (node != <span class="k">NULL</span>) {
+        cout &lt;&lt; node-&gt;data &lt;&lt; <span class="s">" "</span>;
+        node = node-&gt;next;
+    }
+    cout &lt;&lt; endl;
+}
+
+Node* find_node(<span class="k">int</span> data) {
+    Node *node = front;
+    <span class="k">while</span> (node != <span class="k">NULL</span>) {
+        <span class="k">if</span> (node-&gt;data == data)
+            <span class="k">return</span> node;
+        node = node-&gt;next; 
+    }
+    <span class="k">return</span> <span class="k">NULL</span>;
+}</pre></div>
+    <div class="card pad board"><h4>6 · Insert after a node</h4><pre><span class="k">void</span> insert_node(Node *node1, <span class="k">int</span> data) {
+    Node *node = <span class="k">new</span> Node(data);
+    <span class="k">if</span> (node1 == tail) 
+        push_back(data);
+    <span class="k">else</span> {
+        Node *node2 = node1-&gt;next;
+        node1-&gt;next = node;
+        node-&gt;prev = node1;
+        node-&gt;next = node2;
+        node2-&gt;prev = node;
+    }
+}</pre></div>
+    <div class="card pad board"><h4>7 · main — and what it prints</h4><pre><span class="k">int</span> main() {
+    LinkedList *ll = <span class="k">new</span> LinkedList();
+    ll-&gt;push_back(5);
+    ll-&gt;push_back(6);
+    ll-&gt;push_back(7);
+    ll-&gt;push_back(8);
+    ll-&gt;push_back(9);
+    ll-&gt;push_back(10);
+    ll-&gt;push_front(11);
+    ll-&gt;push_front(12);
+    ll-&gt;push_front(13);
+    ll-&gt;push_front(14);
+    ll-&gt;push_front(15);
+    ll-&gt;print();
+    cout &lt;&lt; ll-&gt;front-&gt;data &lt;&lt; <span class="s">" "</span> &lt;&lt; ll-&gt;tail-&gt;data &lt;&lt; endl;
+    ll-&gt;pop_back(); 
+    ll-&gt;pop_back();
+    ll-&gt;pop_front(); 
+    ll-&gt;pop_front();
+    ll-&gt;print();
+    cout &lt;&lt; ll-&gt;front-&gt;data &lt;&lt; <span class="s">" "</span> &lt;&lt; ll-&gt;tail-&gt;data &lt;&lt; endl;
+
+    Node *node = ll-&gt;find_node(11);
+    <span class="k">if</span> (node != <span class="k">NULL</span>) {
+        ll-&gt;del_node(node);
+    }
+
+    ll-&gt;print();
+
+    node = ll-&gt;find_node(6);
+    ll-&gt;insert_node(node, 100);
+    ll-&gt;print();
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">15 14 13 12 11 5 6 7 8 9 10
+15 10
+13 12 11 5 6 7 8
+13 8
+13 12 5 6 7 8
+13 12 5 6 100 7 8</pre></div>
+    <div class="card pad board"><h4>The whole program</h4><p>Everything above in one file — open it and press <strong>▶ edit &amp; run</strong>.</p><div style="margin-top:12px"><details class="code"><summary>doubly linked list — the full program<span class="lines">148 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">class</span> Node {
+    <span class="k">public</span>:
+    <span class="k">int</span> data;
+    Node *next, *prev;
+
+    Node(<span class="k">int</span> data) {
+        <span class="k">this</span>-&gt;data = data;
+        <span class="k">this</span>-&gt;next = <span class="k">NULL</span>;
+        <span class="k">this</span>-&gt;prev = <span class="k">NULL</span>;
+    }
+};
+
+<span class="k">class</span> LinkedList {
+    <span class="k">public</span>:
+    Node *tail, *front;
+    
+    LinkedList() {
+        tail = <span class="k">NULL</span>;
+        front = <span class="k">NULL</span>;
+    }
+
+    <span class="k">void</span> push_back(<span class="k">int</span> data) {
+        Node *node = <span class="k">new</span> Node(data);
+        <span class="k">if</span> (tail == <span class="k">NULL</span>) {
+            tail = node;
+            front = node;
+        } <span class="k">else</span> {
+            node-&gt;prev = tail;
+            tail-&gt;next = node;
+            tail = node;
+        }
+    }
+
+    <span class="k">void</span> push_front(<span class="k">int</span> data) {
+        Node *node = <span class="k">new</span> Node(data);
+        <span class="k">if</span> (front == <span class="k">NULL</span>) {
+            tail = node;
+            front = node;
+        } <span class="k">else</span> {
+            front-&gt;prev = node;
+            node-&gt;next = front;
+            front = node;
+        }
+    }
+
+    <span class="k">void</span> pop_back() {
+        <span class="k">if</span> (tail != <span class="k">NULL</span>) {
+            tail = tail-&gt;prev;
+            <span class="k">if</span> (tail != <span class="k">NULL</span>)
+                tail-&gt;next = <span class="k">NULL</span>;
+            <span class="k">else</span> 
+                front = <span class="k">NULL</span>;
+        }
+    }
+
+    <span class="k">void</span> pop_front() {
+        <span class="k">if</span> (front != <span class="k">NULL</span>) {
+            front = front-&gt;next;
+            <span class="k">if</span> (front != <span class="k">NULL</span>)
+                front-&gt;prev = <span class="k">NULL</span>;
+            <span class="k">else</span>
+                tail = <span class="k">NULL</span>;
+        }
+    }
+
+    <span class="k">void</span> del_node(Node *node) {
+        <span class="k">if</span> (node == tail)
+            pop_back();
+        <span class="k">else</span> <span class="k">if</span> (node == front) 
+            pop_front();
+        <span class="k">else</span> {
+            Node *a = node-&gt;prev;
+            Node *b = node-&gt;next;
+            a-&gt;next = b;
+            b-&gt;prev = a;
+        }
+    }
+
+    <span class="k">void</span> print() {
+        Node *node = front;
+        <span class="k">while</span> (node != <span class="k">NULL</span>) {
+            cout &lt;&lt; node-&gt;data &lt;&lt; <span class="s">" "</span>;
+            node = node-&gt;next;
+        }
+        cout &lt;&lt; endl;
+    }
+
+    Node* find_node(<span class="k">int</span> data) {
+        Node *node = front;
+        <span class="k">while</span> (node != <span class="k">NULL</span>) {
+            <span class="k">if</span> (node-&gt;data == data)
+                <span class="k">return</span> node;
+            node = node-&gt;next; 
+        }
+        <span class="k">return</span> <span class="k">NULL</span>;
+    }
+
+    <span class="k">void</span> insert_node(Node *node1, <span class="k">int</span> data) {
+        Node *node = <span class="k">new</span> Node(data);
+        <span class="k">if</span> (node1 == tail) 
+            push_back(data);
+        <span class="k">else</span> {
+            Node *node2 = node1-&gt;next;
+            node1-&gt;next = node;
+            node-&gt;prev = node1;
+            node-&gt;next = node2;
+            node2-&gt;prev = node;
+        }
+    }
+};
+
+<span class="k">int</span> main() {
+    LinkedList *ll = <span class="k">new</span> LinkedList();
+    ll-&gt;push_back(5);
+    ll-&gt;push_back(6);
+    ll-&gt;push_back(7);
+    ll-&gt;push_back(8);
+    ll-&gt;push_back(9);
+    ll-&gt;push_back(10);
+    ll-&gt;push_front(11);
+    ll-&gt;push_front(12);
+    ll-&gt;push_front(13);
+    ll-&gt;push_front(14);
+    ll-&gt;push_front(15);
+    ll-&gt;print();
+    cout &lt;&lt; ll-&gt;front-&gt;data &lt;&lt; <span class="s">" "</span> &lt;&lt; ll-&gt;tail-&gt;data &lt;&lt; endl;
+    ll-&gt;pop_back(); 
+    ll-&gt;pop_back();
+    ll-&gt;pop_front(); 
+    ll-&gt;pop_front();
+    ll-&gt;print();
+    cout &lt;&lt; ll-&gt;front-&gt;data &lt;&lt; <span class="s">" "</span> &lt;&lt; ll-&gt;tail-&gt;data &lt;&lt; endl;
+
+    Node *node = ll-&gt;find_node(11);
+    <span class="k">if</span> (node != <span class="k">NULL</span>) {
+        ll-&gt;del_node(node);
+    }
+
+    ll-&gt;print();
+
+    node = ll-&gt;find_node(6);
+    ll-&gt;insert_node(node, 100);
+    ll-&gt;print();
+    <span class="k">return</span> 0;
+}</pre></details></div></div>
+    <div class="card pad demo"><h4>Demo · list playground</h4><div class="ctl"><button id="llpf">push_front</button><button id="llpb">push_back</button><button id="llppf">pop_front</button><button id="llppb">pop_back</button><button id="llins">insert after #2</button><button id="lldel">erase #2</button><button id="llclr">Clear</button></div><div class="track" id="lltrack"></div><div class="log" id="lllog">Empty list. head = nullptr.</div><div class="readout"><div class="stat"><div class="lab">size</div><div class="val" id="llsize">0</div></div><div class="stat"><div class="lab">pointer writes</div><div class="val" id="llops">0</div></div><div class="stat"><div class="lab">nodes walked</div><div class="val" id="llwalk">0</div></div></div><p style="margin-top:12px;font-size:.83rem;color:var(--ink-3)">Watch the two counters: push_front never walks, insert in the middle always does. That gap is the whole lecture.</p></div>
+    <div class="card pad demo"><h4>Demo · reverse, one step at a time</h4><div class="ctl"><button class="pri" id="rvstep">Step</button><button id="rvauto">▶ Play</button><button id="rvreset">Reset</button><label class="f" style="flex:1 1 130px"><span>length</span><input type="number" id="rvn" value="5" min="2" max="9"></label></div><div class="track" id="rvtrack"></div><div class="readout"><div class="stat"><div class="lab">prev</div><div class="val" id="rvprev">null</div></div><div class="stat"><div class="lab">cur</div><div class="val" id="rvcur">—</div></div><div class="stat"><div class="lab">nxt</div><div class="val" id="rvnxt">—</div></div></div><div class="log" id="rvlog">Press Step. Green is the part already reversed.</div></div>
+    <div class="card pad board"><h4>Another version · list, stack, queue and a singly linked list</h4><p>One file with four classes. The doubly linked list here has no pop_front, so deleting the first node is written out in place:</p><div style="margin-top:12px"></div><pre><span class="k">class</span> LinkedList {
+    <span class="k">public</span>:
+    Node *tail;
+    Node *front;
+    <span class="k">int</span> data;
+
+    LinkedList() {
+        tail = front = <span class="k">NULL</span>;
+    }
+
+    <span class="k">void</span> push_front(<span class="k">int</span> data) {
+        Node *node = <span class="k">new</span> Node(data);
+        <span class="k">if</span> (front == <span class="k">NULL</span>) {
+            front = tail = node;
+        } <span class="k">else</span> {
+            node-&gt;next = front;
+            front-&gt;prev = node;
+            front = node;
+        }
+    }
+
+    <span class="k">void</span> push_back(<span class="k">int</span> data) {
+        Node *node = <span class="k">new</span> Node(data);
+        <span class="k">if</span> (front == <span class="k">NULL</span>) {
+            front = tail = node;
+        } <span class="k">else</span> {
+            tail-&gt;next = node;
+            node-&gt;prev = tail;
+            tail = node;
+        }
+    }
+    
+    <span class="k">void</span> pop_back() {
+        <span class="k">if</span> (tail != <span class="k">NULL</span>) {
+            Node *temp = tail;
+            tail = tail-&gt;prev;
+            <span class="k">if</span> (tail != <span class="k">NULL</span>)
+                tail-&gt;next = <span class="k">NULL</span>;
+            <span class="k">else</span>
+                front = <span class="k">NULL</span>;   <span class="c">// added: the list is empty now</span>
+            <span class="k">delete</span> temp;            
+        }
+    }
+
+    <span class="k">void</span> del_node(Node *node) {
+        <span class="k">if</span> (node == tail)
+            <span class="k">this</span>-&gt;pop_back();
+        <span class="k">else</span> <span class="k">if</span> (node == front) {
+            front = front-&gt;next;   <span class="c">// added: this case did nothing</span>
+            front-&gt;prev = <span class="k">NULL</span>;
+            <span class="k">delete</span> node;
+        } <span class="k">else</span> {
+            Node *a = node-&gt;prev;
+            Node *b = node-&gt;next;
+            a-&gt;next = b;
+            b-&gt;prev = a;
+            <span class="k">delete</span> node;           <span class="c">// added: free the removed node</span>
+        }
+    }
+};</pre><div style="margin-top:14px"><details class="code"><summary>four classes — the full program<span class="lines">231 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">class</span> Node {
+    <span class="k">public</span>:
+    <span class="k">int</span> data;
+    Node *next;
+    Node *prev;
+    Node(<span class="k">int</span> val) {
+        <span class="k">this</span>-&gt;data = val;
+        <span class="k">this</span>-&gt;next = <span class="k">nullptr</span>;
+        <span class="k">this</span>-&gt;prev = <span class="k">nullptr</span>;
+    }
+};
+
+<span class="k">class</span> LinkedList {
+    <span class="k">public</span>:
+    Node *tail;
+    Node *front;
+    <span class="k">int</span> data;
+
+    LinkedList() {
+        tail = front = <span class="k">NULL</span>;
+    }
+
+    <span class="k">void</span> push_front(<span class="k">int</span> data) {
+        Node *node = <span class="k">new</span> Node(data);
+        <span class="k">if</span> (front == <span class="k">NULL</span>) {
+            front = tail = node;
+        } <span class="k">else</span> {
+            node-&gt;next = front;
+            front-&gt;prev = node;
+            front = node;
+        }
+    }
+
+    <span class="k">void</span> push_back(<span class="k">int</span> data) {
+        Node *node = <span class="k">new</span> Node(data);
+        <span class="k">if</span> (front == <span class="k">NULL</span>) {
+            front = tail = node;
+        } <span class="k">else</span> {
+            tail-&gt;next = node;
+            node-&gt;prev = tail;
+            tail = node;
+        }
+    }
+    
+    <span class="k">void</span> pop_back() {
+        <span class="k">if</span> (tail != <span class="k">NULL</span>) {
+            Node *temp = tail;
+            tail = tail-&gt;prev;
+            <span class="k">if</span> (tail != <span class="k">NULL</span>)
+                tail-&gt;next = <span class="k">NULL</span>;
+            <span class="k">else</span>
+                front = <span class="k">NULL</span>;   <span class="c">// added: the list is empty now</span>
+            <span class="k">delete</span> temp;            
+        }
+    }
+
+    <span class="k">void</span> del_node(Node *node) {
+        <span class="k">if</span> (node == tail)
+            <span class="k">this</span>-&gt;pop_back();
+        <span class="k">else</span> <span class="k">if</span> (node == front) {
+            front = front-&gt;next;   <span class="c">// added: this case did nothing</span>
+            front-&gt;prev = <span class="k">NULL</span>;
+            <span class="k">delete</span> node;
+        } <span class="k">else</span> {
+            Node *a = node-&gt;prev;
+            Node *b = node-&gt;next;
+            a-&gt;next = b;
+            b-&gt;prev = a;
+            <span class="k">delete</span> node;           <span class="c">// added: free the removed node</span>
+        }
+    }
+};
+
+<span class="k">class</span> Stack {
+    <span class="k">public</span>:
+    Node* top;
+    <span class="k">int</span> sz;
+    Stack() {
+        top = <span class="k">NULL</span>;
+        sz = 0;
+    }
+    <span class="k">void</span> push(<span class="k">int</span> val) {
+        Node *newNode = <span class="k">new</span> Node(val);
+        newNode-&gt;next = top;
+        top = newNode;
+        <span class="k">this</span>-&gt;sz++;
+    }
+
+    <span class="k">int</span> peek() {
+        <span class="k">if</span> (top == <span class="k">NULL</span>) 
+            <span class="k">return</span> -1; <span class="c">// or throw an exception</span>
+        <span class="k">return</span> top-&gt;data;
+    }
+    <span class="k">int</span> size() {
+        <span class="k">return</span> sz;
+    }
+    <span class="k">int</span> empty() {
+        <span class="k">return</span> sz == 0;
+    }
+};
+
+<span class="k">class</span> Queue {
+    <span class="k">public</span>:
+    Node *front;
+    Node *end;
+    Queue() {
+        front = <span class="k">NULL</span>;
+        end = <span class="k">NULL</span>;
+    }
+    <span class="k">void</span> push(<span class="k">int</span> val) {
+        Node* newNode = <span class="k">new</span> Node(val);
+        <span class="k">if</span> (end == <span class="k">NULL</span>) {
+            front = end = newNode;
+            <span class="k">return</span>;
+        }
+        end-&gt;next = newNode;
+        end = newNode;
+    }
+    <span class="k">void</span> pop() {
+        <span class="k">if</span> (front == <span class="k">NULL</span>) 
+            <span class="k">return</span>;
+        Node* temp = front;
+        front = front-&gt;next;
+        <span class="k">if</span> (front == <span class="k">NULL</span>) 
+            end = <span class="k">NULL</span>;
+        <span class="k">delete</span> temp;
+    }
+    <span class="k">int</span> peek() {
+        <span class="k">if</span> (front == <span class="k">NULL</span>) 
+            <span class="k">return</span> -1; <span class="c">// or throw an exception</span>
+        <span class="k">return</span> front-&gt;data;
+    }
+    <span class="k">int</span> empty() {   
+        <span class="k">return</span> front == <span class="k">NULL</span>;
+    }
+    <span class="k">int</span> size() {
+        <span class="k">int</span> count = 0;
+        Node* current = front;
+        <span class="k">while</span> (current != <span class="k">NULL</span>) {
+            count++;
+            current = current-&gt;next;
+        }
+        <span class="k">return</span> count;
+    }
+
+};
+
+<span class="k">class</span> SinglyLinkedList {   <span class="c">// renamed: the file already has a LinkedList above</span>
+    <span class="k">public</span>:
+    Node* head;
+    Node* tail;
+    <span class="k">int</span> sz;
+    SinglyLinkedList() {
+        head = <span class="k">NULL</span>;
+        tail = <span class="k">NULL</span>;
+        sz = 0;
+    }
+
+    <span class="k">void</span> insert_at_head(<span class="k">int</span> val) {
+        Node* newNode = <span class="k">new</span> Node(val);
+        <span class="k">if</span> (head == <span class="k">NULL</span>) {
+            head = tail = newNode;
+        } <span class="k">else</span> {
+            newNode-&gt;next = head;
+            head = newNode;
+        }
+        sz++;
+    }
+
+    <span class="k">void</span> insert_at_tail(<span class="k">int</span> val) {
+        Node* newNode = <span class="k">new</span> Node(val);
+        <span class="k">if</span> (tail == <span class="k">NULL</span>) {
+            head = tail = newNode;
+        } <span class="k">else</span> {
+            tail-&gt;next = newNode;
+            tail = newNode;
+        }
+        sz++;
+    }
+
+    <span class="k">void</span> delete_from_head() {
+        <span class="k">if</span> (head == <span class="k">NULL</span>) 
+            <span class="k">return</span>;
+        Node* temp = head;
+        head = head-&gt;next;
+        <span class="k">if</span> (head == <span class="k">NULL</span>) 
+            tail = <span class="k">NULL</span>;
+        <span class="k">delete</span> temp;
+        sz--;
+    }
+
+    <span class="k">void</span> delete_from_tail() {
+        <span class="k">if</span> (tail == <span class="k">NULL</span>) 
+            <span class="k">return</span>;
+        <span class="k">if</span> (head == tail) {
+            <span class="k">delete</span> head;
+            head = tail = <span class="k">NULL</span>;
+            sz--;
+            <span class="k">return</span>;
+        }
+        Node* current = head;
+        <span class="k">while</span> (current-&gt;next != tail) {
+            current = current-&gt;next;
+        }
+        <span class="k">delete</span> tail;
+        tail = current;
+        tail-&gt;next = <span class="k">NULL</span>;
+        sz--;
+    }
+
+    <span class="k">int</span> size() {
+        <span class="k">return</span> sz;
+    }
+
+    <span class="k">bool</span> empty() {
+        <span class="k">return</span> sz == 0;
+    }
+};
+<span class="k">int</span> main() {
+    Node *node1 = <span class="k">new</span> Node(10);
+    Node *node2 = <span class="k">new</span> Node(20);
+    Node *node3 = <span class="k">new</span> Node(30);
+    node1-&gt;next = node2;
+    node2-&gt;next = node3;
+    cout &lt;&lt; node1-&gt;next-&gt;next-&gt;data;
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">output</div><pre class="out">30</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b9">
+  <div class="beat-head">
+    <div class="beat-n">09</div>
+    <div>
+      <h2>Data Structures Summary</h2>
+      <div class="sub"><span>4 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Side by side</h4><div class="tw"><table><thead><tr><th>Data Structure</th><th class="n">Access</th><th class="n">Insert</th><th class="n">Delete</th><th class="n">Search</th><th class="n">Space</th></tr></thead><tbody><tr><td class="k">Stack</td><td class="n">O(1) top only</td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">Queue</td><td class="n">O(1) front/rear</td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">Deque</td><td class="n">O(1) both ends</td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">Linked List</td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1) with pointer</span></td><td class="n"><span style="color:var(--prime)">O(1) with pointer</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n">O(n)</td></tr></tbody></table></div></div>
+  </div>
+</section>
+
+<section class="beat" id="b10">
+  <div class="beat-head">
+    <div class="beat-n">10</div>
+    <div>
+      <h2>Key Takeaways</h2>
+      <div class="sub"><span>3 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Six things to remember</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li><strong>Choose the right data structure</strong> based on your access patterns</li><li><strong>Stack</strong>: when you need LIFO behaviour — undo operations, function calls</li><li><strong>Queue</strong>: when you need FIFO behaviour — BFS, task scheduling</li><li><strong>Deque</strong>: when you need both stack and queue operations</li><li><strong>Linked List</strong>: when frequent insertions and deletions and a dynamic size matter</li><li><strong>Understanding pointers and memory management</strong> is crucial for implementing these structures</li></ol></div>
+  </div>
+</section>
+
+<section class="beat" id="b11">
+  <div class="beat-head">
+    <div class="beat-n">11</div>
+    <div>
+      <h2>Lab 2 — the problems</h2>
+      <div class="sub"><span>10 min</span> <span>ADS-Lab-02</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">One-time guests</span><div class="map-why">Queue in disguise — the intended solve is a single pass with a counter, no list needed</div></div></div>
+<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Kuanyshbek</span><div class="map-why">Delete every k-th node while walking the chain</div></div></div>
+<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Database</span><span class="pill fixed">fixed</span><div class="map-why">Delete a node equal to its immediate predecessor</div></div></div>
+<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Reverse the Linked List</span><span class="pill new">new</span><div class="map-why">Reverse a linked list — three pointers, O(1) memory; the reverse demo</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Delete the Middle Node</span><span class="pill new">new</span><div class="map-why">Delete the middle node — slow and fast runners</div></div></div>
+<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Merge Two Sorted Lists</span><span class="pill new">new</span><div class="map-why">Merge two sorted lists by relinking, not copying</div></div></div>
+<div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Jonathan the Poet</span><div class="map-why">Walk the chain and collect; an array passes just as well</div></div></div>
+<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">Ragnarok</span><div class="map-why">Kadane with n ≤ 100 — nothing list-specific</div></div></div>
+<div class="map-row"><span class="map-idx">I</span><div><span class="map-name">Doubly linked list</span><span class="pill key">key</span><div class="map-why">Doubly linked list by hand — the one problem a vector cannot carry</div></div></div>
+<div class="map-row"><span class="map-idx">J</span><div><span class="map-name">Zoro and Seven Sword Style.</span><span class="pill fixed">fixed</span><div class="map-why">Full list interface by index; watch the empty-list print case</div></div></div><div class="trap" style="margin-top:16px"><b>At the defence you will be asked to show the pointers.</b> Every problem except I also passes with a plain array or vector — the judge accepts it, the defence does not. Limits: 1 s and 256 MB, except I at 2 s and J at 1.5 s.</div><div class="trap" style="margin-top:12px"><b>Known rough edges:</b> in B the jury solution is O(N²) although the editorial promises one pass, and its <code>size</code> field goes stale on a no-op delete — harmless for the output, but do not read that code aloud as exemplary.</div></div>
   </div>
 </section>
 </main>
 </div>
 
 <footer>
-  <span>ADS 2026 · KBTU · Lecture 2 — Linked Lists</span>
+  <span>ADS 2026 · KBTU · Lecture 2 — Linear Data Structures</span>
   <span><a href="index.html">All lectures</a></span>
 </footer>
 </div>
 
 <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-<script src="assets/notes.js?v=202609281239"></script>
-<script src="assets/present.js?v=202609281239"></script>
-<script src="assets/cpp.js?v=202609281239"></script>
+<script src="assets/notes.js?v=202609281805"></script>
+<script src="assets/present.js?v=202609281805"></script>
+<script src="assets/cpp.js?v=202609281805"></script>
 <script>
 
 (function(){

@@ -6,40 +6,40 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
-<link rel="stylesheet" href="assets/notes.css?v=202609281239">
-<link rel="stylesheet" href="assets/present.css?v=202609281239">
-<link rel="stylesheet" href="assets/cpp.css?v=202609281239">
+<link rel="stylesheet" href="assets/notes.css?v=202609281805">
+<link rel="stylesheet" href="assets/present.css?v=202609281805">
+<link rel="stylesheet" href="assets/cpp.css?v=202609281805">
 </head><body>
 <div class="wrap">
 
 <header class="masthead">
   <div class="eyebrow">ADS 2026 · KBTU · Lecture 3 · Lab 3</div>
   <h1>Binary <em>Search</em></h1>
-  <p class="dek">One idea, three shapes. First the textbook search in a sorted array, then the two boundary versions that actually get used, and finally the move that makes this the most reusable technique in the course — searching over the answer instead of over the data.</p>
-  <div class="facts"><span class="fact">Length <b>~105 min</b></span><span class="fact">Beats <b>6</b></span><span class="fact">Live demos <b>3</b></span><span class="fact">Practice <b>Lab 3 · 11 problems</b></span></div>
+  <p class="dek">Halve the range at every step. First the exact search in a sorted array, then the nearest element on each side of x, and finally binary search on the answer — over the range of possible answers instead of over an array.</p>
+  <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>6</b></span><span class="fact">Live demos <b>3</b></span><span class="fact">Practice <b>Lab 3 · 11 problems</b></span></div>
 </header>
 
 <div class="cols">
 
 <nav class="rail" aria-label="Running order">
   <div class="rail-h">Running order</div>
-  <div class="part">I · The idea</div>
+  <div class="part">I · Exact match</div>
   <ol>
-    <li><a href="#b1"><span class="n">01</span><span>Halving the range</span><span class="t">16′</span></a></li>
+    <li><a href="#b1"><span class="n">01</span><span>Classic binary search</span><span class="t">35′</span></a></li>
   </ol>
-  <div class="part">II · Boundaries</div>
+  <div class="part">II · Nearest element</div>
   <ol>
-    <li><a href="#b2"><span class="n">02</span><span>lower · upper bound</span><span class="t">18′</span></a></li>
+    <li><a href="#b2"><span class="n">02</span><span>Nearest element</span><span class="t">22′</span></a></li>
   </ol>
   <div class="part">III · Search on the answer</div>
   <ol>
-    <li><a href="#b3"><span class="n">03</span><span>Binary search on the answer</span><span class="t">24′</span></a></li>
-    <li><a href="#b4"><span class="n">04</span><span>Recognising the pattern</span><span class="t">12′</span></a></li>
+    <li><a href="#b3"><span class="n">03</span><span>Search on the answer</span><span class="t">35′</span></a></li>
   </ol>
-  <div class="part">IV · Practice</div>
+  <div class="part">IV · Wrap-up</div>
   <ol>
-    <li><a href="#b5"><span class="n">05</span><span>Lab 3 walkthrough</span><span class="t">12′</span></a></li>
-    <li><a href="#b6"><span class="n">06</span><span>What comes next</span><span class="t">3′</span></a></li>
+    <li><a href="#b4"><span class="n">04</span><span>Key takeaways</span><span class="t">4′</span></a></li>
+    <li><a href="#b5"><span class="n">05</span><span>Binary search variants</span><span class="t">6′</span></a></li>
+    <li><a href="#b6"><span class="n">06</span><span>Lab 3</span><span class="t">8′</span></a></li>
   </ol>
 </nav>
 
@@ -48,31 +48,200 @@
   <div class="beat-head">
     <div class="beat-n">01</div>
     <div>
-      <h2>Guess the number</h2>
-      <div class="sub"><span>16 min</span> <span>demo: search stepper</span></div>
+      <h2>Classic Binary Search — Exact Match</h2>
+      <div class="sub"><span>35 min</span> <span>board</span> <span>code</span> <span>demo: range</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Open with the game: I picked a number from 1 to 1000, you have ten guesses. Someone will say 500. Ask <strong>why</strong> — that answer is the whole lecture.</li>
-        <li>Each comparison <strong>throws away half</strong> the candidates. n → n/2 → n/4 → … → 1 takes <strong>log₂n</strong> steps. For a million that is 20, for a billion 30.</li>
-        <li>Two preconditions, and they are non-negotiable: the data is <strong>sorted</strong>, and you can jump to the middle in O(1). Say out loud that this is exactly what a linked list cannot do — that is the bridge from last week.</li>
-        <li>Run the demo on n = 100 and then on n = 10⁹ and let them read the step count. Linear search on 10⁹ is a billion comparisons; this is thirty.</li>
+        <li><strong>Problem:</strong> a sorted array a[0..n−1] in non-decreasing order; find an index i with a[i] == x.</li>
+        <li>Keep two pointers <span class="mono">l</span> and <span class="mono">r</span> — the range still in play. Look at the middle: equal — done; smaller than x — the answer is to the right; larger — to the left.</li>
+        <li>Every step <strong>halves the range</strong>, so the loop runs at most log₂n times — <strong>O(log n)</strong>. Run the demo on n = 10⁹: thirty steps.</li>
+        <li>Walk through x = 13 on the board with the trace table, then write the code.</li>
+        <li>Then the practice problem: n numbers and k queries, answer YES/NO for each — the same function called k times.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre><span class="k">int</span> l = 0, r = n - 1;
-<span class="k">while</span> (l &lt;= r) {
-    <span class="k">int</span> m = l + (r - l) / 2;   <span class="c">// not (l+r)/2</span>
-    <span class="k">if</span> (a[m] == x) <span class="k">return</span> m;
-    <span class="k">if</span> (a[m] &lt; x) l = m + 1;
-    <span class="k">else</span>          r = m - 1;
+    <div class="card pad board"><h4>The problem and the algorithm</h4><p><strong>Problem:</strong> we have a sorted array <span class="mono">a[0..n-1]</span> in non-decreasing order. We want to find an index <span class="mono">i</span> such that <span class="mono">a[i] == x</span>.</p><p style="margin-top:12px"><strong>Example:</strong> find x = 13 in <span class="mono">[3, 5, 8, 13, 18, 19, 21, 27, 32]</span></p><p style="margin-top:14px"><strong>Algorithm</strong></p><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li>Keep two pointers <span class="mono">l</span> and <span class="mono">r</span> representing the current search range</li><li>While <span class="mono">l &lt;= r</span>:<ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Compute <span class="mono">mid = (l + r) / 2</span></li><li>If <span class="mono">a[mid] == x</span>, return <span class="mono">mid</span></li><li>If <span class="mono">a[mid] &lt; x</span>, search the right half (<span class="mono">l = mid + 1</span>)</li><li>If <span class="mono">a[mid] &gt; x</span>, search the left half (<span class="mono">r = mid - 1</span>)</li></ul></li></ol><p style="margin-top:14px"><strong>Time complexity:</strong> at each step we halve the search space → <strong>O(log n)</strong>.</p></div>
+    <div class="card pad board"><h4>Trace · x = 13</h4><pre class="out">index:   0  1  2  3  4  5  6  7  8
+a:       3  5  8 13 18 19 21 27 32</pre><div style="margin-top:12px"></div><pre class="out">step    l    r  mid  a[mid]   
+------------------------------------------------------
+   1    0    8    4      18   18 &gt; 13 → r = 3
+   2    0    3    1       5   5 &lt; 13 → l = 2
+   3    2    3    2       8   8 &lt; 13 → l = 3
+   4    3    3    3      13   a[mid] == 13 → found at 3</pre><p style="margin-top:12px">4 steps, and the range shrinks 9 → 4 → 2 → 1. For a million elements binary search needs at most 20 steps; a linear scan needs up to a million.</p></div>
+    <div class="card pad demo"><h4>Demo · watch the range collapse</h4><div class="ctl"><label class="f" style="flex:1 1 120px"><span>n</span><input type="number" id="bsn" value="64" min="2" max="1000000000"></label><label class="f" style="flex:1 1 120px"><span>target</span><input type="number" id="bsx" value="41"></label><button class="pri" id="bsrun">Search</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-bs="64,41">n=64</button><button class="chip" data-bs="1000,777">n=1 000</button><button class="chip" data-bs="1000000,999999">n=10⁶</button><button class="chip" data-bs="1000000000,1">n=10⁹, worst</button></div><div class="readout"><div class="stat good"><div class="lab">Binary, comparisons</div><div class="val" id="bsfast">—</div></div><div class="stat bad"><div class="lab">Linear, comparisons</div><div class="val" id="bsslow">—</div></div></div><div class="steps" style="margin-top:14px"><table><thead><tr><th class="n">step</th><th class="n">l</th><th class="n">m</th><th class="n">r</th><th class="n">range</th></tr></thead><tbody id="bssteps"></tbody></table></div></div>
+    <div class="card pad board"><h4>Implementation</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">int</span> binary_search_exact(vector&lt;<span class="k">int</span>&gt;&amp; a, <span class="k">int</span> x) {
+    <span class="k">int</span> l = 0, r = (<span class="k">int</span>)a.size() - 1;
+    <span class="k">while</span> (l &lt;= r) {
+        <span class="k">int</span> mid = l + (r - l) / 2;  <span class="c">// Avoids overflow</span>
+        <span class="k">if</span> (a[mid] == x) <span class="k">return</span> mid;
+        <span class="k">if</span> (a[mid] &lt; x) l = mid + 1;
+        <span class="k">else</span> r = mid - 1;
+    }
+    <span class="k">return</span> -1; <span class="c">// not found</span>
 }
-<span class="k">return</span> -1;</pre><div class="trap" style="margin-top:14px"><b>Why <code>l + (r-l)/2</code>:</b> with <code>l</code> and <code>r</code> near 2·10⁹ the sum <code>l+r</code> overflows <code>int</code> and the index goes negative. This is the famous bug that sat in the JDK for nine years — worth the thirty seconds it takes to tell.</div><div class="trap" style="margin-top:10px"><b>The other classic:</b> writing <code>l = m</code> instead of <code>l = m + 1</code>. The range stops shrinking and the loop hangs. If a submission times out on a tiny test, this is why.</div></div>
-      <div class="card pad demo"><h4>Demo · watch the range collapse</h4><div class="ctl"><label class="f" style="flex:1 1 120px"><span>n</span><input type="number" id="bsn" value="64" min="2" max="1000000000"></label><label class="f" style="flex:1 1 120px"><span>target</span><input type="number" id="bsx" value="41"></label><button class="pri" id="bsrun">Search</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-bs="64,41">n=64</button><button class="chip" data-bs="1000,777">n=1 000</button><button class="chip" data-bs="1000000,999999">n=10⁶</button><button class="chip" data-bs="1000000000,1">n=10⁹, worst</button></div><div class="readout"><div class="stat good"><div class="lab">Binary, comparisons</div><div class="val" id="bsfast">—</div></div><div class="stat bad"><div class="lab">Linear, comparisons</div><div class="val" id="bsslow">—</div></div></div><div class="steps" style="margin-top:14px"><table><thead><tr><th class="n">step</th><th class="n">l</th><th class="n">m</th><th class="n">r</th><th class="n">range</th></tr></thead><tbody id="bssteps"></tbody></table></div></div>
-    </div>
+
+<span class="k">int</span> main() {
+    vector&lt;<span class="k">int</span>&gt; a = {3, 5, 8, 13, 18, 19, 21, 27, 32};
+    <span class="k">int</span> x = 13;
+    <span class="k">int</span> idx = binary_search_exact(a, x);
+    cout &lt;&lt; (idx != -1 ? <span class="s">"Found at index "</span> + to_string(idx) : <span class="s">"Not found"</span>) &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">Found at index 3</pre><p style="margin-top:12px"><span class="mono">l + (r - l) / 2</span> is the same middle as <span class="mono">(l + r) / 2</span>, but <span class="mono">l + r</span> can overflow <span class="mono">int</span> when both are close to 2·10⁹.</p></div>
+    <div class="card pad board"><h4>Another version · returning the index</h4><p>The same search with <span class="mono">(l + r) / 2</span> and an <span class="mono">else if</span> chain. Returns the index, or −1.</p><div style="margin-top:12px"><details class="code"><summary>the full program<span class="lines">25 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">int</span> binary_search(vector&lt;<span class="k">int</span>&gt; &amp;a, <span class="k">int</span> x) {
+    <span class="k">int</span> l = 0, r = a.size() - 1;
+    <span class="k">while</span> (l &lt;= r) {
+        <span class="k">int</span> mid = (l + r) / 2;
+        <span class="k">if</span> (a[mid] == x)
+            <span class="k">return</span> mid;
+        <span class="k">else</span> <span class="k">if</span> (a[mid] &gt; x)
+            r = mid - 1;
+        <span class="k">else</span>
+            l = mid + 1;
+    }
+    <span class="k">return</span> -1;
+}
+
+<span class="k">int</span> main() {
+    vector&lt;<span class="k">int</span>&gt; a = {3, 5, 8, 13, 18, 19, 21, 27, 32};
+    <span class="k">int</span> ind = binary_search(a, 13);
+    cout &lt;&lt; ind;
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">output</div><pre class="out">3</pre></div>
+    <div class="card pad board"><h4>Another version · printing l and r</h4><p>The same function with one extra line — <span class="mono">cout &lt;&lt; l &lt;&lt; " " &lt;&lt; r</span> at the top of the loop — so the range can be watched shrinking. It reads the array and x from input.</p><div style="margin-top:12px"><details class="code"><summary>the full program<span class="lines">36 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">int</span> binary_search(vector&lt;<span class="k">int</span>&gt; &amp;a, <span class="k">int</span> x) {
+    <span class="k">int</span> l = 0, r = a.size() - 1;
+    <span class="k">while</span> (l &lt;= r) {
+        cout &lt;&lt; l &lt;&lt; <span class="s">" "</span> &lt;&lt; r &lt;&lt; endl;
+        <span class="k">int</span> m = (l + r) / 2;
+        <span class="k">if</span> (a[m] == x)
+            <span class="k">return</span> m;
+        <span class="k">if</span> (a[m] &gt; x)
+            r = m - 1;
+        <span class="k">else</span>
+            l = m + 1;
+    }
+    <span class="k">return</span> -1;
+}
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> n;
+    vector&lt;<span class="k">int</span>&gt; a;
+    cin &gt;&gt; n;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">int</span> t;
+        cin &gt;&gt; t;
+        a.push_back(t);
+    }
+    <span class="k">int</span> x;
+    cin &gt;&gt; x;
+    <span class="k">int</span> ind = binary_search(a, x);
+    cout &lt;&lt; ind;
+        
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">9
+3 5 8 13 18 19 21 27 32
+13</pre><div class="out-lbl">output</div><pre class="out">0 8
+0 3
+2 3
+3 3
+3</pre></div>
+    <div class="card pad board"><h4>Practice problem · does x occur in the array?</h4><p>Given an array and k queries, check whether each queried element exists. <a href="https://codeforces.com/edu/course/2/lesson/6/1/practice/contest/283911/problem/A" target="_blank" rel="noopener">Codeforces EDU · Binary Search · A</a></p><div style="margin-top:12px"></div><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">bool</span> find(vector&lt;<span class="k">int</span>&gt; &amp;a, <span class="k">int</span> x) {
+    <span class="k">int</span> l = 0;
+    <span class="k">int</span> r = a.size() - 1;
+    <span class="k">while</span> (l &lt;= r) {
+        <span class="k">int</span> m = (l + r) / 2;
+        <span class="k">if</span> (a[m] == x)
+            <span class="k">return</span> <span class="k">true</span>;
+        <span class="k">if</span> (a[m] &lt; x) 
+            l = m + 1;
+        <span class="k">else</span>
+            r = m - 1;
+    }
+    <span class="k">return</span> <span class="k">false</span>;
+}
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> n, k;
+    cin &gt;&gt; n &gt;&gt; k;
+
+    vector&lt;<span class="k">int</span>&gt; a(n);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        cin &gt;&gt; a[i];
+
+    <span class="k">int</span> x;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; k; i++) {
+        cin &gt;&gt; x;
+        <span class="k">if</span> (find(a, x))
+            cout &lt;&lt; <span class="s">"YES\n"</span>;
+        <span class="k">else</span>
+            cout &lt;&lt; <span class="s">"NO\n"</span>;
+    }
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">input</div><pre class="out">5 3
+1 3 5 7 9
+3 4 9</pre><div class="out-lbl">output</div><pre class="out">YES
+NO
+YES</pre></div>
+    <div class="card pad board"><h4>Another version · exists()</h4><p>The same solution with the function called <span class="mono">exists</span> and the array read with <span class="mono">push_back</span>.</p><div style="margin-top:12px"><details class="code"><summary>the full program<span class="lines">36 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">bool</span> exists(vector&lt;<span class="k">int</span>&gt; &amp;a, <span class="k">int</span> x) {
+    <span class="k">int</span> l = 0, r = a.size() - 1;
+    <span class="k">while</span> (l &lt;= r) {
+        <span class="k">int</span> mid = (l + r) / 2;
+        <span class="k">if</span> (a[mid] == x)
+            <span class="k">return</span> <span class="k">true</span>;
+        <span class="k">if</span> (a[mid] &gt; x) 
+            r = mid - 1;
+        <span class="k">else</span>
+            l = mid + 1;
+    }
+    <span class="k">return</span> <span class="k">false</span>;
+}
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> n, k, t;
+    cin &gt;&gt; n &gt;&gt; k;
+    vector&lt;<span class="k">int</span>&gt; a;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        cin &gt;&gt; t;
+        a.push_back(t);
+    }
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; k; i++) {
+        cin &gt;&gt; t;
+        <span class="k">if</span> (exists(a, t))
+            cout &lt;&lt; <span class="s">"YES"</span> &lt;&lt; endl;
+        <span class="k">else</span>
+            cout &lt;&lt; <span class="s">"NO"</span> &lt;&lt; endl;
+    }
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">5 3
+1 3 5 7 9
+3 4 9</pre><div class="out-lbl">output</div><pre class="out">YES
+NO
+YES</pre></div>
   </div>
 </section>
 
@@ -80,31 +249,164 @@
   <div class="beat-head">
     <div class="beat-n">02</div>
     <div>
-      <h2>The two versions you actually use</h2>
-      <div class="sub"><span>18 min</span> <span>demo: duplicates</span></div>
+      <h2>Finding the Nearest Element</h2>
+      <div class="sub"><span>22 min</span> <span>board</span> <span>code</span> <span>demo: bounds</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>The textbook version answers <em>is it there</em>. Real problems ask <strong>where is the first one ≥ x</strong> or <strong>how many are &lt; x</strong>. That is <code>lower_bound</code>.</li>
-        <li>Switch the loop to <code>while (l &lt; r)</code> with <code>r = n</code> — the answer is a <strong>position, possibly n</strong>, not an index that must exist. This off-by-one is where most of the lab is lost.</li>
-        <li>With duplicates: <code>lower_bound</code> gives the first occurrence, <code>upper_bound</code> the one past the last, and the <strong>difference is the count</strong>. Show it in the demo on an array full of repeats.</li>
-        <li>Then say the practical thing: in C++ these are <code>std::lower_bound</code> and <code>std::upper_bound</code>, and <strong>you should use them</strong> — but you must be able to write them, because at the defence you will be asked to.</li>
+        <li>Now x may be absent, and we want its neighbours: the <strong>largest element ≤ x</strong> and the <strong>smallest element ≥ x</strong>.</li>
+        <li>Pretend there is −∞ before the array and +∞ after it: start with <span class="mono">l = −1</span>, <span class="mono">r = n</span>. The invariant is <strong>a[l] ≤ x &lt; a[r]</strong>; the loop runs while the two are not neighbours.</li>
+        <li>When it stops, <span class="mono">l</span> is the largest element ≤ x, and <span class="mono">r</span> the smallest element <strong>&gt; x</strong>. For "≥ x" run the mirrored search — keep a[l] &lt; x and a[r] ≥ x.</li>
+        <li>In the demo, an array full of repeats: the two boundaries are std::lower_bound and std::upper_bound, and their difference is how many times x occurs.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre><span class="c">// first index with a[i] &gt;= x</span>
-<span class="k">int</span> l = 0, r = n;        <span class="c">// note: n, not n-1</span>
-<span class="k">while</span> (l &lt; r) {
-    <span class="k">int</span> m = l + (r - l) / 2;
-    <span class="k">if</span> (a[m] &lt; x) l = m + 1;
-    <span class="k">else</span>          r = m;
+    <div class="card pad board"><h4>Goal and algorithm</h4><p><strong>Goal:</strong> find</p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>the <strong>largest element ≤ x</strong> — the closest from the left</li><li>the <strong>smallest element ≥ x</strong> — the closest from the right</li></ul><p style="margin-top:14px"><strong>Algorithm for the largest ≤ x</strong></p><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li>Add −∞ at the start and +∞ at the end — conceptually: <span class="mono">l = -1</span>, <span class="mono">r = n</span></li><li>Maintain the invariant: <span class="mono">a[l] ≤ x</span> and <span class="mono">a[r] &gt; x</span></li><li>While <span class="mono">l + 1 &lt; r</span>:<ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><span class="mono">mid = (l + r) / 2</span></li><li>if <span class="mono">a[mid] ≤ x</span> → move <span class="mono">l = mid</span></li><li>else <span class="mono">r = mid</span></li></ul></li></ol></div>
+    <div class="card pad board"><h4>Trace · x = 20</h4><pre class="out">index:   0  1  2  3  4  5  6  7  8
+a:       3  5 10 11 13 18 25 27 31</pre><div style="margin-top:12px"></div><pre class="out">step    l    r  mid  a[mid]   
+------------------------------------------------------
+   1   -1    9    4      13   13 ≤ 20 → l = 4
+   2    4    9    6      25   25 &gt; 20 → r = 6
+   3    4    6    5      18   18 ≤ 20 → l = 5</pre><p style="margin-top:12px">The loop stops with l = 5, r = 6: a[l] = 18 is the largest element ≤ 20, a[r] = 25 the smallest element greater than 20.</p></div>
+    <div class="card pad board"><h4>Implementation</h4><pre><span class="k">#include</span> &lt;bits/stdc++.h&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+pair&lt;<span class="k">int</span>,<span class="k">int</span>&gt; nearest_elements(vector&lt;<span class="k">int</span>&gt;&amp; a, <span class="k">int</span> x) {
+    <span class="k">int</span> n = a.size();
+    <span class="k">int</span> l = -1, r = n; <span class="c">// conceptual -∞ and +∞</span>
+    
+    <span class="k">while</span> (l + 1 &lt; r) {
+        <span class="k">int</span> mid = (l + r) / 2;
+        <span class="k">if</span> (a[mid] &lt;= x) l = mid;
+        <span class="k">else</span> r = mid;
+    }
+    
+    <span class="k">int</span> leftVal = (l &gt;= 0 ? a[l] : INT_MIN);
+    <span class="c">// a[r] is the smallest element &gt; x; for the smallest element &gt;= x</span>
+    <span class="c">// run the mirrored search: keep a[l2] &lt; x and a[r2] &gt;= x</span>
+    <span class="k">int</span> l2 = -1, r2 = n;
+    <span class="k">while</span> (l2 + 1 &lt; r2) {
+        <span class="k">int</span> mid = (l2 + r2) / 2;
+        <span class="k">if</span> (a[mid] &lt; x) l2 = mid;
+        <span class="k">else</span> r2 = mid;
+    }
+    <span class="k">int</span> rightVal = (r2 &lt; n ? a[r2] : INT_MAX);
+    <span class="k">return</span> {leftVal, rightVal};
 }
-<span class="c">// l is the answer, l == n means "no such element"</span></pre><div class="formula" style="margin-top:13px">count of x = upper_bound(x) − lower_bound(x)</div><div class="trap" style="margin-top:14px"><b>The invariant to say out loud:</b> everything left of <code>l</code> is <code>&lt; x</code>, everything from <code>r</code> on is <code>≥ x</code>. When <code>l == r</code> the boundary is found. Teach the invariant, not the template — students who memorise the template cannot adapt it.</div></div>
-      <div class="card pad demo"><h4>Demo · bounds on a array with repeats</h4><div class="ctl"><label class="f" style="flex:1 1 220px"><span>array (sorted)</span><input type="text" id="lba" value="1 3 3 3 5 5 8 9"></label><label class="f" style="flex:1 1 90px"><span>x</span><input type="number" id="lbx" value="3"></label><button class="pri" id="lbrun">Find</button></div><div class="track" id="lbtrack"></div><div class="readout"><div class="stat"><div class="lab">lower_bound</div><div class="val" id="lblo">—</div></div><div class="stat"><div class="lab">upper_bound</div><div class="val" id="lbhi">—</div></div><div class="stat good"><div class="lab">count of x</div><div class="val" id="lbcnt">—</div></div></div><div class="log" id="lblog">Blue is the block equal to x.</div></div>
-    </div>
+
+<span class="k">int</span> main() {
+    vector&lt;<span class="k">int</span>&gt; a = {3, 5, 10, 11, 13, 18, 25, 27, 31};
+    <span class="k">int</span> x = 20;
+    <span class="k">auto</span> [leftVal, rightVal] = nearest_elements(a, x);
+    cout &lt;&lt; <span class="s">"Closest left: "</span> &lt;&lt; leftVal &lt;&lt; <span class="s">", closest right: "</span> &lt;&lt; rightVal &lt;&lt; <span class="s">"\n"</span>;
+
+    x = 18;
+    <span class="k">auto</span> [l18, r18] = nearest_elements(a, x);
+    cout &lt;&lt; <span class="s">"x = 18 -&gt; left: "</span> &lt;&lt; l18 &lt;&lt; <span class="s">", right: "</span> &lt;&lt; r18 &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">Closest left: 18, closest right: 25
+x = 18 -&gt; left: 18, right: 18</pre><p style="margin-top:12px">After the first loop <span class="mono">a[r]</span> is the smallest element <strong>strictly greater</strong> than x. When x itself is in the array that is the wrong answer for "≥ x": for x = 18 it would give 25. The second, mirrored loop keeps <span class="mono">a[l2] &lt; x ≤ a[r2]</span> and gives 18.</p></div>
+    <div class="card pad board"><h4>Another version · closest to the left</h4><p>Returns the index of the largest element ≤ x — <span class="mono">l</span>, or −1 if there is none. The program prints <span class="mono">l + 1</span>: the 1-based position, which is also <strong>how many elements are ≤ x</strong>.</p><div style="margin-top:12px"></div><pre><span class="k">int</span> index_(vector&lt;<span class="k">int</span>&gt; &amp;a, <span class="k">int</span> x) {
+    <span class="k">int</span> l = -1, r = a.size(); 
+    <span class="k">while</span> (r &gt; l + 1) {
+        <span class="k">int</span> mid = (l + r) / 2;
+        <span class="k">if</span> (a[mid] &lt;= x)
+            l = mid;
+        <span class="k">else</span>
+            r = mid;
+        <span class="c">// cout &lt;&lt; l &lt;&lt; " " &lt;&lt; r &lt;&lt; " " &lt;&lt; mid &lt;&lt; endl;</span>
+    }
+    <span class="k">return</span> l;
+}</pre><div style="margin-top:12px"><details class="code"><summary>the full program<span class="lines">32 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">int</span> index_(vector&lt;<span class="k">int</span>&gt; &amp;a, <span class="k">int</span> x) {
+    <span class="k">int</span> l = -1, r = a.size(); 
+    <span class="k">while</span> (r &gt; l + 1) {
+        <span class="k">int</span> mid = (l + r) / 2;
+        <span class="k">if</span> (a[mid] &lt;= x)
+            l = mid;
+        <span class="k">else</span>
+            r = mid;
+        <span class="c">// cout &lt;&lt; l &lt;&lt; " " &lt;&lt; r &lt;&lt; " " &lt;&lt; mid &lt;&lt; endl;</span>
+    }
+    <span class="k">return</span> l;
+}
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> n, k, t;
+    vector&lt;<span class="k">int</span>&gt; a;
+    cin &gt;&gt; n &gt;&gt; k;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        cin &gt;&gt; t;
+        a.push_back(t);
+    }
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; k; i++) {
+        cin &gt;&gt; t;
+        cout &lt;&lt; index_(a, t) + 1 &lt;&lt; endl;
+    }
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">5 5
+1 3 5 7 9
+2 4 8 1 10</pre><div class="out-lbl">output</div><pre class="out">1
+2
+4
+1
+5</pre></div>
+    <div class="card pad board"><h4>Another version · closest to the right</h4><p>The mirrored search: <span class="mono">a[mid] ≥ x</span> moves <span class="mono">r</span>. Returns the index of the smallest element ≥ x — <span class="mono">r</span>, or n if there is none.</p><div style="margin-top:12px"></div><pre><span class="k">int</span> index_right(vector&lt;<span class="k">int</span>&gt; &amp;a, <span class="k">int</span> x) {
+    <span class="k">int</span> l = -1, r = a.size(); 
+    <span class="k">while</span> (r &gt; l + 1) {
+        <span class="k">int</span> mid = (l + r) / 2;
+        <span class="k">if</span> (a[mid] &gt;= x)
+            r = mid;
+        <span class="k">else</span>
+            l = mid;
+        <span class="c">// cout &lt;&lt; l &lt;&lt; " " &lt;&lt; r &lt;&lt; " " &lt;&lt; mid &lt;&lt; endl;</span>
+    }
+    <span class="k">return</span> r;
+}</pre><div style="margin-top:12px"><details class="code"><summary>the full program<span class="lines">32 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">int</span> index_right(vector&lt;<span class="k">int</span>&gt; &amp;a, <span class="k">int</span> x) {
+    <span class="k">int</span> l = -1, r = a.size(); 
+    <span class="k">while</span> (r &gt; l + 1) {
+        <span class="k">int</span> mid = (l + r) / 2;
+        <span class="k">if</span> (a[mid] &gt;= x)
+            r = mid;
+        <span class="k">else</span>
+            l = mid;
+        <span class="c">// cout &lt;&lt; l &lt;&lt; " " &lt;&lt; r &lt;&lt; " " &lt;&lt; mid &lt;&lt; endl;</span>
+    }
+    <span class="k">return</span> r;
+}
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> n, k, t;
+    vector&lt;<span class="k">int</span>&gt; a;
+    cin &gt;&gt; n &gt;&gt; k;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        cin &gt;&gt; t;
+        a.push_back(t);
+    }
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; k; i++) {
+        cin &gt;&gt; t;
+        cout &lt;&lt; index_right(a, t) + 1 &lt;&lt; endl;   <span class="c">// was index_(...), which is not defined here</span>
+    }
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">5 5
+1 3 5 7 9
+2 4 8 1 10</pre><div class="out-lbl">output</div><pre class="out">2
+3
+5
+1
+6</pre></div>
+    <div class="card pad demo"><h4>Demo · bounds on a array with repeats</h4><div class="ctl"><label class="f" style="flex:1 1 220px"><span>array (sorted)</span><input type="text" id="lba" value="1 3 3 3 5 5 8 9"></label><label class="f" style="flex:1 1 90px"><span>x</span><input type="number" id="lbx" value="3"></label><button class="pri" id="lbrun">Find</button></div><div class="track" id="lbtrack"></div><div class="readout"><div class="stat"><div class="lab">lower_bound</div><div class="val" id="lblo">—</div></div><div class="stat"><div class="lab">upper_bound</div><div class="val" id="lbhi">—</div></div><div class="stat good"><div class="lab">count of x</div><div class="val" id="lbcnt">—</div></div></div><div class="log" id="lblog">Blue is the block equal to x.</div></div>
   </div>
 </section>
 
@@ -112,34 +414,220 @@
   <div class="beat-head">
     <div class="beat-n">03</div>
     <div>
-      <h2>When there is no array to search</h2>
-      <div class="sub"><span>24 min</span> <span>demo: rope cutting</span></div>
+      <h2>Binary Search on the Answer</h2>
+      <div class="sub"><span>35 min</span> <span>board</span> <span>code</span> <span>demo: ropes</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>This is the beat that matters. Most of the lab is <strong>not</strong> searching a given array — there is no array.</li>
-        <li>The pattern: the answer is a number in a known range, and there is a <strong>yes/no check</strong> <code>can(x)</code> that is monotone — if x works then everything smaller works too. Then binary search the <em>answer</em>.</li>
-        <li>Say the three questions to ask on every such problem, in this order: <strong>what is the answer</strong>, <strong>what are its bounds</strong>, <strong>what is can(x) and is it monotone</strong>. Write them on the board and leave them up.</li>
-        <li>Work problem G live: n ropes, cut exactly k pieces, maximise the piece length. can(x) = "Σ⌊aᵢ/x⌋ ≥ k", which clearly only gets harder as x grows. Total cost O(n log(max a)).</li>
-        <li><strong>Watch the direction.</strong> Here we want the largest x that works, so the loop keeps the good half: <code>if (can(m)) l = m; else r = m - 1;</code> — and <code>m</code> must round <strong>up</strong> or it hangs.</li>
-        <li>For real-valued answers do not use <code>l &lt; r</code>. Run a fixed <strong>100 iterations</strong> and stop; it is simpler and always terminates.</li>
+        <li>We look for the smallest (or largest) x for which a <strong>monotonic condition</strong> holds. There is no array — we search the <strong>range of possible answers</strong>.</li>
+        <li><strong>Example 1.</strong> n rectangles a × b into the smallest square. f(x) = ⌊x/a⌋·⌊x/b⌋ ≥ n. If side x fits them, any larger side fits too — monotonic, so find the first x where it becomes true.</li>
+        <li>Upper bound for the answer: <span class="mono">max(a, b) · n</span> — n rectangles in one row always fit. Use <strong>long long</strong>: the bound and the product both overflow int.</li>
+        <li><strong>Example 2.</strong> n ropes, k equal pieces, maximise the length. If length x works, every shorter one works too — so keep the largest x that is still true.</li>
+        <li>The answer is real, so do not wait for <span class="mono">l == r</span>: run a <strong>fixed 100 iterations</strong> — or loop while <span class="mono">r − l &gt; eps</span>.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>The template</h4><pre><span class="k">bool</span> can(<span class="k">long long</span> x) { <span class="c">/* monotone check */</span> }
+    <div class="card pad board"><h4>The idea</h4><p>We are looking for the smallest (or largest) x such that some <strong>monotonic condition</strong> holds. Instead of searching an array, we search in the <strong>range of possible answers</strong>.</p></div>
+    <div class="card pad board"><h4>Example 1 · minimum square to fit rectangles</h4><p><strong>Problem:</strong> we have n rectangles of size a × b. Find the smallest side of a square that can fit all of them (no rotation).</p><p style="margin-top:12px"><strong>Monotonic function:</strong> f(x) = (⌊x / a⌋ × ⌊x / b⌋ ≥ n). If a square of side x can fit them, a larger square can too → <strong>monotonic</strong>.</p><div style="margin-top:12px"></div><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
 
-<span class="k">long long</span> l = 1, r = MAXA;
-<span class="k">while</span> (l &lt; r) {
-    <span class="k">long long</span> m = l + (r - l + 1) / 2;   <span class="c">// round UP</span>
-    <span class="k">if</span> (can(m)) l = m;
-    <span class="k">else</span>        r = m - 1;
+<span class="k">bool</span> canFit(<span class="k">long</span> <span class="k">long</span> side, <span class="k">long</span> <span class="k">long</span> a, <span class="k">long</span> <span class="k">long</span> b, <span class="k">long</span> <span class="k">long</span> n) {
+    <span class="k">return</span> (side / a) * (side / b) &gt;= n;
 }
-<span class="c">// l is the largest x with can(x) == true</span></pre><div class="trap" style="margin-top:14px"><b>Rounding up is not decoration.</b> With <code>l = m</code> in the loop and <code>m</code> rounded down, <code>l</code> and <code>r</code> one apart make <code>m == l</code> forever. The submission hangs on a two-element test.</div><div class="trap" style="margin-top:10px"><b>Check the empty answer.</b> If even x = 1 fails, the answer is 0 and there is usually a special line to print. Problem G says so explicitly.</div></div>
-      <div class="card pad demo"><h4>Demo · cutting the ropes (problem G)</h4><div class="ctl"><label class="f" style="flex:1 1 200px"><span>ropes</span><input type="text" id="rca" value="802 743 457 539"></label><label class="f" style="flex:1 1 90px"><span>k</span><input type="number" id="rck" value="11"></label><button class="pri" id="rcrun">Solve</button></div><div class="readout"><div class="stat good"><div class="lab">Longest piece</div><div class="val" id="rcans">—</div></div><div class="stat"><div class="lab">Iterations</div><div class="val" id="rcit">—</div></div><div class="stat bad"><div class="lab">If we tried every length</div><div class="val" id="rcnaive">—</div></div></div><div class="steps" style="margin-top:14px"><table><thead><tr><th class="n">l</th><th class="n">m</th><th class="n">r</th><th class="n">pieces at m</th><th>can(m)</th></tr></thead><tbody id="rcsteps"></tbody></table></div><p style="margin-top:12px;font-size:.83rem;color:var(--ink-3)">The <em>can</em> column only ever goes from yes to no as you read down a fixed column — that is monotonicity, made visible.</p></div>
-    </div>
+
+<span class="k">long</span> <span class="k">long</span> minSquareSide(<span class="k">long</span> <span class="k">long</span> a, <span class="k">long</span> <span class="k">long</span> b, <span class="k">long</span> <span class="k">long</span> n) {
+    <span class="k">long</span> <span class="k">long</span> l = 0, r = max(a, b) * n; <span class="c">// upper bound</span>
+    
+    <span class="k">while</span> (l + 1 &lt; r) {
+        <span class="k">long</span> <span class="k">long</span> mid = (l + r) / 2;
+        <span class="k">if</span> (canFit(mid, a, b, n)) r = mid;
+        <span class="k">else</span> l = mid;
+    }
+    <span class="k">return</span> r;
+}
+
+<span class="k">int</span> main() {
+    <span class="k">long</span> <span class="k">long</span> n = 10, a = 2, b = 3;
+    cout &lt;&lt; <span class="s">"Minimum side: "</span> &lt;&lt; minSquareSide(a, b, n) &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">Minimum side: 9</pre><p style="margin-top:12px">Check: side 9 holds 4 × 3 = 12 rectangles 2 × 3 — enough for 10; side 8 holds only 8.</p></div>
+    <div class="card pad board"><h4>Another version · long long throughout</h4><p>The same solution reading w, h and n from input.</p><div style="margin-top:12px"><details class="code"><summary>the full program<span class="lines">28 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+#define ll <span class="k">long</span> <span class="k">long</span>
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+ll can_fit(ll n, ll w, ll h) {
+    <span class="k">return</span> (n / w) * (n / h);
+}
+
+ll solve(ll w, ll h, ll n) {
+    ll l = 0; ll r = max(w, h) * n;
+    <span class="k">while</span> (l + 1 &lt; r) {
+        ll mid = (l + r) / 2;
+        <span class="k">if</span> (can_fit(mid, w, h) &gt;= n)
+            r = mid;
+        <span class="k">else</span>
+            l = mid;
+    }
+    <span class="k">return</span> r;
+}
+
+
+<span class="k">int</span> main() {
+    ll w, h, n;
+    cin &gt;&gt; w &gt;&gt; h &gt;&gt; n;
+    cout &lt;&lt; solve(w, h, n);
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">2 3 10</pre><div class="out-lbl">output</div><pre class="out">9</pre></div>
+    <div class="card pad board"><h4>Another version · with int and a trace</h4><p>The first draft: prints <span class="mono">l r mid</span> at every step. It is written with <span class="mono">int</span>, which is enough for small inputs only — <span class="mono">max(n, m) * k</span> overflows when the numbers are large.</p><div style="margin-top:12px"><details class="code"><summary>the full program<span class="lines">28 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+<span class="k">int</span> n, m, k;
+
+<span class="k">bool</span> f(<span class="k">int</span> x) {
+    <span class="k">return</span> (x / n) * (x / m) &gt;= k;
+}
+
+<span class="k">int</span> solve(<span class="k">int</span> n, <span class="k">int</span> m, <span class="k">int</span> k) {
+    <span class="k">int</span> l = 0;
+    <span class="k">int</span> r = max(n, m) * k;   <span class="c">// overflows int for large n, m, k — use long long</span>
+    <span class="k">while</span> (l + 1 &lt; r) {
+        cout &lt;&lt; l &lt;&lt; <span class="s">" "</span> &lt;&lt; r &lt;&lt; <span class="s">" "</span> &lt;&lt; (l + r) / 2 &lt;&lt; endl;
+        <span class="k">int</span> x = (l + r) / 2;
+        <span class="k">if</span> (f(x) == <span class="k">true</span>)
+            r = x;
+        <span class="k">else</span>
+            l = x;
+    }
+    <span class="k">return</span> r;
+}
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; n &gt;&gt; m &gt;&gt; k;
+    cout &lt;&lt; solve(n, m, k);
+    <span class="k">return</span> 0;
+}</pre></details></div></div>
+    <div class="card pad board"><h4>Example 2 · maximum rope length</h4><p><strong>Problem:</strong> we have n ropes and want k equal pieces of the maximum length.</p><p style="margin-top:12px"><strong>Monotonic function:</strong> f(x) = can we cut ≥ k pieces of length x? If we can cut pieces of length x, we can cut shorter ones too → <strong>monotonic decreasing</strong>, so the search keeps the largest x that is still true.</p><div style="margin-top:12px"></div><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">#include</span> &lt;algorithm&gt;
+<span class="k">#include</span> &lt;iomanip&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">bool</span> canCut(<span class="k">const</span> vector&lt;<span class="k">double</span>&gt;&amp; ropes, <span class="k">double</span> len, <span class="k">int</span> k) {
+    <span class="k">long</span> <span class="k">long</span> count = 0;
+    <span class="k">for</span> (<span class="k">double</span> r : ropes) 
+        count += (<span class="k">long</span> <span class="k">long</span>)(r / len);
+    <span class="k">return</span> count &gt;= k;
+}
+
+<span class="k">double</span> maxRopeLength(vector&lt;<span class="k">double</span>&gt;&amp; ropes, <span class="k">int</span> k) {
+    <span class="k">double</span> l = 0, r = *max_element(ropes.begin(), ropes.end());
+    
+    <span class="k">for</span> (<span class="k">int</span> iter = 0; iter &lt; 100; iter++) { <span class="c">// enough iterations for precision</span>
+        <span class="k">double</span> mid = (l + r) / 2;
+        <span class="k">if</span> (canCut(ropes, mid, k)) l = mid;
+        <span class="k">else</span> r = mid;
+    }
+    <span class="k">return</span> l;
+}
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> n, k;
+    cin &gt;&gt; n &gt;&gt; k;
+    
+    vector&lt;<span class="k">double</span>&gt; ropes(n);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        cin &gt;&gt; ropes[i];
+    }
+    
+    cout &lt;&lt; fixed &lt;&lt; setprecision(2) &lt;&lt; <span class="s">"Max length: "</span> &lt;&lt; maxRopeLength(ropes, k) &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}
+
+<span class="c">// Example input:</span>
+<span class="c">// 4 11</span>
+<span class="c">// 802</span>
+<span class="c">// 743</span>
+<span class="c">// 457</span>
+<span class="c">// 539</span></pre><div class="out-lbl">input</div><pre class="out">4 11
+802
+743
+457
+539</pre><div class="out-lbl">output</div><pre class="out">Max length: 200.50</pre></div>
+    <div class="card pad board"><h4>Another version · stop by precision</h4><p>Instead of 100 iterations the loop runs while <span class="mono">r − l &gt; eps</span> with <span class="mono">eps = 1e-8</span>, starting from <span class="mono">r = 1e9</span>.</p><div style="margin-top:12px"><details class="code"><summary>the full program<span class="lines">38 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">double</span> eps = 1e-8;
+
+<span class="k">bool</span> ok(vector&lt;<span class="k">double</span>&gt; &amp;a, <span class="k">int</span> n, <span class="k">double</span> t) {
+    <span class="k">int</span> p = 0;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; a.size(); i++)
+        p += (<span class="k">int</span>) (a[i] / t);
+    <span class="k">return</span> p &gt;= n;
+}
+
+<span class="k">double</span> solve(vector&lt;<span class="k">double</span>&gt; &amp;a, <span class="k">int</span> n) {
+    <span class="k">double</span> l = 0, r = 1e9;
+    <span class="k">while</span> (r - l &gt; eps) {
+        <span class="k">double</span> mid = (l + r) / 2.0;
+        <span class="k">if</span> (!ok(a, n, mid)) 
+            r = mid;
+        <span class="k">else</span>
+            l = mid;
+    }
+    <span class="k">return</span> l;
+}
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> n, k;
+    cin &gt;&gt; n &gt;&gt; k;
+    vector&lt;<span class="k">double</span>&gt; a;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">double</span> q;
+        cin &gt;&gt; q;
+        a.push_back(q);
+    }
+    cout &lt;&lt; solve(a, k);
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">4 11
+802
+743
+457
+539</pre><div class="out-lbl">output</div><pre class="out">200.5</pre></div>
+    <div class="card pad board"><h4>Another version · cube root</h4><p>A real-valued answer with nothing to cut: the cube root of x. f(y) = y³ grows, so find the point where it reaches x, with precision <span class="mono">eps = 1e-3</span>. The loop prints the range and f(mid) at every step.</p><div style="margin-top:12px"><details class="code"><summary>the full program<span class="lines">29 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+<span class="k">double</span> x;
+<span class="k">double</span> eps = 1e-3;
+
+<span class="k">double</span> f(<span class="k">double</span> y) {
+    <span class="k">return</span> y * y * y;
+}
+
+<span class="k">double</span> solve(<span class="k">double</span> x) {
+    <span class="k">double</span> l = 0, r = max(1.0, x);   <span class="c">// for x &lt; 1 the cube root is bigger than x</span>
+    <span class="k">while</span> (r - l &gt; eps) {
+        cout &lt;&lt; l &lt;&lt; <span class="s">" "</span> &lt;&lt; r &lt;&lt; <span class="s">" "</span> &lt;&lt; (l + r) / 2.0 &lt;&lt; endl;
+        <span class="k">double</span> y = (l + r) / 2;
+        cout &lt;&lt; f(y) &lt;&lt; endl;
+        <span class="k">if</span> (f(y) &gt;= x)
+            r = y;
+        <span class="k">else</span>
+            l = y;
+    }
+    <span class="k">return</span> l;
+}
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; x;
+    cout &lt;&lt; solve(x);
+    <span class="k">return</span> 0;
+}</pre></details></div><p style="margin-top:12px">The upper bound must contain the answer: for x &lt; 1 the cube root is <strong>bigger</strong> than x (∛0.125 = 0.5), so <span class="mono">r = x</span> is not enough — <span class="mono">r = max(1.0, x)</span> is.</p></div>
+    <div class="card pad demo"><h4>Demo · cutting the ropes (problem G)</h4><div class="ctl"><label class="f" style="flex:1 1 200px"><span>ropes</span><input type="text" id="rca" value="802 743 457 539"></label><label class="f" style="flex:1 1 90px"><span>k</span><input type="number" id="rck" value="11"></label><button class="pri" id="rcrun">Solve</button></div><div class="readout"><div class="stat good"><div class="lab">Longest piece</div><div class="val" id="rcans">—</div></div><div class="stat"><div class="lab">Iterations</div><div class="val" id="rcit">—</div></div><div class="stat bad"><div class="lab">If we tried every length</div><div class="val" id="rcnaive">—</div></div></div><div class="steps" style="margin-top:14px"><table><thead><tr><th class="n">l</th><th class="n">m</th><th class="n">r</th><th class="n">pieces at m</th><th>can(m)</th></tr></thead><tbody id="rcsteps"></tbody></table></div><p style="margin-top:12px;font-size:.83rem;color:var(--ink-3)">The <em>can</em> column only ever goes from yes to no as you read down a fixed column — that is monotonicity, made visible.</p></div>
   </div>
 </section>
 
@@ -147,24 +635,12 @@
   <div class="beat-head">
     <div class="beat-n">04</div>
     <div>
-      <h2>How to spot it in a statement</h2>
-      <div class="sub"><span>12 min</span> <span>board</span></div>
+      <h2>Key Takeaways</h2>
+      <div class="sub"><span>4 min</span></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Give them the vocabulary that signals it: <strong>"maximum such that"</strong>, <strong>"minimum time to"</strong>, <strong>"the largest k for which it is possible"</strong>. Almost every one of those is a binary search on the answer.</li>
-        <li>Second signal: the direct computation is hopeless, but <strong>checking a candidate is easy</strong>. Robin Hood (F) is exactly that — you cannot compute the rate, but given a rate you can add up the hours in one pass.</li>
-        <li>Third: the answer range is huge (up to 10⁹ or 10¹⁸) while n is small. That mismatch is a giveaway — the log is over the <em>values</em>, not over n.</li>
-        <li>Warn them about the cost: the check runs <strong>inside</strong> the loop. An O(n) check gives O(n log C) overall, which is fine; an O(n²) check is not.</li>
-      </ul>
-    </div>
-    <div class="two">
-      <div class="card pad board"><h4>The three questions, filled in</h4><div class="tw"><table><thead><tr><th>Problem</th><th>Answer</th><th>can(x)</th></tr></thead><tbody><tr><td class="k">G · Cutting the Ropes</td><td>piece length</td><td>Σ⌊aᵢ/x⌋ ≥ k</td></tr><tr><td class="k">F · Robin Hood</td><td>bars per hour</td><td>Σ⌈bagsᵢ/x⌉ ≤ H</td></tr><tr><td class="k">C · Debugging</td><td>blocks read</td><td>mistakes found ≥ M</td></tr><tr><td class="k">I · Ghouls</td><td>segment value</td><td>a valid split exists</td></tr><tr><td class="k">J · Jonathan the Farmer</td><td>distance</td><td>K sheep fit that far apart</td></tr></tbody></table></div><p style="margin-top:13px">Five of the eleven problems are the same technique wearing different clothes. Say that — it lowers the apparent size of the lab a great deal.</p></div>
-      <div class="card pad board"><h4>Where binary search hides</h4><p>Two problems in the lab are binary search on something that is <strong>not a number line at all</strong>:</p><p style="margin-top:11px"><strong>D · Win me if you can</strong> — sort the competitors once, then every round is a <code>upper_bound</code> plus a prefix sum. The search is over the sorted array; the work is in noticing you should sort first.</p><p style="margin-top:11px"><strong>K · Snake</strong> — the array is never built (it can be 10⁹ cells). You binary search the <em>column</em>, then compute the row by formula. Pure "search a virtual structure".</p><div class="trap" style="margin-top:14px"><b>B and E are the same problem twice.</b> B has n, q ≤ 100 so a double loop passes; E raises both to 10⁵ and the double loop dies. Hand them out as a pair — solving B naively and then being forced to rewrite is the lesson.</div></div>
-    </div>
+    <div class="card pad board"><h4>Five things to remember</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li><strong>Binary search works on sorted data or monotonic conditions</strong></li><li><strong>Search the answer space:</strong> sometimes we search not an array but a range of possible answers</li><li><strong>Floating point precision:</strong> when the answer is a floating point number, iterate a fixed number of times (e.g. 100) to avoid infinite loops</li><li><strong>Always define a clear monotonic function f(x)</strong> before implementing binary search on the answer</li><li><strong>Time complexity:</strong> O(log n) for array search, O(log(max − min) × cost of f) for answer search</li></ol></div>
   </div>
 </section>
 
@@ -172,31 +648,12 @@
   <div class="beat-head">
     <div class="beat-n">05</div>
     <div>
-      <h2>Lab 3 — how it maps onto today</h2>
-      <div class="sub"><span>12 min</span> <span>ADS-Lab-03</span></div>
+      <h2>Binary Search Variants</h2>
+      <div class="sub"><span>6 min</span> <span>board</span></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>A is the warm-up and should be done in the room, on the projector, in three minutes.</li>
-        <li>Then point at the split: <strong>A, B, D, E, K</strong> search inside data; <strong>C, F, G, I, J</strong> search over the answer. H is the odd one out — it is prefix sums plus a set, and it is there to stop the lab being monotonous.</li>
-        <li>Tell them the honest order of difficulty: A → D → F → G → C → J. Starting at J because it looks like a farm story is how people lose an evening.</li>
-        <li>Limits are mostly 1–2 s; <strong>J has 5 s</strong> because n = 2·10⁵ with a log inside a log.</li>
-      </ul>
-    </div>
-    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Binary search</span><span class="pill new">new</span><div class="map-why">Beat 01 · the plain search, n ≤ 100 — write it once, correctly</div></div></div>
-<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Patchwork Staccato I</span><div class="map-why">Beat 02 · bounds inside a segment; n, q ≤ 100 so brute force still passes</div></div></div>
-<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Debugging</span><div class="map-why">Beat 03 · search the answer — how many blocks until M mistakes are found</div></div></div>
-<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Win me if you can!</span><div class="map-why">Beat 04 · sort once, then upper_bound plus a prefix sum per round</div></div></div>
-<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Patchwork Staccato II</span><div class="map-why">Beat 04 · the same statement as B with n, q ≤ 10⁵ — brute force now dies</div></div></div>
-<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Robin Hood stealing the Gold</span><div class="map-why">Beat 03 · search the answer — minimum bars per hour, ceilings not floors</div></div></div>
-<div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Cutting the Ropes</span><span class="pill new">new</span><div class="map-why">Beat 03 · the worked example — longest equal piece, Σ⌊aᵢ/x⌋ ≥ k</div></div></div>
-<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">K-subarray</span><div class="map-why">Prefix sums with a set — the one problem that is not binary search</div></div></div>
-<div class="map-row"><span class="map-idx">I</span><div><span class="map-name">Oshiete oshiete yo sono shikumi wo</span><div class="map-why">Beat 03 · search the answer over a split of the street</div></div></div>
-<div class="map-row"><span class="map-idx">J</span><div><span class="map-name">Jonathan the Farmer</span><div class="map-why">Beat 03 · classic "place K items as far apart as possible", TL 5 s</div></div></div>
-<div class="map-row"><span class="map-idx">K</span><div><span class="map-name">Snake</span><div class="map-why">Beat 04 · search a virtual array — the snake is never built</div></div></div></div>
+    <div class="card pad board"><h4>Four variants</h4><div class="tw"><table><thead><tr><th>Type</th><th>Use case</th><th>Template</th></tr></thead><tbody><tr><td class="k">Exact Match</td><td>find a specific element</td><td><span class="mono">while (l &lt;= r)</span></td></tr><tr><td class="k">Lower Bound</td><td>first element ≥ x</td><td><span class="mono">while (l &lt; r)</span></td></tr><tr><td class="k">Upper Bound</td><td>first element &gt; x</td><td><span class="mono">while (l &lt; r)</span></td></tr><tr><td class="k">Answer Search</td><td>optimise on a monotonic function</td><td><span class="mono">while (l &lt; r)</span> with a condition</td></tr></tbody></table></div><p style="margin-top:13px">The code on this page writes lower bound, upper bound and answer search in the other common style — <span class="mono">l = -1</span>, <span class="mono">r = n</span>, <span class="mono">while (l + 1 &lt; r)</span>, with a[l] and a[r] always on opposite sides of the boundary. Both styles are correct; pick one and keep its invariant.</p></div>
   </div>
 </section>
 
@@ -204,12 +661,22 @@
   <div class="beat-head">
     <div class="beat-n">06</div>
     <div>
-      <h2>What comes next</h2>
-      <div class="sub"><span>3 min</span></div>
+      <h2>Lab 3 — the problems</h2>
+      <div class="sub"><span>8 min</span> <span>ADS-Lab-03</span></div>
     </div>
   </div>
   <div class="stack">
-    <div class="card pad board"><p>Lecture 4 is the <strong>binary search tree</strong> — the same halving idea, but built into the structure itself instead of applied to a flat array. Leave them with the question: <em>a sorted array supports binary search in O(log n), so why would anyone need a tree?</em> The answer is insertion, and it opens the next lecture.</p><p style="margin-top:12px">Homework is Lab 3. Ask for <strong>A and G</strong> before the next class — one of each kind, so both templates get written at least once.</p></div>
+    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Binary search</span><span class="pill new">new</span><div class="map-why">Exact match — the plain search, n ≤ 100</div></div></div>
+<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Patchwork Staccato I</span><div class="map-why">Nearest element inside a segment; n, q ≤ 100, so brute force still passes</div></div></div>
+<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Debugging</span><div class="map-why">Search on the answer — how many blocks until M mistakes are found</div></div></div>
+<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Win me if you can!</span><div class="map-why">Sort once, then an upper bound plus a prefix sum per round</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Patchwork Staccato II</span><div class="map-why">The same statement as B with n, q ≤ 10⁵ — brute force now dies</div></div></div>
+<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Robin Hood stealing the Gold</span><div class="map-why">Search on the answer — minimum bars per hour, ceilings not floors</div></div></div>
+<div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Cutting the Ropes</span><span class="pill new">new</span><div class="map-why">Search on the answer — the longest equal piece, Σ⌊aᵢ/x⌋ ≥ k</div></div></div>
+<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">K-subarray</span><div class="map-why">Prefix sums with a set — the one problem that is not binary search</div></div></div>
+<div class="map-row"><span class="map-idx">I</span><div><span class="map-name">Oshiete oshiete yo sono shikumi wo</span><div class="map-why">Search on the answer over a split of the street</div></div></div>
+<div class="map-row"><span class="map-idx">J</span><div><span class="map-name">Jonathan the Farmer</span><div class="map-why">Place K items as far apart as possible — search on the distance, TL 5 s</div></div></div>
+<div class="map-row"><span class="map-idx">K</span><div><span class="map-name">Snake</span><div class="map-why">Search a virtual array — the snake is never built</div></div></div><div class="trap" style="margin-top:16px"><b>B and E are the same problem twice.</b> B has n, q ≤ 100, so a double loop passes; E raises both to 10⁵ and the double loop dies. Hand them out as a pair.</div><div class="trap" style="margin-top:10px"><b>J has TL 5 s</b> — n = 2·10⁵ with a log inside a log. Suggested order: A → D → F → G → C → J.</div></div>
   </div>
 </section>
 </main>
@@ -222,9 +689,9 @@
 </div>
 
 <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-<script src="assets/notes.js?v=202609281239"></script>
-<script src="assets/present.js?v=202609281239"></script>
-<script src="assets/cpp.js?v=202609281239"></script>
+<script src="assets/notes.js?v=202609281805"></script>
+<script src="assets/present.js?v=202609281805"></script>
+<script src="assets/cpp.js?v=202609281805"></script>
 <script>
 
 (function(){
