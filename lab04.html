@@ -6,9 +6,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
-<link rel="stylesheet" href="assets/notes.css?v=202609281049">
-<link rel="stylesheet" href="assets/present.css?v=202609281049">
-<link rel="stylesheet" href="assets/cpp.css?v=202609281049">
+<link rel="stylesheet" href="assets/notes.css?v=202609281051">
+<link rel="stylesheet" href="assets/present.css?v=202609281051">
+<link rel="stylesheet" href="assets/cpp.css?v=202609281051">
 </head><body>
 <div class="wrap">
 
@@ -68,17 +68,19 @@
       <h4>What to say</h4>
       <ul>
         <li>A <strong>Binary Search Tree</strong> is a binary tree in which every node holds a key and the keys obey one ordering property.</li>
-        <li><strong>All nodes in the left subtree</strong> of a node are strictly less than it; <strong>all nodes in the right subtree</strong> are strictly greater. The whole subtree, not only the child.</li>
+        <li><strong>All nodes in the left subtree</strong> of a node are less than or equal to it; <strong>all nodes in the right subtree</strong> are strictly greater. The whole subtree, not only the child.</li>
+        <li>Someone will ask about <strong>equal keys</strong> — answer with the three options on the second card, and say which one today's code uses: equal keys go left.</li>
         <li>That property is what makes search, insertion and deletion efficient — <strong>especially while the tree stays balanced</strong>.</li>
       </ul>
     </div>
-    <div class="card pad board"><h4>The ordering property</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li><strong>Left subtree</strong> — every key <strong>strictly less</strong> than the node's key.</li><li><strong>Right subtree</strong> — every key <strong>strictly greater</strong> than the node's key.</li></ol><p style="margin-top:14px">Draw it for the keys of today's program, <span class="mono">10 15 16 13 12 14 9 8 17</span>:</p><pre class="out">        10
+    <div class="card pad board"><h4>The ordering property</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li><strong>Left subtree</strong> — every key <strong>less than or equal to</strong> the node's key (≤).</li><li><strong>Right subtree</strong> — every key <strong>strictly greater</strong> than the node's key (&gt;).</li></ol><p style="margin-top:14px">Draw it for the keys of today's program, <span class="mono">10 15 16 13 12 14 9 8 17</span>:</p><pre class="out">        10
        /  \
       9    15
      /    /  \
     8    13   16
         /  \    \
        12  14    17</pre><p style="margin-top:12px">Check the rule at 15: its left subtree is 13, 12, 14 — all smaller; its right subtree is 16, 17 — all larger. And the whole right half of the tree is larger than the root 10.</p></div>
+    <div class="card pad board"><h4>What about equal keys?</h4><p>The rule has to say where a key equal to the node goes. There are three usual answers — pick one and use it in <strong>every</strong> function: insert, search and delete.</p><div class="tw"><table><thead><tr><th>Option</th><th>In insert</th><th>Left / right rule</th><th>Like</th></tr></thead><tbody><tr><td class="k">1 · No duplicates</td><td><code>if (data == node-&gt;data) return node;</code></td><td>left &lt; node &lt; right</td><td><code>std::set</code></td></tr><tr><td class="k">2 · Equal keys go left</td><td><code>if (data &lt;= node-&gt;data)</code> → left</td><td>left ≤ node &lt; right</td><td>today's code</td></tr><tr><td class="k">3 · A counter in the node</td><td><code>if (data == node-&gt;data) { node-&gt;cnt++; return node; }</code></td><td>left &lt; node &lt; right</td><td><code>std::multiset</code></td></tr></tbody></table></div><p style="margin-top:13px"><strong>Option 2</strong> is what today's program does. In-order still comes out sorted, with equal keys next to each other; search stops at the highest copy. That is why <span class="mono">main</span>, which inserts 10 three times, prints <span class="mono">8 9 10 10 10 12 …</span>.</p><p style="margin-top:10px"><strong>Option 3</strong> keeps the tree small when there are many repeats: delete decrements <span class="mono">cnt</span> and removes the node only when it reaches 0.</p></div>
   </div>
 </section>
 
@@ -947,9 +949,9 @@ post-order  8 9 12 14 13 17 16 15 10</pre></div>
 </div>
 
 <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-<script src="assets/notes.js?v=202609281049"></script>
-<script src="assets/present.js?v=202609281049"></script>
-<script src="assets/cpp.js?v=202609281049"></script>
+<script src="assets/notes.js?v=202609281051"></script>
+<script src="assets/present.js?v=202609281051"></script>
+<script src="assets/cpp.js?v=202609281051"></script>
 <script>
 
 (function(){
