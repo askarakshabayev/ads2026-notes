@@ -6,9 +6,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
-<link rel="stylesheet" href="assets/notes.css?v=202609281805">
-<link rel="stylesheet" href="assets/present.css?v=202609281805">
-<link rel="stylesheet" href="assets/cpp.css?v=202609281805">
+<link rel="stylesheet" href="assets/notes.css?v=202609281811">
+<link rel="stylesheet" href="assets/present.css?v=202609281811">
+<link rel="stylesheet" href="assets/cpp.css?v=202609281811">
 </head><body>
 <div class="wrap">
 
@@ -213,44 +213,29 @@ Node *search(Node *node, <span class="k">int</span> data) {
     <span class="k">else</span>
         <span class="k">return</span> search(node-&gt;right, data);
 }</pre><p style="margin-top:12px">Minimum is the leftmost node, maximum the rightmost. Search is insert without the insertion: stop when the key matches or the pointer is <span class="mono">NULL</span>.</p></div>
-    <div class="card pad board"><h4>5 · Delete</h4><pre><span class="c">// Delete operation - most complex</span>
+    <div class="card pad board"><h4>5 · Delete</h4><pre><span class="c">// Delete operation</span>
 Node *deleteNode(Node *node, <span class="k">int</span> data) {
     <span class="k">if</span> (node == <span class="k">NULL</span>)
         <span class="k">return</span> <span class="k">NULL</span>;
-        
     <span class="k">if</span> (data &lt; node-&gt;data)
         node-&gt;left = deleteNode(node-&gt;left, data);
     <span class="k">else</span> <span class="k">if</span> (data &gt; node-&gt;data)
         node-&gt;right = deleteNode(node-&gt;right, data);
     <span class="k">else</span> {
-        <span class="c">// Node to be deleted found</span>
-        
-        <span class="c">// Case 1: Node has no children (leaf node)</span>
-        <span class="k">if</span> (node-&gt;right == <span class="k">NULL</span> &amp;&amp; node-&gt;left == <span class="k">NULL</span>) {
-            <span class="k">delete</span> node;
+        <span class="k">if</span> (node-&gt;right == <span class="k">NULL</span> <span class="k">and</span> node-&gt;left == <span class="k">NULL</span>)
             node = <span class="k">NULL</span>;
-        }
-        <span class="c">// Case 2: Node has only right child</span>
-        <span class="k">else</span> <span class="k">if</span> (node-&gt;left == <span class="k">NULL</span>) {
-            Node *temp = node;
+        <span class="k">else</span> <span class="k">if</span> (node-&gt;left == <span class="k">NULL</span>)
             node = node-&gt;right;
-            <span class="k">delete</span> temp;
-        }
-        <span class="c">// Case 3: Node has only left child</span>
-        <span class="k">else</span> <span class="k">if</span> (node-&gt;right == <span class="k">NULL</span>) {
-            Node *temp = node;
+        <span class="k">else</span> <span class="k">if</span> (node-&gt;right == <span class="k">NULL</span>)
             node = node-&gt;left;
-            <span class="k">delete</span> temp;
-        }
-        <span class="c">// Case 4: Node has both children</span>
         <span class="k">else</span> {
-            Node *tmp = findMax(node-&gt;left);  <span class="c">// Find inorder predecessor</span>
-            node-&gt;data = tmp-&gt;data;           <span class="c">// Replace data</span>
-            node-&gt;left = deleteNode(node-&gt;left, tmp-&gt;data);  <span class="c">// Delete predecessor</span>
+            Node *tmp = findMin(node-&gt;right);
+            node-&gt;data = tmp-&gt;data;
+            node-&gt;right = deleteNode(node-&gt;right, tmp-&gt;data);
         }
     }
     <span class="k">return</span> node;
-}</pre><p style="margin-top:12px">Find the node as in search, then one of the cases. With two children the node takes the key of its <strong>in-order predecessor</strong> — the maximum of the left subtree — and that node is deleted instead. The cases are drawn step by step in <em>Deletion Cases in Detail</em>.</p></div>
+}</pre><p style="margin-top:12px">Find the node as in search, then one of the cases. With two children the node takes the key of its <strong>in-order successor</strong> — the minimum of the right subtree — and that node is deleted from the right subtree instead. The cases are drawn step by step in <em>Deletion Cases in Detail</em>.</p></div>
     <div class="card pad board"><h4>6 · Height and node count</h4><pre><span class="c">// Helper function to get height of tree</span>
 <span class="k">int</span> getHeight(Node *node) {
     <span class="k">if</span> (node == <span class="k">NULL</span>)
@@ -325,7 +310,7 @@ Tree height: 4
 Total nodes: 11
 Deleting node 13...
 In-order after deletion: 8 9 10 10 10 12 14 15 16 17</pre><p style="margin-top:12px">Besides the nine keys, <span class="mono">main</span> inserts 10 twice more. Equal keys go left, so in-order prints three 10s and the height is 4.</p></div>
-    <div class="card pad board"><h4>The whole program</h4><p>Everything above in one file — open it and press <strong>▶ edit &amp; run</strong>.</p><div style="margin-top:12px"><details class="code"><summary>BST — the full program<span class="lines">201 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+    <div class="card pad board"><h4>The whole program</h4><p>Everything above in one file — open it and press <strong>▶ edit &amp; run</strong>.</p><div style="margin-top:12px"><details class="code"><summary>BST — the full program<span class="lines">186 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">using</span> <span class="k">namespace</span> std;
 
 <span class="k">class</span> Node {
@@ -419,40 +404,25 @@ In-order after deletion: 8 9 10 10 10 12 14 15 16 17</pre><p style="margin-top:1
             <span class="k">return</span> search(node-&gt;right, data);
     }
 
-    <span class="c">// Delete operation - most complex</span>
+    <span class="c">// Delete operation</span>
     Node *deleteNode(Node *node, <span class="k">int</span> data) {
         <span class="k">if</span> (node == <span class="k">NULL</span>)
             <span class="k">return</span> <span class="k">NULL</span>;
-            
         <span class="k">if</span> (data &lt; node-&gt;data)
             node-&gt;left = deleteNode(node-&gt;left, data);
         <span class="k">else</span> <span class="k">if</span> (data &gt; node-&gt;data)
             node-&gt;right = deleteNode(node-&gt;right, data);
         <span class="k">else</span> {
-            <span class="c">// Node to be deleted found</span>
-            
-            <span class="c">// Case 1: Node has no children (leaf node)</span>
-            <span class="k">if</span> (node-&gt;right == <span class="k">NULL</span> &amp;&amp; node-&gt;left == <span class="k">NULL</span>) {
-                <span class="k">delete</span> node;
+            <span class="k">if</span> (node-&gt;right == <span class="k">NULL</span> <span class="k">and</span> node-&gt;left == <span class="k">NULL</span>)
                 node = <span class="k">NULL</span>;
-            }
-            <span class="c">// Case 2: Node has only right child</span>
-            <span class="k">else</span> <span class="k">if</span> (node-&gt;left == <span class="k">NULL</span>) {
-                Node *temp = node;
+            <span class="k">else</span> <span class="k">if</span> (node-&gt;left == <span class="k">NULL</span>)
                 node = node-&gt;right;
-                <span class="k">delete</span> temp;
-            }
-            <span class="c">// Case 3: Node has only left child</span>
-            <span class="k">else</span> <span class="k">if</span> (node-&gt;right == <span class="k">NULL</span>) {
-                Node *temp = node;
+            <span class="k">else</span> <span class="k">if</span> (node-&gt;right == <span class="k">NULL</span>)
                 node = node-&gt;left;
-                <span class="k">delete</span> temp;
-            }
-            <span class="c">// Case 4: Node has both children</span>
             <span class="k">else</span> {
-                Node *tmp = findMax(node-&gt;left);  <span class="c">// Find inorder predecessor</span>
-                node-&gt;data = tmp-&gt;data;           <span class="c">// Replace data</span>
-                node-&gt;left = deleteNode(node-&gt;left, tmp-&gt;data);  <span class="c">// Delete predecessor</span>
+                Node *tmp = findMin(node-&gt;right);
+                node-&gt;data = tmp-&gt;data;
+                node-&gt;right = deleteNode(node-&gt;right, tmp-&gt;data);
             }
         }
         <span class="k">return</span> node;
@@ -679,7 +649,7 @@ Node *find_min2(Node *node) {
 
     <span class="k">return</span> 0;
 }</pre></details></div><div class="out-lbl">output</div><pre class="out">7</pre></div>
-    <div class="card pad board"><h4>Another version · Tree with a constructor</h4><p>A third version: a constructor for <span class="mono">Tree</span>, one recursive insert, <span class="mono">find_min</span>, <span class="mono">find_max</span> and delete with the <strong>successor</strong> — the minimum of the right subtree, the mirror image of the predecessor. <span class="mono">main</span> builds <span class="mono">30 20 40 10 26 34 45 9 12</span> and prints the maximum.</p><div style="margin-top:12px"><details class="code"><summary>the full program — version 3<span class="lines">98 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+    <div class="card pad board"><h4>Another version · Tree with a constructor</h4><p>A third version: a constructor for <span class="mono">Tree</span>, one recursive insert, <span class="mono">find_min</span>, <span class="mono">find_max</span> and the same delete with the <strong>successor</strong>. <span class="mono">main</span> builds <span class="mono">30 20 40 10 26 34 45 9 12</span> and prints the maximum.</p><div style="margin-top:12px"><details class="code"><summary>the full program — version 3<span class="lines">98 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
 
 <span class="k">using</span> <span class="k">namespace</span> std;
 
@@ -843,13 +813,13 @@ post-order  8 9 12 14 13 17 16 15 10</pre></div>
     </div>
     <div class="card pad board"><h4>Case 1 · a leaf</h4><p>Simply remove the node. On the tree from the introduction: <strong>delete 8</strong> — 9 loses its left child, nothing else changes.</p></div>
     <div class="card pad board"><h4>Case 2 · one child</h4><p>Replace the node with its child. <strong>Delete 9</strong> — it has only the left child 8, so 8 takes its place under 10.</p></div>
-    <div class="card pad board"><h4>Case 3 · two children</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Find the <strong>in-order predecessor</strong> — the rightmost node in the left subtree — <strong>or</strong> the <strong>in-order successor</strong> — the leftmost node in the right subtree.</li><li>Replace the node's data with the predecessor's / successor's.</li><li>Delete the predecessor / successor.</li></ul><p style="margin-top:14px"><strong>Delete 15</strong> with the predecessor, as <code>deleteNode</code> above does: the rightmost key of its left subtree is 14.</p><pre class="out">        10                        10
+    <div class="card pad board"><h4>Case 3 · two children</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Find the <strong>in-order predecessor</strong> — the rightmost node in the left subtree — <strong>or</strong> the <strong>in-order successor</strong> — the leftmost node in the right subtree.</li><li>Replace the node's data with the predecessor's / successor's.</li><li>Delete the predecessor / successor.</li></ul><p style="margin-top:14px"><strong>Delete 15</strong> with the successor, as <code>deleteNode</code> above does: the leftmost key of its right subtree is 16. 16 moves up into 15's place, and 17 takes the old place of 16.</p><pre class="out">        10                        10
        /  \                      /  \
-      9    15          →        9    14
+      9    15          →        9    16
      /    /  \                 /    /  \
-    8    13   16              8    13   16
-        /  \    \                 /      \
-       12  14    17              12       17</pre><p style="margin-top:12px">With the successor it would be 16 instead — version 3 of the program does it that way. Both keep the ordering property.</p></div>
+    8    13   16              8    13   17
+        /  \    \                /  \
+       12  14    17             12  14</pre><p style="margin-top:12px">With the predecessor it would be 14 instead — the rightmost key of the left subtree. Both keep the ordering property.</p></div>
   </div>
 </section>
 
@@ -949,9 +919,9 @@ post-order  8 9 12 14 13 17 16 15 10</pre></div>
 </div>
 
 <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-<script src="assets/notes.js?v=202609281805"></script>
-<script src="assets/present.js?v=202609281805"></script>
-<script src="assets/cpp.js?v=202609281805"></script>
+<script src="assets/notes.js?v=202609281811"></script>
+<script src="assets/present.js?v=202609281811"></script>
+<script src="assets/cpp.js?v=202609281811"></script>
 <script>
 
 (function(){
