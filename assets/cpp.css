@@ -88,3 +88,14 @@ body.ed-on{overflow:hidden}
 .ed-pop-list .del:hover{color:var(--mark)}
 .ed-pop-list .del.arm{color:var(--mark);font-size:.75rem}
 .ed-pop-list .empty{padding:14px 12px;font-size:.84rem;color:var(--ink-3);line-height:1.5}
+
+/* ошибки компиляции: строка в редакторе и ссылка в выводе */
+.ed-errline{background:color-mix(in srgb,var(--mark) 16%,transparent)}
+.ed-warnline{background:color-mix(in srgb,#d9a441 14%,transparent)}
+.ed-errglyph{background:var(--mark);width:4px !important;margin-left:3px}
+.ed-warnglyph{background:#d9a441;width:4px !important;margin-left:3px}
+.ed-out a.diag{cursor:pointer;font-weight:600;text-decoration:underline;text-underline-offset:3px;
+  color:var(--mark);border-radius:4px;padding:0 3px;margin-left:-3px}
+.ed-out a.diag:hover{background:var(--mark-soft)}
+.ed-out a.diag.warning{color:#c48a1a}
+.ed-out a.diag.note{color:var(--ink-3)}

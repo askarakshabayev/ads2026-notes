@@ -361,6 +361,58 @@ function syncMonaco(){
   MON.ed.layout();
 }
 
+
+/* ---------- где ошибка: строка из сообщения компилятора ----------
+   g++ пишет «<source>:15:2: error: …» (Compiler Explorer) или «prog.cc:15:2: …» (Wandbox).
+   Отправляется ровно текст редактора, поэтому номера строк совпадают один в один. */
+var DIAG_RE=/^(?:<source>|prog\.cc|[\w.\/-]+\.(?:cpp|cc|cxx|h|hpp)):(\d+):(\d+):\s*(fatal error|error|warning|note):\s*(.*)$/;
+function parseDiag(text){
+  var out=[];
+  stripAnsi(text).split('\n').forEach(function(l){
+    var m=l.match(DIAG_RE); if(!m) return;
+    out.push({line:+m[1],col:+m[2],sev:/error/.test(m[3])?'error':m[3],msg:m[4]});
+  });
+  return out;
+}
+/* в выводе: «15:2» у каждой ошибки — ссылка, клик ставит курсор на это место */
+function renderDiag(text){
+  return stripAnsi(text).split('\n').map(function(l){
+    var m=l.match(DIAG_RE);
+    if(!m) return '<span class="err">'+esc(l.replace(/^(?:<source>|prog\.cc):\s*/,''))+'</span>';
+    var rest=l.slice(l.indexOf(m[1]+':'+m[2])+(m[1]+':'+m[2]).length);
+    return '<a class="diag '+(/error/.test(m[3])?'e':m[3])+'" data-l="'+m[1]+'" data-c="'+m[2]+'" title="Перейти к строке '+m[1]+'">'+
+           'строка '+m[1]+':'+m[2]+'</a><span class="err">'+esc(rest)+'</span>';
+  }).join('\n');
+}
+var DECO=[];
+function markDiag(list){
+  if(!MON.ed||!window.monaco) return;
+  var model=MON.ed.getModel(), n=model.getLineCount(), S=monaco.MarkerSeverity;
+  var ok=list.filter(function(d){ return d.line>=1&&d.line<=n; });
+  monaco.editor.setModelMarkers(model,'gcc',ok.map(function(d){
+    return {startLineNumber:d.line,startColumn:d.col,endLineNumber:d.line,endColumn:model.getLineMaxColumn(d.line),
+            message:d.msg,severity:d.sev==='error'?S.Error:d.sev==='warning'?S.Warning:S.Info};
+  }));
+  DECO=MON.ed.deltaDecorations(DECO,ok.filter(function(d){ return d.sev!=='note'; }).map(function(d){
+    return {range:new monaco.Range(d.line,1,d.line,1),
+            options:{isWholeLine:true,className:d.sev==='error'?'ed-errline':'ed-warnline',
+                     linesDecorationsClassName:d.sev==='error'?'ed-errglyph':'ed-warnglyph'}};
+  }));
+}
+function jumpTo(line,col){
+  if(MON.ed){
+    MON.ed.revealLineInCenter(line);
+    MON.ed.setPosition({lineNumber:line,column:col||1});
+    MON.ed.focus();
+    return;
+  }
+  var ls=ta.value.split('\n'), a=0;
+  for(var i=0;i<line-1&&i<ls.length;i++) a+=ls[i].length+1;
+  var b=a+((ls[line-1]||'').length);
+  ta.focus(); ta.setSelectionRange(a,b);
+  ta.scrollTop=Math.max(0,(line-5)*parseFloat(getComputedStyle(ta).lineHeight||'20'));
+}
+
 /* ---------- запуск ---------- */
 function stripAnsi(s){ return String(s).replace(/\u001b\[[0-9;]*[A-Za-z]/g,''); }
 function esc(s){ return stripAnsi(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
@@ -404,6 +456,7 @@ function runWandbox(src,inp){
 function run(){
   if(ED.busy) return;
   ED.busy=true;
+  markDiag([]);
   var src=getCode(), inp=stdin.value;
   say('<span class="dim">compiling…</span>');
   setStatus('отправлено на удалённый компилятор…');
@@ -413,8 +466,12 @@ function run(){
     .then(function(r){
       var dt=Date.now()-t0;
       if(!r.ok){
-        say('<span class="err">'+esc(r.text)+'</span>');
-        setStatus('ошибка компиляции · '+r.engine+' · '+dt+' ms');
+        var dg=parseDiag(r.text);
+        say(renderDiag(r.text));
+        markDiag(dg);
+        var first=dg.filter(function(d){ return d.sev==='error'; })[0]||dg[0];
+        if(first) jumpTo(first.line,first.col);
+        setStatus('ошибка компиляции'+(first?' · строка '+first.line:'')+' · '+r.engine+' · '+dt+' ms');
         return;
       }
       var h='';
@@ -461,7 +518,7 @@ function keyHandler(e){
 }
 
 function load(code,label){
-  setCode(code); saveState();
+  setCode(code); saveState(); markDiag([]);
   setStatus(label?('загружено: '+label):'готово');
   say('<span class="dim">Ctrl+Enter или кнопку Run — чтобы скомпилировать и запустить.</span>');
 }
@@ -550,7 +607,11 @@ function build(){
   body.appendChild(w);
 
   ta=document.getElementById('ed-ta'); stdin=document.getElementById('ed-stdin');
-  out=document.getElementById('ed-out'); status=document.getElementById('ed-status');
+  out=document.getElementById('ed-out');
+  out.addEventListener('click',function(e){
+    var a=e.target.closest('a.diag'); if(!a) return;
+    jumpTo(+a.getAttribute('data-l'),+a.getAttribute('data-c'));
+  }); status=document.getElementById('ed-status');
   nums=document.getElementById('ed-nums'); sel=document.getElementById('ed-snip');
 
   ta.addEventListener('input',function(){ renumber(); saveState(); });
