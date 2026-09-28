@@ -6,45 +6,51 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
-<link rel="stylesheet" href="assets/notes.css?v=202609272207">
-<link rel="stylesheet" href="assets/present.css?v=202609272207">
-<link rel="stylesheet" href="assets/cpp.css?v=202609272207">
+<link rel="stylesheet" href="assets/notes.css?v=202609281026">
+<link rel="stylesheet" href="assets/present.css?v=202609281026">
+<link rel="stylesheet" href="assets/cpp.css?v=202609281026">
 </head><body>
 <div class="wrap">
 
 <header class="masthead">
   <div class="eyebrow">ADS 2026 · KBTU · Lecture 4 · Lab 4</div>
   <h1>Binary Search <em>Tree</em></h1>
-  <p class="dek">Last week binary search needed a sorted array, and a sorted array is expensive to insert into. The tree fixes that — and then immediately introduces the failure mode that the rest of the lecture is about: a tree that has quietly become a list.</p>
-  <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>5</b></span><span class="fact">Live demos <b>1</b></span><span class="fact">Reference <b>2025 code</b></span><span class="fact">Practice <b>Lab 4 · 10 problems</b></span></div>
+  <p class="dek">A binary tree with one ordering rule — smaller keys to the left, larger to the right. The rule makes search, insert and delete fast while the tree stays balanced, and in-order traversal hands back the keys already sorted.</p>
+  <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>11</b></span><span class="fact">Live demo <b>1</b></span><span class="fact">Practice <b>Lab 4 · 10 problems</b></span></div>
 </header>
 
 <div class="cols">
 
 <nav class="rail" aria-label="Running order">
   <div class="rail-h">Running order</div>
-  <div class="part">I · Shape</div>
+  <div class="part">I · The idea</div>
   <ol>
-    <li><a href="#b1"><span class="n">01</span><span>Why a tree</span><span class="t">14′</span></a></li>
+    <li><a href="#b1"><span class="n">01</span><span>Introduction</span><span class="t">8′</span></a></li>
+    <li><a href="#b2"><span class="n">02</span><span>BST properties</span><span class="t">12′</span></a></li>
   </ol>
-  <div class="part">II · Operations</div>
+  <div class="part">II · Implementation</div>
   <ol>
-    <li><a href="#b2"><span class="n">02</span><span>Insert · search · height</span><span class="t">20′</span></a></li>
+    <li><a href="#b3"><span class="n">03</span><span>Complete implementation</span><span class="t">35′</span></a></li>
   </ol>
-  <div class="part">III · Traversal</div>
+  <div class="part">III · Traversals and cost</div>
   <ol>
-    <li><a href="#b3"><span class="n">03</span><span>The four traversals</span><span class="t">18′</span></a></li>
+    <li><a href="#b4"><span class="n">04</span><span>Tree traversals</span><span class="t">10′</span></a></li>
+    <li><a href="#b5"><span class="n">05</span><span>Operations analysis</span><span class="t">6′</span></a></li>
   </ol>
-  <div class="part">IV · Practice</div>
+  <div class="part">IV · Deletion</div>
   <ol>
-    <li><a href="#b4"><span class="n">04</span><span>Lab 4 walkthrough</span><span class="t">14′</span></a></li>
-    <li><a href="#b5"><span class="n">05</span><span>What comes next</span><span class="t">3′</span></a></li>
+    <li><a href="#b6"><span class="n">06</span><span>Deletion cases</span><span class="t">15′</span></a></li>
   </ol>
-  <div class="part">V · Reference</div>
+  <div class="part">V · Comparison</div>
   <ol>
-    <li><a href="#b6"><span class="n">06</span><span>Full BST · 2025 notes</span><span class="t">ref</span></a></li>
-    <li><a href="#b7"><span class="n">07</span><span>Live code · week 4, 2025</span><span class="t">ref</span></a></li>
-    <li><a href="#b8"><span class="n">08</span><span>BST against the rest</span><span class="t">ref</span></a></li>
+    <li><a href="#b7"><span class="n">07</span><span>BST vs other structures</span><span class="t">5′</span></a></li>
+    <li><a href="#b8"><span class="n">08</span><span>Advantages and disadvantages</span><span class="t">4′</span></a></li>
+    <li><a href="#b9"><span class="n">09</span><span>When to use a BST</span><span class="t">4′</span></a></li>
+  </ol>
+  <div class="part">VI · Wrap-up</div>
+  <ol>
+    <li><a href="#b10"><span class="n">10</span><span>Key takeaways</span><span class="t">3′</span></a></li>
+    <li><a href="#b11"><span class="n">11</span><span>Lab 4</span><span class="t">8′</span></a></li>
   </ol>
 </nav>
 
@@ -53,35 +59,26 @@
   <div class="beat-head">
     <div class="beat-n">01</div>
     <div>
-      <h2>The gap a sorted array leaves</h2>
-      <div class="sub"><span>14 min</span> <span>board</span></div>
+      <h2>Introduction to Binary Search Tree</h2>
+      <div class="sub"><span>8 min</span> <span>board</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Recall last week honestly: a sorted array searches in O(log n) — but <strong>inserting into it is O(n)</strong>, because everything after the insertion point shifts.</li>
-        <li>A linked list inserts in O(1) once you hold the node, but <strong>cannot binary search at all</strong>. Neither structure gives you both.</li>
-        <li>The BST is the compromise: <strong>search, insert and delete all O(h)</strong>, where h is the height. Say <em>height</em>, not <em>log n</em> — the difference is the whole lecture.</li>
-        <li>The invariant, and write it exactly: for every node, <strong>all keys in the left subtree are smaller, all keys in the right subtree are larger</strong>. Not just the children — the entire subtree.</li>
+        <li>A <strong>Binary Search Tree</strong> is a binary tree in which every node holds a key and the keys obey one ordering property.</li>
+        <li><strong>All nodes in the left subtree</strong> of a node are strictly less than it; <strong>all nodes in the right subtree</strong> are strictly greater. The whole subtree, not only the child.</li>
+        <li>That property is what makes search, insertion and deletion efficient — <strong>especially while the tree stays balanced</strong>.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>Three structures, one table</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Sorted array</th><th class="n">Linked list</th><th class="n">BST</th></tr></thead><tbody><tr><td class="k">Search</td><td class="n" style="color:var(--prime)">O(log n)</td><td class="n" style="color:var(--mark)">O(n)</td><td class="n" style="color:var(--prime)">O(h)</td></tr><tr><td class="k">Insert</td><td class="n" style="color:var(--mark)">O(n)</td><td class="n" style="color:var(--prime)">O(1)*</td><td class="n" style="color:var(--prime)">O(h)</td></tr><tr><td class="k">Delete</td><td class="n" style="color:var(--mark)">O(n)</td><td class="n" style="color:var(--prime)">O(1)*</td><td class="n" style="color:var(--prime)">O(h)</td></tr><tr><td class="k">Sorted output</td><td class="n" style="color:var(--prime)">free</td><td class="n" style="color:var(--mark)">O(n log n)</td><td class="n" style="color:var(--prime)">O(n)</td></tr></tbody></table></div><p style="margin-top:11px;font-size:.85rem;color:var(--ink-3)">* once you already hold the node — finding it is still O(n).</p><div class="trap" style="margin-top:14px"><b>h is not log n.</b> It is log n only if the tree is balanced. Insert 1, 2, 3, …, n in order and you get a tree of height n — a linked list with extra pointers. Every problem in this lab lives or dies on which case it is.</div></div>
-      <div class="card pad board"><h4>For the board</h4><pre><span class="k">struct</span> Node {
-    <span class="k">int</span> key;
-    Node *left, *right;
-    Node(<span class="k">int</span> k) : key(k), left(0), right(0) {}
-};
-
-Node* insert(Node* t, <span class="k">int</span> k) {
-    <span class="k">if</span> (!t) <span class="k">return</span> <span class="k">new</span> Node(k);
-    <span class="k">if</span> (k &lt; t-&gt;key) t-&gt;left  = insert(t-&gt;left,  k);
-    <span class="k">else if</span> (k &gt; t-&gt;key) t-&gt;right = insert(t-&gt;right, k);
-    <span class="k">return</span> t;
-}</pre><p style="margin-top:12px">Draw the tree for <span class="mono">20 8 22 4 12 10 14</span> and keep it on the board — six of the ten lab problems are questions about this exact picture.</p></div>
-    </div>
+    <div class="card pad board"><h4>The ordering property</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li><strong>Left subtree</strong> — every key <strong>strictly less</strong> than the node's key.</li><li><strong>Right subtree</strong> — every key <strong>strictly greater</strong> than the node's key.</li></ol><p style="margin-top:14px">Draw it for the keys of today's program, <span class="mono">10 15 16 13 12 14 9 8 17</span>:</p><pre class="out">        10
+       /  \
+      9    15
+     /    /  \
+    8    13   16
+        /  \    \
+       12  14    17</pre><p style="margin-top:12px">Check the rule at 15: its left subtree is 13, 12, 14 — all smaller; its right subtree is 16, 17 — all larger. And the whole right half of the tree is larger than the root 10.</p></div>
   </div>
 </section>
 
@@ -89,22 +86,21 @@ Node* insert(Node* t, <span class="k">int</span> k) {
   <div class="beat-head">
     <div class="beat-n">02</div>
     <div>
-      <h2>Build it live</h2>
-      <div class="sub"><span>20 min</span> <span>demo: tree builder</span></div>
+      <h2>BST Properties</h2>
+      <div class="sub"><span>12 min</span> <span>demo: tree builder</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Insert is one rule repeated: <strong>smaller goes left, larger goes right, keep walking until you fall off</strong>. Type keys into the demo and let the tree grow on the screen.</li>
-        <li>Then do the thing that makes the point: press <strong>"sorted 1…12"</strong> and watch the tree collapse into a diagonal. Height jumps from 4 to 12, and the readout says so.</li>
-        <li>Ask the room what input is worst for a BST. The answer — <strong>already sorted data</strong> — is counter-intuitive enough to be worth the pause.</li>
-        <li>Search is the same walk, returning when the key matches or the pointer is null. <strong>Minimum is leftmost, maximum is rightmost</strong>, both one straight descent.</li>
-        <li>Deletion has three cases: leaf, one child, two children. For two children you replace the key with its <strong>in-order successor</strong> — the leftmost node of the right subtree — and delete that instead.</li>
-        <li>Name the fix without teaching it: <strong>AVL and red-black trees</strong> rebalance on insert to keep h ≈ log n. <code>std::set</code> and <code>std::map</code> are red-black trees. That is why they never degrade the way today's code does.</li>
+        <li><strong>In-order traversal</strong> of a BST gives the elements in <strong>sorted order</strong>. Show it: build a tree in the demo and run in-order.</li>
+        <li>Search, insert and delete are <strong>O(log n) on average</strong> — each step goes down one level.</li>
+        <li>The <strong>worst case is O(n)</strong> — a skewed tree. Press <em>sorted 1…10</em>: the tree becomes a diagonal, height 10 instead of 4.</li>
+        <li><strong>Space is O(n)</strong> — one node per key.</li>
       </ul>
     </div>
+    <div class="card pad board"><h4>Four facts</h4><div class="tw"><table><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody><tr><td class="k">In-order traversal</td><td>elements in <strong>sorted order</strong></td></tr><tr><td class="k">Search, insert, delete — average</td><td><span style="color:var(--prime)">O(log n)</span></td></tr><tr><td class="k">Search, insert, delete — worst (skewed tree)</td><td><span style="color:var(--mark)">O(n)</span></td></tr><tr><td class="k">Space for n nodes</td><td>O(n)</td></tr></tbody></table></div></div>
     <div class="card pad demo"><h4>Demo · the tree, live</h4><div class="ctl"><label class="f" style="flex:0 0 110px"><span>key</span><input type="number" id="bsv" value="35"></label><button class="pri" id="bsins">insert</button><button id="bssearch">search</button><button id="bsdel">delete</button><button id="bsmin">min</button><button id="bsmax">max</button><button id="bsrand">random</button><button id="bssorted">sorted 1…10</button><button id="bsclear">clear</button></div><div class="ctl"><div class="seg" id="bstrav"><button data-t="in">in-order</button><button data-t="pre">pre-order</button><button data-t="post">post-order</button><button data-t="level">level</button></div><button class="pri" id="bsplay">▶ Play</button><button id="bsstep">Step</button><label class="f" style="flex:1 1 130px"><span>speed</span><input type="range" id="bsspeed" min="1" max="10" value="6"></label></div><div class="readout" style="margin-top:0;margin-bottom:12px"><div class="stat"><div class="lab">nodes</div><div class="val" id="bsn">0</div></div><div class="stat"><div class="lab">height h</div><div class="val" id="bsh">0</div></div><div class="stat good"><div class="lab">⌈log₂(n+1)⌉ ideal</div><div class="val" id="bsideal">0</div></div><div class="stat"><div class="lab">comparisons, last op</div><div class="val" id="bscmp">—</div></div></div><div id="bswrap" style="overflow:auto;border:1px solid var(--line-soft);border-radius:8px;background:var(--surface-2);padding:6px"><svg id="bssvg" style="display:block"></svg></div><div class="log" id="bslog">Type a key and press insert. The walk down is animated — that walk is the algorithm.</div><div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:14px 0 6px">visit order</div><div class="track" id="bsout" style="flex-wrap:wrap;min-height:58px"></div></div>
   </div>
 </section>
@@ -113,97 +109,221 @@ Node* insert(Node* t, <span class="k">int</span> k) {
   <div class="beat-head">
     <div class="beat-n">03</div>
     <div>
-      <h2>In-order, and the other three</h2>
-      <div class="sub"><span>18 min</span> <span>demo: traversal order</span></div>
+      <h2>Complete BST Implementation</h2>
+      <div class="sub"><span>35 min</span> <span>code</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Three depth-first orders, and they differ by <strong>one line moved</strong>: visit before the children (pre), between them (in), after them (post).</li>
-        <li><strong>In-order on a BST prints the keys sorted.</strong> That is not a coincidence, it is the invariant read out loud — and it is the single most used fact in the lab.</li>
-        <li>Give each one a job: pre-order <strong>copies</strong> a tree, in-order <strong>sorts</strong>, post-order <strong>frees</strong> it (children before parent, or you delete the pointers you still need).</li>
-        <li>The fourth is level-order — a <strong>BFS with a queue</strong>, not recursion. It answers "what is on each level", which is problems D and E almost word for word.</li>
-        <li>Mention recursion depth: with h up to 10⁵ in the degenerate case, a recursive traversal can <strong>overflow the stack</strong>. On ejudge the import sets a 256 MB stack, so it survives — but say it, because elsewhere it will not.</li>
+        <li>Write the program top to bottom, one function at a time: the node, the class, insert, traversals, min and max, search, delete, height and count, then <span class="mono">main</span>.</li>
+        <li>Every recursive function has the same shape: <strong>stop at NULL</strong>, otherwise go left or right by comparing with the key.</li>
+        <li>Insert <strong>returns the (sub)tree root</strong> and the caller reattaches it: <code>node-&gt;left = insert(node-&gt;left, data)</code>. The same trick is used by delete.</li>
+        <li>Then show two more versions of the same program: the loop version of insert and of find_min next to the recursive ones — <strong>the same walk down, written two ways</strong>.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre><span class="k">void</span> inorder(Node* t) {
-    <span class="k">if</span> (!t) <span class="k">return</span>;
-    inorder(t-&gt;left);
-    cout &lt;&lt; t-&gt;key &lt;&lt; <span class="s">" "</span>;   <span class="c">// ← move this line</span>
-    inorder(t-&gt;right);
-}</pre><pre style="margin-top:13px"><span class="c">// level order — a queue, not recursion</span>
-queue&lt;Node*&gt; q; q.push(root);
-<span class="k">while</span> (!q.empty()) {
-    <span class="k">int</span> sz = q.size();        <span class="c">// one full level</span>
-    <span class="k">while</span> (sz--) {
-        Node* v = q.front(); q.pop();
-        <span class="k">if</span> (v-&gt;left)  q.push(v-&gt;left);
-        <span class="k">if</span> (v-&gt;right) q.push(v-&gt;right);
+    <div class="card pad board"><h4>1 · The node</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">class</span> Node {
+    <span class="k">public</span>:
+    <span class="k">int</span> data;
+    Node *left, *right;
+
+    Node(<span class="k">int</span> data) {
+        <span class="k">this</span>-&gt;data = data;
+        left = <span class="k">NULL</span>;
+        right = <span class="k">NULL</span>;
     }
-}</pre><div class="trap" style="margin-top:14px"><b>The <code>int sz = q.size()</code> line</b> is what separates levels. Without it you get one flat list and problems D and E both fail.</div></div>
-      <div class="card pad board"><h4>The four readings, side by side</h4><div class="tw"><table><thead><tr><th>Order</th><th>Where the visit happens</th><th>What it is for</th></tr></thead><tbody><tr><td class="k">pre-order</td><td>before both children</td><td>copy the tree — replay it into an empty BST</td></tr><tr><td class="k">in-order</td><td>between the children</td><td><strong>sorted output</strong></td></tr><tr><td class="k">post-order</td><td>after both children</td><td>free the tree — children before the parent</td></tr><tr><td class="k">level</td><td>queue, not recursion</td><td>per-level questions — problems D and E</td></tr></tbody></table></div><p style="margin-top:13px">Run all four in the demo of beat 02 on the same tree and read the output row out loud. In-order is the only one that comes out sorted, and that is the invariant of the structure, not a property of the traversal.</p><div class="trap" style="margin-top:14px"><b>Switch the demo to <em>sorted 1…10</em> first,</b> then run in-order. The output is identical to a degenerate tree and to a balanced one — which is exactly why in-order cannot tell you anything about the shape.</div></div>
-    </div>
-  </div>
-</section>
+};</pre><p style="margin-top:12px">A key and two pointers. A new node has no children, so both start as <span class="mono">NULL</span>.</p></div>
+    <div class="card pad board"><h4>2 · The tree and insert</h4><pre><span class="k">class</span> BST {
+    <span class="k">public</span>:
+    Node *root;
 
-<section class="beat" id="b4">
-  <div class="beat-head">
-    <div class="beat-n">04</div>
-    <div>
-      <h2>Lab 4 — how it maps onto today</h2>
-      <div class="sub"><span>14 min</span> <span>ADS-Lab-04</span></div>
-    </div>
-  </div>
-  <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Five problems are <strong>"build the tree, then answer one question about it"</strong>: B, C, H, I, J. They all start with the same fifteen lines from beat 02.</li>
-        <li>D and E are the <strong>level-order</strong> pair — D asks for the sum per level, E for the widest level. Both are the queue loop from beat 03.</li>
-        <li>A is the odd one: the tree is <strong>given as edges</strong>, not built by insertion, and you follow a path of L/R instructions. Read the input format carefully with them.</li>
-        <li><strong>Warn them off F and G.</strong> F counts nodes per depth on n = 10⁴ with TL 3 s, G is the tree diameter on n = 2·10⁴ with TL 5 s. Both are real work and neither is on the defence.</li>
-        <li>J is the one worth doing carefully: k-th smallest is <strong>in-order traversal with a counter</strong>, stopping early. Doing it by collecting everything into a vector also passes here, but it is the wrong habit.</li>
-      </ul>
-    </div>
-    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Mountains</span><div class="map-why">Tree given as edges — follow an L/R path, n ≤ 10⁵</div></div></div>
-<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Get subtree</span><span class="pill key">key</span><div class="map-why">Beat 02 · build, then size of one subtree</div></div></div>
-<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Christmas Gifts</span><span class="pill key">key</span><div class="map-why">Beat 02 · build, then a subtree question</div></div></div>
-<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Aureole</span><div class="map-why">Beat 03 · level order — how many levels and the sum of each</div></div></div>
-<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Width</span><div class="map-why">Beat 03 · level order — the widest level</div></div></div>
-<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Triangle Binary Search Tree</span><div class="map-why">Nodes per depth, n = 10⁴, TL 3 s — heavy, not on the defence</div></div></div>
-<div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Killua and Hunter exam</span><div class="map-why">Tree diameter, n = 2·10⁴, TL 5 s — heaviest in the lab, not on the defence</div></div></div>
-<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">Greater Sum Tree</span><div class="map-why">Beat 03 · reverse in-order with a running sum</div></div></div>
-<div class="map-row"><span class="map-idx">I</span><div><span class="map-name">More One Night</span><div class="map-why">Beat 02 · insert a permutation, count something about the shape</div></div></div>
-<div class="map-row"><span class="map-idx">J</span><div><span class="map-name">K-th element in Binary Search Tree</span><span class="pill key">key</span><div class="map-why">Beat 03 · k-th smallest — in-order with a counter, stop early</div></div></div><div class="trap" style="margin-top:16px"><b>On the defence:</b> the variants are built from eight of these ten — F and G are excluded as disproportionately heavy. Say so, so nobody burns the evening on the diameter problem thinking it is required.</div></div>
-  </div>
-</section>
+    BST() {
+        root = <span class="k">NULL</span>;
+    }
+    ...
+};</pre><div style="margin-top:12px"></div><pre><span class="c">// Insert operation - O(log n) average, O(n) worst case</span>
+Node *insert(Node *node, <span class="k">int</span> data) {
+    <span class="k">if</span> (node == <span class="k">NULL</span>) {
+        node = <span class="k">new</span> Node(data);
+        <span class="k">return</span> node;
+    }
 
-<section class="beat" id="b5">
-  <div class="beat-head">
-    <div class="beat-n">05</div>
-    <div>
-      <h2>What comes next</h2>
-      <div class="sub"><span>3 min</span></div>
-    </div>
-  </div>
-  <div class="stack">
-    <div class="card pad board"><p>Lecture 5 is the <strong>heap</strong> — a tree that gives up total order and keeps only one guarantee: the smallest element is at the root. Set it up with the contrast: today's tree can answer "is 47 here", the heap cannot — but it never degenerates into a list, because it is stored in an array and is balanced by construction.</p><p style="margin-top:12px">Homework is Lab 4. Ask for <strong>B and J</strong> before the next class — the first is the bare skeleton, the second is that skeleton plus one counter.</p></div>
-  </div>
-</section>
+    <span class="k">if</span> (data &lt;= node-&gt;data) 
+        node-&gt;left = insert(node-&gt;left, data);
+    <span class="k">else</span>
+        node-&gt;right = insert(node-&gt;right, data);
 
-<section class="beat" id="b6">
-  <div class="beat-head">
-    <div class="beat-n">06</div>
-    <div>
-      <h2>The complete implementation</h2>
-      <div class="sub"><span>reference</span> <span>lecture04.md · ADS2025FALL</span></div>
-    </div>
-  </div>
-  <div class="stack">
-    <div class="card pad board"><h4>One program, every operation</h4><p>The reference program from last year's <span class="mono">lecture04.md</span>, unchanged: insert, the three depth-first traversals, min, max, search, delete with all cases, height and node count, and a <span class="mono">main</span> that exercises each of them. Open it and press <strong>▶ edit &amp; run</strong>.</p><div style="margin-top:13px"><details class="code"><summary>lecture04.md — class BST<span class="lines">201 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+    <span class="k">return</span> node;
+}</pre><p style="margin-top:12px">Walk down until a <span class="mono">NULL</span>, create the node there, and return it so the parent links it in. Equal keys go <strong>left</strong> here (<code>&lt;=</code>).</p></div>
+    <div class="card pad board"><h4>3 · Traversals</h4><pre><span class="c">// In-order traversal - gives sorted output</span>
+<span class="k">void</span> inOrder(Node *node) {
+    <span class="k">if</span> (node == <span class="k">NULL</span>)
+        <span class="k">return</span>;
+    inOrder(node-&gt;left);
+    cout &lt;&lt; node-&gt;data &lt;&lt; <span class="s">" "</span>;
+    inOrder(node-&gt;right);
+}
+
+<span class="c">// Pre-order traversal</span>
+<span class="k">void</span> preOrder(Node *node) {
+    <span class="k">if</span> (node == <span class="k">NULL</span>)
+        <span class="k">return</span>;
+    cout &lt;&lt; node-&gt;data &lt;&lt; <span class="s">" "</span>;
+    preOrder(node-&gt;left);
+    preOrder(node-&gt;right);
+}
+
+<span class="c">// Post-order traversal</span>
+<span class="k">void</span> postOrder(Node *node) {
+    <span class="k">if</span> (node == <span class="k">NULL</span>)
+        <span class="k">return</span>;
+    postOrder(node-&gt;left);
+    postOrder(node-&gt;right);
+    cout &lt;&lt; node-&gt;data &lt;&lt; <span class="s">" "</span>;
+}</pre><p style="margin-top:12px">Three functions, one difference: <strong>where the <code>cout</code> line stands</strong> — between the calls, before them, or after them.</p></div>
+    <div class="card pad board"><h4>4 · Minimum, maximum, search</h4><pre><span class="c">// Find minimum element - leftmost node</span>
+Node *findMin(Node *node) {
+    <span class="k">if</span> (node == <span class="k">NULL</span>)
+        <span class="k">return</span> <span class="k">NULL</span>;
+    <span class="k">while</span> (node-&gt;left != <span class="k">NULL</span>)
+        node = node-&gt;left;
+    <span class="k">return</span> node;
+}
+
+<span class="c">// Find maximum element - rightmost node</span>
+Node *findMax(Node *node) {
+    <span class="k">if</span> (node == <span class="k">NULL</span>)
+        <span class="k">return</span> <span class="k">NULL</span>;
+    <span class="k">while</span> (node-&gt;right != <span class="k">NULL</span>)
+        node = node-&gt;right;
+    <span class="k">return</span> node;
+}</pre><div style="margin-top:12px"></div><pre><span class="c">// Search for a value</span>
+Node *search(Node *node, <span class="k">int</span> data) {
+    <span class="k">if</span> (node == <span class="k">NULL</span> || node-&gt;data == data)
+        <span class="k">return</span> node;
+    
+    <span class="k">if</span> (data &lt; node-&gt;data)
+        <span class="k">return</span> search(node-&gt;left, data);
+    <span class="k">else</span>
+        <span class="k">return</span> search(node-&gt;right, data);
+}</pre><p style="margin-top:12px">Minimum is the leftmost node, maximum the rightmost. Search is insert without the insertion: stop when the key matches or the pointer is <span class="mono">NULL</span>.</p></div>
+    <div class="card pad board"><h4>5 · Delete</h4><pre><span class="c">// Delete operation - most complex</span>
+Node *deleteNode(Node *node, <span class="k">int</span> data) {
+    <span class="k">if</span> (node == <span class="k">NULL</span>)
+        <span class="k">return</span> <span class="k">NULL</span>;
+        
+    <span class="k">if</span> (data &lt; node-&gt;data)
+        node-&gt;left = deleteNode(node-&gt;left, data);
+    <span class="k">else</span> <span class="k">if</span> (data &gt; node-&gt;data)
+        node-&gt;right = deleteNode(node-&gt;right, data);
+    <span class="k">else</span> {
+        <span class="c">// Node to be deleted found</span>
+        
+        <span class="c">// Case 1: Node has no children (leaf node)</span>
+        <span class="k">if</span> (node-&gt;right == <span class="k">NULL</span> &amp;&amp; node-&gt;left == <span class="k">NULL</span>) {
+            <span class="k">delete</span> node;
+            node = <span class="k">NULL</span>;
+        }
+        <span class="c">// Case 2: Node has only right child</span>
+        <span class="k">else</span> <span class="k">if</span> (node-&gt;left == <span class="k">NULL</span>) {
+            Node *temp = node;
+            node = node-&gt;right;
+            <span class="k">delete</span> temp;
+        }
+        <span class="c">// Case 3: Node has only left child</span>
+        <span class="k">else</span> <span class="k">if</span> (node-&gt;right == <span class="k">NULL</span>) {
+            Node *temp = node;
+            node = node-&gt;left;
+            <span class="k">delete</span> temp;
+        }
+        <span class="c">// Case 4: Node has both children</span>
+        <span class="k">else</span> {
+            Node *tmp = findMax(node-&gt;left);  <span class="c">// Find inorder predecessor</span>
+            node-&gt;data = tmp-&gt;data;           <span class="c">// Replace data</span>
+            node-&gt;left = deleteNode(node-&gt;left, tmp-&gt;data);  <span class="c">// Delete predecessor</span>
+        }
+    }
+    <span class="k">return</span> node;
+}</pre><p style="margin-top:12px">Find the node as in search, then one of the cases. With two children the node takes the key of its <strong>in-order predecessor</strong> — the maximum of the left subtree — and that node is deleted instead. The cases are drawn step by step in <em>Deletion Cases in Detail</em>.</p></div>
+    <div class="card pad board"><h4>6 · Height and node count</h4><pre><span class="c">// Helper function to get height of tree</span>
+<span class="k">int</span> getHeight(Node *node) {
+    <span class="k">if</span> (node == <span class="k">NULL</span>)
+        <span class="k">return</span> 0;
+    <span class="k">return</span> 1 + max(getHeight(node-&gt;left), getHeight(node-&gt;right));
+}
+
+<span class="c">// Count total nodes in tree</span>
+<span class="k">int</span> countNodes(Node *node) {
+    <span class="k">if</span> (node == <span class="k">NULL</span>)
+        <span class="k">return</span> 0;
+    <span class="k">return</span> 1 + countNodes(node-&gt;left) + countNodes(node-&gt;right);
+}</pre><p style="margin-top:12px">Both are "answer for the left + answer for the right + this node". An empty tree has height 0 and 0 nodes.</p></div>
+    <div class="card pad board"><h4>7 · main — and what it prints</h4><pre><span class="k">int</span> main() {
+    BST *bst = <span class="k">new</span> BST();
+    
+    <span class="c">// Insert nodes</span>
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 10);
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 15);
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 16);
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 13);
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 12);
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 14);
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 9);
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 8);
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 10);  <span class="c">// Duplicate - goes to left</span>
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 10);  <span class="c">// Another duplicate</span>
+    bst-&gt;root = bst-&gt;insert(bst-&gt;root, 17);
+
+    cout &lt;&lt; <span class="s">"In-order traversal (sorted): "</span>;
+    bst-&gt;inOrder(bst-&gt;root);
+    cout &lt;&lt; endl;
+
+    cout &lt;&lt; <span class="s">"Pre-order traversal: "</span>;
+    bst-&gt;preOrder(bst-&gt;root);
+    cout &lt;&lt; endl;
+
+    cout &lt;&lt; <span class="s">"Post-order traversal: "</span>;
+    bst-&gt;postOrder(bst-&gt;root);
+    cout &lt;&lt; endl;
+
+    <span class="c">// Find min and max</span>
+    Node *node_min = bst-&gt;findMin(bst-&gt;root);
+    Node *node_max = bst-&gt;findMax(bst-&gt;root);
+    cout &lt;&lt; <span class="s">"Min: "</span> &lt;&lt; node_min-&gt;data &lt;&lt; <span class="s">", Max: "</span> &lt;&lt; node_max-&gt;data &lt;&lt; endl;
+
+    <span class="c">// Search for a value</span>
+    Node *found = bst-&gt;search(bst-&gt;root, 13);
+    <span class="k">if</span> (found)
+        cout &lt;&lt; <span class="s">"Found: "</span> &lt;&lt; found-&gt;data &lt;&lt; endl;
+    <span class="k">else</span>
+        cout &lt;&lt; <span class="s">"Not found"</span> &lt;&lt; endl;
+
+    <span class="c">// Tree statistics</span>
+    cout &lt;&lt; <span class="s">"Tree height: "</span> &lt;&lt; bst-&gt;getHeight(bst-&gt;root) &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"Total nodes: "</span> &lt;&lt; bst-&gt;countNodes(bst-&gt;root) &lt;&lt; endl;
+
+    <span class="c">// Delete a node</span>
+    cout &lt;&lt; <span class="s">"Deleting node 13..."</span> &lt;&lt; endl;
+    bst-&gt;root = bst-&gt;deleteNode(bst-&gt;root, 13);
+    cout &lt;&lt; <span class="s">"In-order after deletion: "</span>;
+    bst-&gt;inOrder(bst-&gt;root);
+    cout &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">In-order traversal (sorted): 8 9 10 10 10 12 13 14 15 16 17
+Pre-order traversal: 10 9 8 10 10 15 13 12 14 16 17
+Post-order traversal: 8 10 10 9 12 14 13 17 16 15 10
+Min: 8, Max: 17
+Found: 13
+Tree height: 4
+Total nodes: 11
+Deleting node 13...
+In-order after deletion: 8 9 10 10 10 12 14 15 16 17</pre><p style="margin-top:12px">Besides the nine keys, <span class="mono">main</span> inserts 10 twice more. Equal keys go left, so in-order prints three 10s and the height is 4.</p></div>
+    <div class="card pad board"><h4>The whole program</h4><p>Everything above in one file — open it and press <strong>▶ edit &amp; run</strong>.</p><div style="margin-top:12px"><details class="code"><summary>BST — the full program<span class="lines">201 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">using</span> <span class="k">namespace</span> std;
 
 <span class="k">class</span> Node {
@@ -403,37 +523,39 @@ queue&lt;Node*&gt; q; q.push(root);
     cout &lt;&lt; endl;
 
     <span class="k">return</span> 0;
-}</pre></details></div><div class="out-lbl">output</div><pre class="out">In-order traversal (sorted): 8 9 10 10 10 12 13 14 15 16 17
-Pre-order traversal: 10 9 8 10 10 15 13 12 14 16 17
-Post-order traversal: 8 10 10 9 12 14 13 17 16 15 10
-Min: 8, Max: 17
-Found: 13
-Tree height: 4
-Total nodes: 11
-Deleting node 13...
-In-order after deletion: 8 9 10 10 10 12 14 15 16 17</pre><div class="trap" style="margin-top:14px"><b>Duplicates go left here.</b> <code>data &lt;= node-&gt;data</code> keeps repeated keys, which is why 10 is printed three times. The board code of beat 01 and the demo of beat 02 <em>skip</em> a key that is already present. Both are legitimate — say which one a problem needs, because it changes the answer to every "count" question.</div></div>
-    <div class="card pad board"><h4>What the tree in that main looks like</h4><pre class="out">          10
-        /    \
-       9      15
-      / \    /  \
-     8  10  13   16
-        /   / \    \
-      10  12  14   17</pre><p style="margin-top:12px">Both extra 10s walk left at the root, then right at 9. That is why the height is 4, not 3, and why the pre-order starts <span class="mono">10 9 8 10 10</span>.</p><div class="trap" style="margin-top:14px"><b>The notes' own example is wrong for this tree.</b> <span class="mono">lecture04.md</span> says "delete 9 — it has only the left child 8". With the duplicates inserted, 9 has <strong>two</strong> children, 8 and 10. Use <strong>16</strong> (only the right child 17) for the one-child case, and <strong>8, 12, 14, 17</strong> for leaves.</div></div>
-    <div class="card pad board"><h4>Deleting — the three cases</h4><div class="tw"><table><thead><tr><th>Case</th><th>What happens</th><th>Example on this tree</th></tr></thead><tbody><tr><td class="k">leaf</td><td>unlink it, free it</td><td>8, 12, 14, 17</td></tr><tr><td class="k">one child</td><td>the child takes the node's place</td><td>16 → 17 moves up</td></tr><tr><td class="k">two children</td><td>copy in the predecessor <em>or</em> the successor, then delete that one</td><td>13, 15, 10 (root)</td></tr></tbody></table></div><p style="margin-top:13px">The 2025 code takes the <strong>in-order predecessor</strong> — the maximum of the left subtree. The demo of beat 02 and the week-4 files take the <strong>successor</strong> — the minimum of the right subtree. They are mirror images; either keeps the invariant. The one that matters is that the replacement has <strong>at most one child</strong>, so deleting it is case 1 or 2 and the recursion stops there.</p></div>
-    <div class="card pad board"><h4>Cost of each operation</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Best</th><th class="n">Average</th><th class="n">Worst</th></tr></thead><tbody><tr><td class="k">Search</td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td></tr><tr><td class="k">Insert</td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td></tr><tr><td class="k">Delete</td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td></tr><tr><td class="k">Find min / max</td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td></tr><tr><td class="k">Any traversal</td><td class="n">O(n)</td><td class="n">O(n)</td><td class="n">O(n)</td></tr></tbody></table></div><p style="margin-top:12px">Every non-traversal row is really <strong>O(h)</strong>. Best is the key at the root, average is a tree built from random order, worst is the degenerate list — press <em>sorted 1…10</em> in the demo. Memory is O(n) for the nodes, plus O(h) of call stack for the recursive versions.</p></div>
-  </div>
-</section>
+}</pre></details></div></div>
+    <div class="card pad board"><h4>Another version · insert with a loop</h4><p>The same step can be written two ways. Insert with a loop instead of recursion:</p><div style="margin-top:12px"></div><pre><span class="k">void</span> insert_node2(<span class="k">int</span> data) {
+    <span class="k">if</span> (<span class="k">this</span>-&gt;root == <span class="k">NULL</span>) {
+        <span class="k">this</span>-&gt;root = <span class="k">new</span> Node(data);
+        <span class="k">return</span>;
+    }
+    Node *cur = root;
+    <span class="k">while</span> (cur != <span class="k">NULL</span>) {
+        <span class="k">if</span> (data &gt; cur-&gt;data) {
+            <span class="k">if</span> (cur-&gt;right == <span class="k">NULL</span>) {
+                cur-&gt;right = <span class="k">new</span> Node(data);
+                break;
+            } <span class="k">else</span>
+                cur = cur-&gt;right;
+        } <span class="k">else</span> {
+            <span class="k">if</span> (cur-&gt;left == <span class="k">NULL</span>) {
+                cur-&gt;left = <span class="k">new</span> Node(data);
+                break;
+            } <span class="k">else</span> 
+                cur = cur-&gt;left;
+        }
+    }
+}</pre><p style="margin-top:12px">and the minimum, recursive and with a loop:</p><div style="margin-top:12px"></div><pre>Node* find_min(Node *node) {
+    <span class="k">if</span> (node-&gt;left == <span class="k">NULL</span>)
+        <span class="k">return</span> node;
+    <span class="k">return</span> find_min(node-&gt;left);
+}
 
-<section class="beat" id="b7">
-  <div class="beat-head">
-    <div class="beat-n">07</div>
-    <div>
-      <h2>Written live last year</h2>
-      <div class="sub"><span>reference</span> <span>week4/1.cpp</span> <span>week4/2.cpp</span></div>
-    </div>
-  </div>
-  <div class="stack">
-    <div class="card pad board"><h4>Pair 1 — recursion and the loop, side by side</h4><p>Written during the lecture, so it keeps both versions of each step: <span class="mono">insert_node</span> (recursive, returns the new subtree) next to <span class="mono">insert_node2</span> (a loop that looks for a free slot), and <span class="mono">find_min</span> next to <span class="mono">find_min2</span>. It is the same walk down both times — good for showing that recursion here is only a way to write the loop.</p><div style="margin-top:13px"><details class="code"><summary>week4/1.cpp<span class="lines">122 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+Node *find_min2(Node *node) {
+    <span class="k">while</span> (node-&gt;left != <span class="k">NULL</span>)
+        node = node-&gt;left;
+    <span class="k">return</span> node;
+}</pre><div style="margin-top:14px"><details class="code"><summary>the full program — version 2<span class="lines">122 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
 
 <span class="k">using</span> <span class="k">namespace</span> std;
 
@@ -555,7 +677,7 @@ In-order after deletion: 8 9 10 10 10 12 14 15 16 17</pre><div class="trap" styl
 
     <span class="k">return</span> 0;
 }</pre></details></div><div class="out-lbl">output</div><pre class="out">7</pre></div>
-    <div class="card pad board"><h4>Pair 2 — the tidied-up version</h4><p>A constructor for <span class="mono">Tree</span>, one recursive insert, <span class="mono">find_min</span> and <span class="mono">find_max</span>, and delete with the successor. <span class="mono">main</span> builds <span class="mono">30 20 40 10 26 34 45 9 12</span> — a balanced tree of height 4 — and prints the maximum.</p><div style="margin-top:13px"><details class="code"><summary>week4/2.cpp<span class="lines">97 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+    <div class="card pad board"><h4>Another version · Tree with a constructor</h4><p>A third version: a constructor for <span class="mono">Tree</span>, one recursive insert, <span class="mono">find_min</span>, <span class="mono">find_max</span> and delete with the <strong>successor</strong> — the minimum of the right subtree, the mirror image of the predecessor. <span class="mono">main</span> builds <span class="mono">30 20 40 10 26 34 45 9 12</span> and prints the maximum.</p><div style="margin-top:12px"><details class="code"><summary>the full program — version 3<span class="lines">98 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
 
 <span class="k">using</span> <span class="k">namespace</span> std;
 
@@ -631,6 +753,7 @@ In-order after deletion: 8 9 10 10 10 12 14 15 16 17</pre><div class="trap" styl
                 node-&gt;right = delete_node(node-&gt;right, tmp-&gt;data);
             }
         }
+        <span class="k">return</span> node;   <span class="c">// added: without it the caller gets garbage</span>
     }
 };
 
@@ -652,7 +775,99 @@ In-order after deletion: 8 9 10 10 10 12 14 15 16 17</pre><div class="trap" styl
     cout &lt;&lt; node-&gt;data;
     <span class="k">return</span> 0;
 }</pre></details></div><div class="out-lbl">output</div><pre class="out">45</pre></div>
-    <div class="card pad board"><h4>Four things to fix before showing it</h4><div class="trap"><b>2.cpp · <code>delete_node</code> never returns the node.</b> The function ends after the <code>else</code> block with no <code>return node;</code>. g++ only warns (<code>-Wreturn-type</code>), and the output above looks fine only because <span class="mono">main</span> never calls delete. Any call is undefined behaviour: the parent gets a garbage pointer. One line fixes it — a good "find the bug" moment.</div><div class="trap" style="margin-top:12px"><b>1.cpp · <code>Tree</code> has no constructor.</b> <code>root</code> is <span class="mono">NULL</span> only because <code>new Tree()</code> — with the parentheses — value-initialises it. Write <code>new Tree</code> or <code>Tree t;</code> and <code>root</code> is garbage, so <code>insert_node2</code> dereferences it on the first call. 2.cpp adds the constructor; say why.</div><div class="trap" style="margin-top:12px"><b>1.cpp · <code>parent</code> is declared and never set.</b> The field stays uninitialised and nothing reads it. Either drop it (2.cpp comments it out) or maintain it on every insert and delete — half-done is worse than absent.</div><div class="trap" style="margin-top:12px"><b>Both files · deleted nodes are never freed.</b> The node is unlinked but not <code>delete</code>d. On a lab-sized input nobody notices; the lecture04.md version does free them, with a <code>temp</code> pointer in the one-child cases.</div></div>
+  </div>
+</section>
+
+<section class="beat" id="b4">
+  <div class="beat-head">
+    <div class="beat-n">04</div>
+    <div>
+      <h2>Tree Traversals</h2>
+      <div class="sub"><span>10 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li><strong>In-order</strong> — left, root, right. The result is the elements in <strong>sorted order</strong>; use it to get a sorted sequence from a BST.</li>
+        <li><strong>Pre-order</strong> — root, left, right. The root comes first; use it to <strong>create a copy</strong> of the tree.</li>
+        <li><strong>Post-order</strong> — left, right, root. The root comes last; use it to <strong>delete the tree safely</strong> — children before the parent.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Three orders</h4><div class="tw"><table><thead><tr><th>Traversal</th><th>Order</th><th>Result</th><th>Use case</th></tr></thead><tbody><tr><td class="k">In-order</td><td>Left → Root → Right</td><td>elements in <strong>sorted order</strong></td><td>sorted sequence from a BST</td></tr><tr><td class="k">Pre-order</td><td>Root → Left → Right</td><td>root comes first</td><td>creating a copy of the tree</td></tr><tr><td class="k">Post-order</td><td>Left → Right → Root</td><td>root comes last</td><td>deleting the tree safely</td></tr></tbody></table></div><p style="margin-top:14px">On the tree from the introduction:</p><pre class="out">in-order    8 9 10 12 13 14 15 16 17
+pre-order   10 9 8 15 13 12 14 16 17
+post-order  8 9 12 14 13 17 16 15 10</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b5">
+  <div class="beat-head">
+    <div class="beat-n">05</div>
+    <div>
+      <h2>BST Operations Analysis</h2>
+      <div class="sub"><span>6 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Every operation except traversal walks one path from the root, so its cost is the <strong>height</strong> of the tree.</li>
+        <li>Best case — the key is at the root. Average — a tree built from random order, height about log n. Worst — the skewed tree, height n.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Cost of each operation</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Average case</th><th class="n">Worst case</th><th class="n">Best case</th></tr></thead><tbody><tr><td class="k">Search</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td></tr><tr><td class="k">Insert</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td></tr><tr><td class="k">Delete</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td></tr><tr><td class="k">Find Min</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td></tr><tr><td class="k">Find Max</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td></tr><tr><td class="k">Traversal</td><td class="n">O(n)</td><td class="n">O(n)</td><td class="n">O(n)</td></tr></tbody></table></div></div>
+  </div>
+</section>
+
+<section class="beat" id="b6">
+  <div class="beat-head">
+    <div class="beat-n">06</div>
+    <div>
+      <h2>Deletion Cases in Detail</h2>
+      <div class="sub"><span>15 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li><strong>Case 1 — a leaf.</strong> Simply remove the node. Example: delete 8.</li>
+        <li><strong>Case 2 — one child.</strong> Replace the node with its child. Example: delete 9 — it has only the left child 8.</li>
+        <li><strong>Case 3 — two children.</strong> Find the in-order predecessor (the rightmost node of the left subtree) <em>or</em> the in-order successor (the leftmost node of the right subtree), copy its value into the node, then delete the predecessor or successor.</li>
+        <li>The predecessor has no right child, the successor no left child — so deleting it is always case 1 or 2.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Case 1 · a leaf</h4><p>Simply remove the node. On the tree from the introduction: <strong>delete 8</strong> — 9 loses its left child, nothing else changes.</p></div>
+    <div class="card pad board"><h4>Case 2 · one child</h4><p>Replace the node with its child. <strong>Delete 9</strong> — it has only the left child 8, so 8 takes its place under 10.</p></div>
+    <div class="card pad board"><h4>Case 3 · two children</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Find the <strong>in-order predecessor</strong> — the rightmost node in the left subtree — <strong>or</strong> the <strong>in-order successor</strong> — the leftmost node in the right subtree.</li><li>Replace the node's data with the predecessor's / successor's.</li><li>Delete the predecessor / successor.</li></ul><p style="margin-top:14px"><strong>Delete 15</strong> with the predecessor, as <code>deleteNode</code> above does: the rightmost key of its left subtree is 14.</p><pre class="out">        10                        10
+       /  \                      /  \
+      9    15          →        9    14
+     /    /  \                 /    /  \
+    8    13   16              8    13   16
+        /  \    \                 /      \
+       12  14    17              12       17</pre><p style="margin-top:12px">With the successor it would be 16 instead — version 3 of the program does it that way. Both keep the ordering property.</p></div>
+  </div>
+</section>
+
+<section class="beat" id="b7">
+  <div class="beat-head">
+    <div class="beat-n">07</div>
+    <div>
+      <h2>BST vs Other Data Structures</h2>
+      <div class="sub"><span>5 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>A sorted array searches fast but inserts slowly; a linked list inserts fast but searches slowly. A <strong>balanced BST</strong> does all three in O(log n).</li>
+        <li>A hash table is O(1) on average, but it keeps no order.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Side by side</h4><div class="tw"><table><thead><tr><th>Data Structure</th><th class="n">Search</th><th class="n">Insert</th><th class="n">Delete</th><th class="n">Space</th></tr></thead><tbody><tr><td class="k">Array (unsorted)</td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">Array (sorted)</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">Linked List</td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">BST (balanced)</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">Hash Table</td><td class="n"><span style="color:var(--prime)">O(1)*</span></td><td class="n"><span style="color:var(--prime)">O(1)*</span></td><td class="n"><span style="color:var(--prime)">O(1)*</span></td><td class="n">O(n)</td></tr></tbody></table></div><p style="margin-top:11px;font-size:.85rem;color:var(--ink-3)">* average case for a hash table</p></div>
   </div>
 </section>
 
@@ -660,14 +875,66 @@ In-order after deletion: 8 9 10 10 10 12 14 15 16 17</pre><div class="trap" styl
   <div class="beat-head">
     <div class="beat-n">08</div>
     <div>
-      <h2>Where the BST fits</h2>
-      <div class="sub"><span>reference</span> <span>lecture04.md</span></div>
+      <h2>Advantages and Disadvantages</h2>
+      <div class="sub"><span>4 min</span> <span>board</span></div>
     </div>
   </div>
   <div class="stack">
-    <div class="card pad board"><h4>Against the other structures</h4><div class="tw"><table><thead><tr><th>Structure</th><th class="n">Search</th><th class="n">Insert</th><th class="n">Delete</th><th class="n">Memory</th></tr></thead><tbody><tr><td class="k">Array, unsorted</td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">Array, sorted</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">Linked list</td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">BST, balanced</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">Hash table</td><td class="n"><span style="color:var(--prime)">O(1)*</span></td><td class="n"><span style="color:var(--prime)">O(1)*</span></td><td class="n"><span style="color:var(--prime)">O(1)*</span></td><td class="n">O(n)</td></tr></tbody></table></div><p style="margin-top:11px;font-size:.85rem;color:var(--ink-3)">* on average — lecture 8. A hash table is faster, but it has no order: no min, no "next larger", no range, no sorted output.</p></div>
-    <div class="card pad board"><h4>Strengths and weaknesses</h4><div class="tw"><table><thead><tr><th>Good at</th><th>Bad at</th></tr></thead><tbody><tr><td class="k">search in O(log n) on average</td><td>can degenerate — O(n) on sorted input</td></tr><tr><td class="k">sorted output for free — in-order</td><td>no O(1) operations, unlike a hash table</td></tr><tr><td class="k">grows and shrinks at runtime</td><td>no access by index — no <span class="mono">a[i]</span></td></tr><tr><td class="k">range queries: every key between x and y</td><td>more code than an array for simple jobs</td></tr></tbody></table></div><p style="margin-top:13px"><strong>Reach for it</strong> when the data changes and you keep needing order: frequent search, min/max, "the next key after x", everything in a range. <strong>Do not</strong> when access is mostly sequential, when you need the i-th element, or when only exact lookup matters — that is a hash table.</p></div>
-    <div class="card pad board"><h4>Five things to leave with</h4><ol style="margin:0;padding-left:1.3em;line-height:1.7"><li>The order lives in the <strong>structure</strong>: left subtree smaller, right subtree larger — at every node.</li><li>Speed depends on <strong>balance</strong>: O(log n) when balanced, O(n) when it has become a list.</li><li><strong>In-order</strong> traversal always prints the keys sorted.</li><li><strong>Delete</strong> is the hard operation — three cases, and the third reduces to the first two.</li><li>The BST is the base of <strong>AVL and red-black trees</strong> — and red-black is what <code>std::set</code> and <code>std::map</code> are.</li></ol></div>
+    <div class="two">
+      <div class="card pad board"><h4>Advantages</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Efficient searching</strong>: O(log n) average case</li><li><strong>In-order traversal</strong> gives a sorted sequence</li><li><strong>Dynamic size</strong>: can grow and shrink during runtime</li><li><strong>No extra space</strong> needed for sorting</li></ul></div>
+      <div class="card pad board"><h4>Disadvantages</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Can become unbalanced</strong> → O(n) worst case</li><li><strong>No constant time operations</strong> like hash tables</li><li><strong>More complex</strong> than arrays for simple operations</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b9">
+  <div class="beat-head">
+    <div class="beat-n">09</div>
+    <div>
+      <h2>When to Use BST</h2>
+      <div class="sub"><span>4 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="two">
+      <div class="card pad board"><h4>Good for</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Frequent search operations</li><li>Need to maintain sorted order</li><li>Range queries (find all elements between x and y)</li><li>Dynamic data with insertions and deletions</li></ul></div>
+      <div class="card pad board"><h4>Not ideal for</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Mostly sequential access</li><li>Frequent random access by index</li><li>When constant time operations are critical</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b10">
+  <div class="beat-head">
+    <div class="beat-n">10</div>
+    <div>
+      <h2>Key Takeaways</h2>
+      <div class="sub"><span>3 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Five things to remember</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li><strong>A BST maintains sorted order</strong> through its structure property.</li><li><strong>Performance depends on tree balance</strong> — a balanced tree gives O(log n), a skewed tree gives O(n).</li><li><strong>In-order traversal always gives sorted output.</strong></li><li><strong>Deletion is the most complex operation</strong>, with three different cases.</li><li><strong>The BST is the foundation for more advanced trees</strong> like AVL and Red-Black trees.</li></ol></div>
+  </div>
+</section>
+
+<section class="beat" id="b11">
+  <div class="beat-head">
+    <div class="beat-n">11</div>
+    <div>
+      <h2>Lab 4 — the problems</h2>
+      <div class="sub"><span>8 min</span> <span>ADS-Lab-04</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Mountains</span><div class="map-why">Tree given as edges — follow a path of L/R instructions</div></div></div>
+<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Get subtree</span><span class="pill key">key</span><div class="map-why">Build with insert, then the size of one subtree</div></div></div>
+<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Christmas Gifts</span><span class="pill key">key</span><div class="map-why">Build with insert, then a question about a subtree</div></div></div>
+<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Aureole</span><div class="map-why">Level by level — needs a queue (BFS), not in today's code</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Width</span><div class="map-why">The widest level — the same queue</div></div></div>
+<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Triangle Binary Search Tree</span><div class="map-why">Nodes per depth, n = 10⁴, TL 3 s — heavy, not on the defence</div></div></div>
+<div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Killua and Hunter exam</span><div class="map-why">Tree diameter, n = 2·10⁴, TL 5 s — heaviest in the lab, not on the defence</div></div></div>
+<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">Greater Sum Tree</span><div class="map-why">Reverse in-order (right, root, left) with a running sum</div></div></div>
+<div class="map-row"><span class="map-idx">I</span><div><span class="map-name">More One Night</span><div class="map-why">Insert a permutation, then count something about the shape</div></div></div>
+<div class="map-row"><span class="map-idx">J</span><div><span class="map-name">K-th element in Binary Search Tree</span><span class="pill key">key</span><div class="map-why">k-th smallest — in-order with a counter, stop early</div></div></div><div class="trap" style="margin-top:16px"><b>On the defence:</b> F and G are excluded as disproportionately heavy — say so, so nobody spends the evening on them thinking they are required.</div></div>
   </div>
 </section>
 </main>
@@ -680,9 +947,9 @@ In-order after deletion: 8 9 10 10 10 12 14 15 16 17</pre><div class="trap" styl
 </div>
 
 <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-<script src="assets/notes.js?v=202609272207"></script>
-<script src="assets/present.js?v=202609272207"></script>
-<script src="assets/cpp.js?v=202609272207"></script>
+<script src="assets/notes.js?v=202609281026"></script>
+<script src="assets/present.js?v=202609281026"></script>
+<script src="assets/cpp.js?v=202609281026"></script>
 <script>
 
 (function(){
