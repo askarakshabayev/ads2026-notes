@@ -2,43 +2,63 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Heap and Priority Queue</title>
+<title>Heap and Heap Sort</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
-<link rel="stylesheet" href="assets/notes.css?v=202609281051">
-<link rel="stylesheet" href="assets/present.css?v=202609281051">
-<link rel="stylesheet" href="assets/cpp.css?v=202609281051">
+<link rel="stylesheet" href="assets/notes.css?v=202609281239">
+<link rel="stylesheet" href="assets/present.css?v=202609281239">
+<link rel="stylesheet" href="assets/cpp.css?v=202609281239">
 </head><body>
 <div class="wrap">
 
 <header class="masthead">
   <div class="eyebrow">ADS 2026 · KBTU · Lecture 5 · Lab 5</div>
-  <h1>Heap and <em>Priority Queue</em></h1>
-  <p class="dek">A tree that gives up almost everything a BST offers and keeps exactly one promise — the smallest element is at the root. In exchange it never degenerates, needs no pointers at all, and answers "give me the next one" in logarithmic time forever.</p>
-  <div class="facts"><span class="fact">Length <b>~105 min</b></span><span class="fact">Beats <b>6</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 5 · 5 problems</b></span></div>
+  <h1>Heap and <em>Heap Sort</em></h1>
+  <p class="dek">A complete binary tree with one rule between parent and children. The minimum is always at the root, the whole tree lives in a plain array, and insert and extract both cost O(log n) — enough for a priority queue and for sorting.</p>
+  <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>19</b></span><span class="fact">Live demo <b>1</b></span><span class="fact">Practice <b>Lab 5 · 5 problems</b></span></div>
 </header>
 
 <div class="cols">
 
 <nav class="rail" aria-label="Running order">
   <div class="rail-h">Running order</div>
-  <div class="part">I · The shape</div>
+  <div class="part">I · The idea</div>
   <ol>
-    <li><a href="#b1"><span class="n">01</span><span>A weaker promise</span><span class="t">14′</span></a></li>
+    <li><a href="#b1"><span class="n">01</span><span>Introduction</span><span class="t">5′</span></a></li>
+    <li><a href="#b2"><span class="n">02</span><span>Heap properties</span><span class="t">4′</span></a></li>
+    <li><a href="#b3"><span class="n">03</span><span>Array representation</span><span class="t">7′</span></a></li>
   </ol>
-  <div class="part">II · Operations</div>
+  <div class="part">II · Implementation</div>
   <ol>
-    <li><a href="#b2"><span class="n">02</span><span>Sift up · sift down</span><span class="t">22′</span></a></li>
+    <li><a href="#b4"><span class="n">04</span><span>Min-heap implementation</span><span class="t">22′</span></a></li>
   </ol>
-  <div class="part">III · Using it</div>
+  <div class="part">III · How it works</div>
   <ol>
-    <li><a href="#b3"><span class="n">03</span><span>priority_queue</span><span class="t">16′</span></a></li>
+    <li><a href="#b5"><span class="n">05</span><span>Operations explained</span><span class="t">12′</span></a></li>
+    <li><a href="#b6"><span class="n">06</span><span>Complete example</span><span class="t">6′</span></a></li>
   </ol>
-  <div class="part">IV · Practice</div>
+  <div class="part">IV · Heap sort and cost</div>
   <ol>
-    <li><a href="#b4"><span class="n">04</span><span>Lab 5 walkthrough</span><span class="t">12′</span></a></li>
-    <li><a href="#b5"><span class="n">05</span><span>What comes next</span><span class="t">3′</span></a></li>
+    <li><a href="#b7"><span class="n">07</span><span>Heap sort</span><span class="t">7′</span></a></li>
+    <li><a href="#b8"><span class="n">08</span><span>Time complexity</span><span class="t">3′</span></a></li>
+    <li><a href="#b9"><span class="n">09</span><span>Space complexity</span><span class="t">2′</span></a></li>
+  </ol>
+  <div class="part">V · Using it</div>
+  <ol>
+    <li><a href="#b10"><span class="n">10</span><span>Practical applications</span><span class="t">7′</span></a></li>
+    <li><a href="#b11"><span class="n">11</span><span>Advantages</span><span class="t">2′</span></a></li>
+    <li><a href="#b12"><span class="n">12</span><span>Potential improvements</span><span class="t">4′</span></a></li>
+    <li><a href="#b13"><span class="n">13</span><span>Max-heap</span><span class="t">4′</span></a></li>
+    <li><a href="#b14"><span class="n">14</span><span>Sample run</span><span class="t">3′</span></a></li>
+  </ol>
+  <div class="part">VI · Wrap-up</div>
+  <ol>
+    <li><a href="#b15"><span class="n">15</span><span>Common questions</span><span class="t">5′</span></a></li>
+    <li><a href="#b16"><span class="n">16</span><span>Comparison</span><span class="t">3′</span></a></li>
+    <li><a href="#b17"><span class="n">17</span><span>Key takeaways</span><span class="t">2′</span></a></li>
+    <li><a href="#b18"><span class="n">18</span><span>Practice problems</span><span class="t">2′</span></a></li>
+    <li><a href="#b19"><span class="n">19</span><span>Lab 5</span><span class="t">8′</span></a></li>
   </ol>
 </nav>
 
@@ -47,30 +67,20 @@
   <div class="beat-head">
     <div class="beat-n">01</div>
     <div>
-      <h2>Less order, more guarantee</h2>
-      <div class="sub"><span>14 min</span> <span>board</span></div>
+      <h2>Introduction to Heap</h2>
+      <div class="sub"><span>5 min</span> <span>board</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Start from last week's failure: a BST built from sorted input becomes a list of height n. <strong>The heap cannot do that</strong> — and the reason is worth the whole beat.</li>
-        <li>The heap property is local and weak: <strong>every parent is ≤ both children</strong>. Nothing is claimed about siblings, nothing about left versus right.</li>
-        <li>Because the order is weak, the structure can be forced: a heap is always a <strong>complete binary tree</strong> — every level full except possibly the last, which fills left to right. Complete means <strong>height is always ⌈log₂n⌉</strong>. No degenerate case exists.</li>
-        <li>And a complete tree needs <strong>no pointers</strong>: store it in an array, children of i are 2i+1 and 2i+2, parent is (i−1)/2. Write those three formulas and leave them up.</li>
-        <li>Say what you gave up: you <strong>cannot search a heap</strong>. "Is 47 in here" is O(n), the same as a plain array. A heap answers one question only — what is the minimum.</li>
+        <li>A <strong>heap</strong> is a tree-based structure that satisfies the <strong>heap property</strong>: it is a complete binary tree, and every node follows one ordering rule with its children.</li>
+        <li>Two kinds. <strong>Max-heap</strong>: every parent ≥ its children, the root is the maximum. <strong>Min-heap</strong>: every parent ≤ its children, the root is the minimum.</li>
+        <li>Today we write the <strong>min-heap</strong>; the max-heap is the same code with the comparisons turned around.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><div class="formula">left(i)   = 2i + 1<br>right(i)  = 2i + 2<br>parent(i) = (i − 1) / 2</div><pre style="margin-top:13px"><span class="c">// the heap [1, 3, 6, 5, 9, 8] is this tree:</span>
-<span class="c">//          1</span>
-<span class="c">//        /   \</span>
-<span class="c">//       3     6</span>
-<span class="c">//      / \   /</span>
-<span class="c">//     5   9 8</span></pre><p style="margin-top:12px">Check the property with them on this example: 1 ≤ 3, 1 ≤ 6, 3 ≤ 5, 3 ≤ 9, 6 ≤ 8. Note that <strong>9 sits above nothing and below 3</strong>, yet 5 and 8 are smaller — that is allowed, and it is why a heap is cheap.</p></div>
-      <div class="card pad board"><h4>BST against heap</h4><div class="tw"><table><thead><tr><th>Question</th><th class="n">BST</th><th class="n">Heap</th></tr></thead><tbody><tr><td class="k">Find the minimum</td><td class="n">O(h)</td><td class="n" style="color:var(--prime)">O(1)</td></tr><tr><td class="k">Remove the minimum</td><td class="n">O(h)</td><td class="n" style="color:var(--prime)">O(log n)</td></tr><tr><td class="k">Insert</td><td class="n">O(h)</td><td class="n" style="color:var(--prime)">O(log n)</td></tr><tr><td class="k">Search for a key</td><td class="n" style="color:var(--prime)">O(h)</td><td class="n" style="color:var(--mark)">O(n)</td></tr><tr><td class="k">Print sorted</td><td class="n" style="color:var(--prime)">O(n)</td><td class="n">O(n log n)</td></tr><tr><td class="k">Worst-case height</td><td class="n" style="color:var(--mark)">n</td><td class="n" style="color:var(--prime)">log n</td></tr><tr><td class="k">Memory overhead</td><td class="n">2 pointers</td><td class="n" style="color:var(--prime)">none</td></tr></tbody></table></div><div class="trap" style="margin-top:14px"><b>The line that makes it click:</b> a BST is organised so you can <em>find anything</em>; a heap is organised so you can <em>find the next thing</em>. Different jobs, and most scheduling-shaped problems want the second.</div></div>
-    </div>
+    <div class="card pad board"><h4>Types of heaps</h4><div class="tw"><table><thead><tr><th>Type</th><th>Rule</th><th>Root holds</th></tr></thead><tbody><tr><td class="k">Max-Heap</td><td>every parent is <strong>greater than or equal to</strong> its children</td><td>the <strong>maximum</strong></td></tr><tr><td class="k">Min-Heap</td><td>every parent is <strong>less than or equal to</strong> its children</td><td>the <strong>minimum</strong></td></tr></tbody></table></div><p style="margin-top:13px">The rule is only between a parent and its children. Nothing is said about two siblings or about left against right — that is the difference from a BST.</p></div>
   </div>
 </section>
 
@@ -78,40 +88,20 @@
   <div class="beat-head">
     <div class="beat-n">02</div>
     <div>
-      <h2>Two repairs, that is all</h2>
-      <div class="sub"><span>22 min</span> <span>demo: heap stepper</span></div>
+      <h2>Heap Properties</h2>
+      <div class="sub"><span>4 min</span> <span>board</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li><strong>Insert.</strong> Put the new value at the end of the array — the tree stays complete — then <strong>sift up</strong>: while it is smaller than its parent, swap. At most log n swaps.</li>
-        <li><strong>Extract-min.</strong> The root is the answer. Move the <em>last</em> element into the root (complete again), then <strong>sift down</strong>: swap with the smaller child while it is bigger. Again log n.</li>
-        <li>Insist on <em>smaller</em> child. Swapping with the larger one silently breaks the property and the bug survives small tests. Step the demo on that deliberately if time allows.</li>
-        <li>Use the demo: insert a few values, then extract three times, and read the swap counter. It never exceeds the height.</li>
-        <li><strong>Building from n values.</strong> Inserting one by one is O(n log n). Heapify — sift down from the last parent backwards — is <strong>O(n)</strong>. Surprising enough to state; the proof is that most nodes are near the bottom and sift down almost nowhere.</li>
+        <li><strong>Complete binary tree</strong>: all levels are full except possibly the last, which is filled from left to right.</li>
+        <li>Because it is complete, the <strong>height is O(log n)</strong> — always, whatever order the keys arrive in.</li>
+        <li>And because it is complete, it is stored in an <strong>array</strong>, with no pointers.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre><span class="k">void</span> siftUp(<span class="k">int</span> i) {
-    <span class="k">while</span> (i &gt; 0 &amp;&amp; a[(i-1)/2] &gt; a[i]) {
-        swap(a[(i-1)/2], a[i]);
-        i = (i-1)/2;
-    }
-}
-
-<span class="k">void</span> siftDown(<span class="k">int</span> i) {
-    <span class="k">while</span> (2*i+1 &lt; n) {
-        <span class="k">int</span> j = 2*i+1;
-        <span class="k">if</span> (j+1 &lt; n &amp;&amp; a[j+1] &lt; a[j]) j++;  <span class="c">// smaller child</span>
-        <span class="k">if</span> (a[i] &lt;= a[j]) <span class="k">break</span>;
-        swap(a[i], a[j]);
-        i = j;
-    }
-}</pre><div class="trap" style="margin-top:14px"><b>The <code>j+1 &lt; n</code> check</b> is not optional — a node can have a left child and no right one. Dropping it reads past the end of the array, and on a judge that is either a wrong answer or a crash, depending on luck.</div></div>
-      <div class="card pad demo"><h4>Demo · the heap, live</h4><div class="ctl"><label class="f" style="flex:1 1 110px"><span>value</span><input type="number" id="hpv" value="4"></label><button class="pri" id="hpins">insert</button><button id="hpext">extract-min</button><button id="hprand">random 10</button><button id="hpclr">clear</button></div><div class="track" id="hptrack"></div><div id="hptree" style="margin-top:12px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.5;color:var(--ink-2)"></div><div class="readout"><div class="stat"><div class="lab">size</div><div class="val" id="hpn">0</div></div><div class="stat"><div class="lab">height</div><div class="val" id="hph">0</div></div><div class="stat good"><div class="lab">swaps, last op</div><div class="val" id="hps">—</div></div></div><div class="log" id="hplog">Array view on top, tree view below. They are the same thing.</div></div>
-    </div>
+    <div class="card pad board"><h4>Four properties</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Complete Binary Tree</strong>: all levels are completely filled except possibly the last level, which is filled from left to right</li><li><strong>Heap Property</strong>: the parent–child relationship follows the max-heap or min-heap rule</li><li><strong>Array Representation</strong>: heaps are typically implemented using arrays (vectors) for efficiency</li><li><strong>Height</strong>: O(log n) for n elements</li></ul></div>
   </div>
 </section>
 
@@ -119,33 +109,27 @@
   <div class="beat-head">
     <div class="beat-n">03</div>
     <div>
-      <h2>In practice you write one line</h2>
-      <div class="sub"><span>16 min</span> <span>board</span></div>
+      <h2>Array Representation of Heap</h2>
+      <div class="sub"><span>7 min</span> <span>board</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Everything above exists in the standard library as <code>std::priority_queue</code> — and by default it is a <strong>max</strong>-heap, which catches people out every single year.</li>
-        <li>Write both forms on the board: the default, and the min-heap incantation with <code>greater&lt;&gt;</code>. Make them copy it; nobody remembers it under time pressure.</li>
-        <li>The operations are named differently from what we just built: <code>push</code>, <code>top</code>, <code>pop</code>, and <strong><code>pop</code> returns nothing</strong> — read <code>top()</code> first.</li>
-        <li>For pairs, it sorts by <code>.first</code> then <code>.second</code>, which is usually exactly what you want for "cheapest first, then by index".</li>
-        <li>Say where it shows up later in this course: <strong>Dijkstra in lecture 13 is a priority queue with a relaxation step</strong>. Today is the prerequisite for that.</li>
+        <li>Number the nodes level by level, left to right, starting from 0 — that number is the index in the array.</li>
+        <li>Then the children and the parent are <strong>one formula each</strong>. Write the three formulas and leave them on the board for the rest of the lecture.</li>
+        <li>Check them on the example: the children of 15 (index 1) are at 3 and 4 — 30 and 40; the parent of 50 (index 5) is at 2 — 20.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre><span class="c">// max-heap — the default, surprises everyone</span>
-priority_queue&lt;<span class="k">int</span>&gt; pq;
+    <div class="card pad board"><h4>For a node at index i</h4><div class="formula">Parent      = (i - 1) / 2<br>Left Child  = 2 * i + 1<br>Right Child = 2 * i + 2</div><p style="margin-top:14px">Example min-heap:</p><pre class="out">        10
+       /  \
+      15   20
+     / \  / \
+    30 40 50 60
 
-<span class="c">// min-heap — memorise this line</span>
-priority_queue&lt;<span class="k">int</span>, vector&lt;<span class="k">int</span>&gt;, greater&lt;<span class="k">int</span>&gt;&gt; pq;
-
-pq.push(5);
-<span class="k">int</span> x = pq.top();   <span class="c">// look</span>
-pq.pop();           <span class="c">// remove, returns void</span></pre><div class="trap" style="margin-top:14px"><b>Two traps in one:</b> <code>pop()</code> on an empty queue is undefined behaviour, not an exception — check <code>empty()</code>. And if your answer comes out reversed, you almost certainly forgot <code>greater&lt;&gt;</code>.</div></div>
-      <div class="card pad board"><h4>The shapes worth naming</h4><p><strong>Repeated "take the two cheapest".</strong> Pull twice, combine, push the result back. That loop is problem B almost verbatim, and it is also how Huffman coding works.</p><p style="margin-top:11px"><strong>Event simulation.</strong> Keep a queue of (time, event); pop the earliest, process it, push whatever it spawns. Problem C is this.</p><p style="margin-top:11px"><strong>k smallest of something huge.</strong> Never build the huge thing. Seed the heap with the obvious candidates and expand only the popped one — problem E in one sentence.</p><p style="margin-top:11px"><strong>Keep the k best seen so far.</strong> A max-heap of size k: push, and if the size exceeds k drop the top. O(n log k) instead of sorting everything.</p><div class="trap" style="margin-top:14px"><b>Heap sort, since it is on the syllabus:</b> heapify in O(n), then extract-min n times — O(n log n), in place, no extra memory. It loses to quicksort in practice on cache, which is next week's discussion.</div></div>
-    </div>
+Array: [10, 15, 20, 30, 40, 50, 60]
+Index:  0   1   2   3   4   5   6</pre></div>
   </div>
 </section>
 
@@ -153,26 +137,203 @@ pq.pop();           <span class="c">// remove, returns void</span></pre><div cla
   <div class="beat-head">
     <div class="beat-n">04</div>
     <div>
-      <h2>Lab 5 — how it maps onto today</h2>
-      <div class="sub"><span>12 min</span> <span>ADS-Lab-05</span></div>
+      <h2>Min-Heap Implementation</h2>
+      <div class="sub"><span>22 min</span> <span>code</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Only five problems this week, and <strong>four of them are one priority queue each</strong>. Say that up front — it is the shortest lab of the semester.</li>
-        <li>B is the "take the two cheapest, put the result back" loop from beat 03. If they can write that loop, B is ten lines.</li>
-        <li>E is the one that needs thought: <strong>k-th smallest sum without building all the sums</strong>. There are n² sums and n can be large; the heap exists precisely so you never materialise them.</li>
-        <li><strong>D is the heavy one</strong> — TL 3 s, and it is not on the defence. Tell them to attempt it last, or not at all if they are short of time.</li>
-        <li>At the defence you will be asked to show the sift, not the <code>#include</code>. Solving with <code>priority_queue</code> is fine and expected; not knowing what it does underneath is not.</li>
+        <li>Write the class top to bottom: the array and the three index formulas, then getMin, insert, heapify, extractMin, and <span class="mono">main</span>.</li>
+        <li><strong>insert</strong>: put the element at the end, then bubble it up while it is smaller than its parent.</li>
+        <li><strong>heapify</strong>: take the smaller child; if the node is bigger than it, swap and continue from there.</li>
+        <li><strong>extractMin</strong>: remember the root, move the last element into the root, remove the last, heapify from the root.</li>
+        <li><span class="mono">main</span> inserts n numbers and extracts them all — they come out sorted. That is heap sort, and it is the next part.</li>
       </ul>
     </div>
-    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Optimizing Program</span><span class="pill key">key</span><div class="map-why">Beat 03 · priority queue over the tasks; TL 2 s</div></div></div>
-<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Rock Game</span><span class="pill key">key</span><div class="map-why">Beat 03 · take the two cheapest, push the result back — the Huffman loop</div></div></div>
-<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Standard problem about soccer</span><span class="pill key">key</span><div class="map-why">Beat 03 · event simulation, earliest first</div></div></div>
-<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Experiment with Mixtures</span><div class="map-why">Heaviest of the five, TL 3 s — not on the defence</div></div></div>
-<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">K-th sum</span><span class="pill key">key</span><div class="map-why">Beat 03 · k-th smallest sum without ever building the n² sums</div></div></div></div>
+    <div class="card pad board"><h4>1 · The array and the index formulas</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">class</span> MinHeap {
+    <span class="k">public</span>:
+    vector&lt;<span class="k">int</span>&gt; a;
+
+    <span class="c">// Get parent index</span>
+    <span class="k">int</span> parent(<span class="k">int</span> i) {
+        <span class="k">return</span> (i - 1) / 2;
+    }
+
+    <span class="c">// Get left child index</span>
+    <span class="k">int</span> left(<span class="k">int</span> i) {
+        <span class="k">return</span> 2 * i + 1;
+    }
+
+    <span class="c">// Get right child index</span>
+    <span class="k">int</span> right(<span class="k">int</span> i) {
+        <span class="k">return</span> 2 * i + 2;
+    }
+
+    ...
+};</pre><p style="margin-top:12px">The whole tree is one <span class="mono">vector&lt;int&gt;</span>. Parent and children are computed, not stored.</p></div>
+    <div class="card pad board"><h4>2 · getMin</h4><pre><span class="c">// Get minimum element (root) - O(1)</span>
+<span class="k">int</span> getMin() {
+    <span class="k">return</span> a[0];
+}</pre><p style="margin-top:12px">The minimum of a min-heap is always at the root — index 0. O(1).</p></div>
+    <div class="card pad board"><h4>3 · insert — bubble up</h4><pre><span class="c">// Insert element - O(log n)</span>
+<span class="k">void</span> insert(<span class="k">int</span> k) {
+    <span class="c">// Add element at the end</span>
+    a.push_back(k);
+    <span class="k">int</span> ind = a.size() - 1;
+
+    <span class="c">// Heapify up: bubble up the element</span>
+    <span class="k">while</span> (ind &gt; 0 &amp;&amp; a[ind] &lt; a[parent(ind)]) {
+        swap(a[ind], a[parent(ind)]);
+        ind = parent(ind);
+    }
+}</pre><p style="margin-top:12px">The new element goes to the end, so the tree stays complete. Then it rises while it is smaller than its parent — at most one swap per level.</p></div>
+    <div class="card pad board"><h4>4 · heapify — sift down</h4><pre><span class="c">// Heapify down - O(log n)</span>
+<span class="k">void</span> heapify(<span class="k">int</span> i) {
+    <span class="k">if</span> (left(i) &gt; a.size() - 1)
+        <span class="k">return</span>;
+
+    <span class="c">// Find smallest among node and its children</span>
+    <span class="k">int</span> j = left(i);
+    <span class="k">if</span> (right(i) &lt; a.size() &amp;&amp; a[right(i)] &lt; a[left(i)])
+        j = right(i);
+
+    <span class="c">// If parent is greater than smallest child, swap and continue</span>
+    <span class="k">if</span> (a[i] &gt; a[j]) {
+        swap(a[i], a[j]);
+        heapify(j);
+    }
+}</pre><p style="margin-top:12px">Pick the <strong>smaller</strong> child — the right one only if it exists. If the node is bigger than it, swap and repeat one level down.</p></div>
+    <div class="card pad board"><h4>5 · extractMin</h4><pre><span class="c">// Extract minimum element - O(log n)</span>
+<span class="k">int</span> extractMin() {
+    <span class="k">int</span> root_value = getMin();
+
+    <span class="c">// Replace root with last element</span>
+    swap(a[0], a[a.size() - 1]);
+    a.pop_back();
+
+    <span class="c">// Heapify down from root</span>
+    <span class="k">if</span> (a.size() &gt; 0)
+        heapify(0);
+
+    <span class="k">return</span> root_value;
+}</pre><p style="margin-top:12px">Moving the last element into the root keeps the tree complete; heapify then restores the order from the top.</p></div>
+    <div class="card pad board"><h4>6 · main</h4><pre><span class="k">int</span> main() {
+    <span class="k">int</span> n, x;
+    cin &gt;&gt; n;
+    MinHeap *heap = <span class="k">new</span> MinHeap();
+
+    <span class="c">// Insert n elements</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        cin &gt;&gt; x;
+        heap-&gt;insert(x);
+    }
+
+    <span class="c">// Extract all elements (sorted order)</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        cout &lt;&lt; heap-&gt;extractMin() &lt;&lt; <span class="s">" "</span>;
+
+    <span class="k">return</span> 0;
+}</pre><p style="margin-top:12px">Input</p><pre class="out">7
+64 34 25 12 22 11 90</pre><div class="out-lbl">output</div><pre class="out">11 12 22 25 34 64 90</pre></div>
+    <div class="card pad board"><h4>The whole program</h4><p>Everything above in one file. Open it, put the input into <strong>stdin</strong>, and press <strong>Run</strong>.</p><div style="margin-top:12px"><details class="code"><summary>MinHeap — the full program<span class="lines">92 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">class</span> MinHeap {
+    <span class="k">public</span>:
+    vector&lt;<span class="k">int</span>&gt; a;
+
+    <span class="c">// Get parent index</span>
+    <span class="k">int</span> parent(<span class="k">int</span> i) {
+        <span class="k">return</span> (i - 1) / 2;
+    }
+
+    <span class="c">// Get left child index</span>
+    <span class="k">int</span> left(<span class="k">int</span> i) {
+        <span class="k">return</span> 2 * i + 1;
+    }
+
+    <span class="c">// Get right child index</span>
+    <span class="k">int</span> right(<span class="k">int</span> i) {
+        <span class="k">return</span> 2 * i + 2;
+    }
+
+    <span class="c">// Get minimum element (root) - O(1)</span>
+    <span class="k">int</span> getMin() {
+        <span class="k">return</span> a[0];
+    }
+
+    <span class="c">// Insert element - O(log n)</span>
+    <span class="k">void</span> insert(<span class="k">int</span> k) {
+        <span class="c">// Add element at the end</span>
+        a.push_back(k);
+        <span class="k">int</span> ind = a.size() - 1;
+
+        <span class="c">// Heapify up: bubble up the element</span>
+        <span class="k">while</span> (ind &gt; 0 &amp;&amp; a[ind] &lt; a[parent(ind)]) {
+            swap(a[ind], a[parent(ind)]);
+            ind = parent(ind);
+        }
+    }
+
+    <span class="c">// Heapify down - O(log n)</span>
+    <span class="k">void</span> heapify(<span class="k">int</span> i) {
+        <span class="k">if</span> (left(i) &gt; a.size() - 1)
+            <span class="k">return</span>;
+
+        <span class="c">// Find smallest among node and its children</span>
+        <span class="k">int</span> j = left(i);
+        <span class="k">if</span> (right(i) &lt; a.size() &amp;&amp; a[right(i)] &lt; a[left(i)])
+            j = right(i);
+
+        <span class="c">// If parent is greater than smallest child, swap and continue</span>
+        <span class="k">if</span> (a[i] &gt; a[j]) {
+            swap(a[i], a[j]);
+            heapify(j);
+        }
+    }
+
+    <span class="c">// Extract minimum element - O(log n)</span>
+    <span class="k">int</span> extractMin() {
+        <span class="k">int</span> root_value = getMin();
+
+        <span class="c">// Replace root with last element</span>
+        swap(a[0], a[a.size() - 1]);
+        a.pop_back();
+
+        <span class="c">// Heapify down from root</span>
+        <span class="k">if</span> (a.size() &gt; 0)
+            heapify(0);
+
+        <span class="k">return</span> root_value;
+    }
+};
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> n, x;
+    cin &gt;&gt; n;
+    MinHeap *heap = <span class="k">new</span> MinHeap();
+
+    <span class="c">// Insert n elements</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        cin &gt;&gt; x;
+        heap-&gt;insert(x);
+    }
+
+    <span class="c">// Extract all elements (sorted order)</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        cout &lt;&lt; heap-&gt;extractMin() &lt;&lt; <span class="s">" "</span>;
+
+    <span class="k">return</span> 0;
+}</pre></details></div></div>
   </div>
 </section>
 
@@ -180,27 +341,399 @@ pq.pop();           <span class="c">// remove, returns void</span></pre><div cla
   <div class="beat-head">
     <div class="beat-n">05</div>
     <div>
-      <h2>What comes next</h2>
-      <div class="sub"><span>3 min</span></div>
+      <h2>Heap Operations Explained</h2>
+      <div class="sub"><span>12 min</span> <span>board</span> <span>demo: heap</span></div>
     </div>
   </div>
   <div class="stack">
-    <div class="card pad board"><p>Lecture 6 is <strong>sorting</strong> — heap sort, which you can already derive from today, and quick sort, which is the opposite philosophy. The hook to leave them with: heap sort has a guaranteed O(n log n) and still loses to quicksort on real data. Ask them to guess why before the next class; the answer is cache, and it is the first time in this course where the machine, not the asymptotics, decides.</p><p style="margin-top:12px">Homework is Lab 5. It is small — ask for <strong>B and C</strong>, both of which are the plain queue loop.</p></div>
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li><strong>Insert — O(log n).</strong> Add at the end, compare with the parent, swap while smaller. Walk through inserting 5 on the board.</li>
+        <li><strong>Extract min — O(log n).</strong> Save the root, replace it with the last element, remove the last, heapify down. Walk through it on the second example.</li>
+        <li><strong>Heapify — O(log n).</strong> Compare with the children, find the smallest, swap if the node is not the smallest, repeat in that subtree.</li>
+        <li>Then let the demo do a few of each and read the swap counter — it never exceeds the height.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>1 · Insert — O(log n)</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li>Add the element at the end of the array</li><li>Compare with its parent</li><li>If smaller than the parent (min-heap), swap</li><li>Continue until the heap property is satisfied</li></ol><p style="margin-top:14px"><strong>Example:</strong> insert 5 into <span class="mono">[10, 15, 20, 30, 40]</span>. It lands at index 5, whose parent is index 2 — the value 20.</p><pre class="out">Step 1: [10, 15, 20, 30, 40, 5]  — add at end
+Step 2: [10, 15, 5, 30, 40, 20]  — swap with parent (20)
+Step 3: [5, 15, 10, 30, 40, 20]  — swap with parent (10)</pre><p style="margin-top:12px">Two swaps — the heap has three levels, so it could never take more than two.</p></div>
+    <div class="card pad board"><h4>2 · Extract min — O(log n)</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li>Save the root value (the minimum)</li><li>Replace the root with the last element</li><li>Remove the last element</li><li>Heapify down from the root</li></ol><p style="margin-top:14px"><strong>Example:</strong> extract min from <span class="mono">[10, 15, 20, 30, 40, 50]</span>.</p><pre class="out">Step 1: save 10 (minimum)
+Step 2: [50, 15, 20, 30, 40]  — replace root with last
+Step 3: [15, 50, 20, 30, 40]  — heapify: swap 50 with 15
+Step 4: [15, 30, 20, 50, 40]  — heapify: swap 50 with 30
+Result: return 10, heap is [15, 30, 20, 50, 40]</pre><p style="margin-top:12px">At each step 50 goes to the <strong>smaller</strong> child: 15 rather than 20, then 30 rather than 40.</p></div>
+    <div class="card pad board"><h4>3 · Heapify — O(log n)</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li>Compare the node with its children</li><li>Find the smallest among the node and its children</li><li>If the node is not the smallest, swap it with the smallest child</li><li>Recursively heapify the affected subtree</li></ol></div>
+    <div class="card pad demo"><h4>Demo · the heap, live</h4><div class="ctl"><label class="f" style="flex:1 1 110px"><span>value</span><input type="number" id="hpv" value="4"></label><button class="pri" id="hpins">insert</button><button id="hpext">extract-min</button><button id="hprand">random 10</button><button id="hpclr">clear</button></div><div class="track" id="hptrack"></div><div id="hptree" style="margin-top:12px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.5;color:var(--ink-2)"></div><div class="readout"><div class="stat"><div class="lab">size</div><div class="val" id="hpn">0</div></div><div class="stat"><div class="lab">height</div><div class="val" id="hph">0</div></div><div class="stat good"><div class="lab">swaps, last op</div><div class="val" id="hps">—</div></div></div><div class="log" id="hplog">Array view on top, tree view below. They are the same thing.</div></div>
+  </div>
+</section>
+
+<section class="beat" id="b6">
+  <div class="beat-head">
+    <div class="beat-n">06</div>
+    <div>
+      <h2>Complete Example with Trace</h2>
+      <div class="sub"><span>6 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Insert <span class="mono">50, 30, 20, 15, 10, 8, 16</span> one by one and write every array on the board.</li>
+        <li>Each new element starts at the end and rises while it is smaller than its parent. Point at which parent it is compared with — the formula (i − 1) / 2.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Insert 50, 30, 20, 15, 10, 8, 16</h4><pre class="out">Insert 50:  [50]
+
+Insert 30:  [50, 30]
+            [30, 50]  — swap with parent (50)
+
+Insert 20:  [30, 50, 20]
+            [20, 50, 30]  — swap with parent (30)
+
+Insert 15:  [20, 50, 30, 15]
+            [20, 15, 30, 50]  — swap with parent (50)
+            [15, 20, 30, 50]  — swap with parent (20)
+
+Insert 10:  [15, 20, 30, 50, 10]
+            [15, 10, 30, 50, 20]  — swap with parent (20)
+            [10, 15, 30, 50, 20]  — swap with parent (15)
+
+Insert 8:   [10, 15, 30, 50, 20, 8]
+            [10, 15, 8, 50, 20, 30]  — swap with parent (30)
+            [8, 15, 10, 50, 20, 30]  — swap with parent (10)
+
+Insert 16:  [8, 15, 10, 50, 20, 30, 16]</pre><p style="margin-top:14px">Final heap: <span class="mono">[8, 15, 10, 50, 20, 30, 16]</span></p><pre class="out">        8
+       /  \
+      15   10
+     / \  / \
+    50 20 30 16</pre><p style="margin-top:12px">Check the rule: every parent is smaller than its children. The array is <strong>not sorted</strong> — 50 comes before 20 — and it does not need to be.</p></div>
+  </div>
+</section>
+
+<section class="beat" id="b7">
+  <div class="beat-head">
+    <div class="beat-n">07</div>
+    <div>
+      <h2>Heap Sort Using Min-Heap</h2>
+      <div class="sub"><span>7 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>The program from the implementation is already <strong>heap sort</strong>: build the heap by inserting everything, then extract the minimum n times.</li>
+        <li>Both halves are O(n log n), so the whole sort is <strong>O(n log n)</strong>.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Build, then extract</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li><strong>Build heap</strong>: insert all elements — O(n log n)</li><li><strong>Extract all</strong>: extract min repeatedly — O(n log n)</li><li><strong>Result</strong>: sorted array in ascending order</li></ol><p style="margin-top:14px"><strong>Example.</strong> Input: <span class="mono">[64, 34, 25, 12, 22, 11, 90]</span></p><pre class="out">After building heap: [11, 22, 12, 64, 25, 34, 90]
+
+Extract operations:
+Extract: 11 → Heap: [12, 22, 34, 64, 25, 90]
+Extract: 12 → Heap: [22, 25, 34, 64, 90]
+Extract: 22 → Heap: [25, 64, 34, 90]
+Extract: 25 → Heap: [34, 64, 90]
+Extract: 34 → Heap: [64, 90]
+Extract: 64 → Heap: [90]
+Extract: 90 → Heap: []
+
+Sorted: [11, 12, 22, 25, 34, 64, 90]</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b8">
+  <div class="beat-head">
+    <div class="beat-n">08</div>
+    <div>
+      <h2>Time Complexity Analysis</h2>
+      <div class="sub"><span>3 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Each operation</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Time Complexity</th><th class="n">Description</th></tr></thead><tbody><tr><td class="k">getMin()</td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n">simply return the root element</td></tr><tr><td class="k">insert()</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n">add at end, bubble up</td></tr><tr><td class="k">extractMin()</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n">remove root, heapify down</td></tr><tr><td class="k">heapify()</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n">restore the heap property</td></tr><tr><td class="k">Sorting n elements</td><td class="n">O(n log n)</td><td class="n">n insertions + n extractions</td></tr></tbody></table></div></div>
+  </div>
+</section>
+
+<section class="beat" id="b9">
+  <div class="beat-head">
+    <div class="beat-n">09</div>
+    <div>
+      <h2>Space Complexity</h2>
+      <div class="sub"><span>2 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Memory</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Vector storage</strong>: O(n) for n elements</li><li><strong>Recursion stack</strong>: O(log n) for the heapify operation</li><li><strong>Total</strong>: O(n)</li></ul></div>
+  </div>
+</section>
+
+<section class="beat" id="b10">
+  <div class="beat-head">
+    <div class="beat-n">10</div>
+    <div>
+      <h2>Practical Applications</h2>
+      <div class="sub"><span>7 min</span> <span>code</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Four places the same two operations — insert and extractMin — are all you need.</li>
+        <li>The priority queue is the main one: whatever has the smallest priority comes out first, no matter the order it went in.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>1 · Priority queue</h4><pre>MinHeap pq;
+pq.insert(5);  <span class="c">// Add task with priority 5</span>
+pq.insert(1);  <span class="c">// Add task with priority 1</span>
+pq.insert(3);  <span class="c">// Add task with priority 3</span>
+
+<span class="c">// Process in priority order (1, 3, 5)</span>
+<span class="k">while</span> (!pq.a.empty()) {
+    cout &lt;&lt; pq.extractMin() &lt;&lt; <span class="s">" "</span>;
+}</pre><p style="margin-top:12px">Tasks go in as 5, 1, 3 and come out as 1, 3, 5.</p></div>
+    <div class="card pad board"><h4>2 · Finding the k smallest elements</h4><pre>MinHeap heap;
+<span class="c">// Insert all elements</span>
+<span class="k">for</span> (<span class="k">int</span> num : array)
+    heap.insert(num);
+
+<span class="c">// Extract k smallest</span>
+<span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; k; i++)
+    cout &lt;&lt; heap.extractMin() &lt;&lt; <span class="s">" "</span>;</pre></div>
+    <div class="card pad board"><h4>3 · Heap sort</h4><pre>MinHeap heap;
+<span class="c">// Insert all elements</span>
+<span class="k">for</span> (<span class="k">int</span> num : unsorted_array)
+    heap.insert(num);
+
+<span class="c">// Extract all (sorted)</span>
+vector&lt;<span class="k">int</span>&gt; sorted;
+<span class="k">while</span> (!heap.a.empty())
+    sorted.push_back(heap.extractMin());</pre></div>
+    <div class="card pad board"><h4>4 · Merging k sorted arrays</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Insert the first element of each array into a min-heap</li><li>Extract the minimum, insert the next element from the same array</li><li>Continue until all elements are processed</li></ul></div>
+  </div>
+</section>
+
+<section class="beat" id="b11">
+  <div class="beat-head">
+    <div class="beat-n">11</div>
+    <div>
+      <h2>Advantages of This Implementation</h2>
+      <div class="sub"><span>2 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Why this code is a good starting point</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li><strong>Simple and clean code</strong></li><li><strong>STL vector</strong> for dynamic size</li><li><strong>Recursive heapify</strong> is easy to understand</li><li><strong>Direct array access</strong> for efficiency</li><li><strong>Compact implementation</strong> with the essential operations</li></ol></div>
+  </div>
+</section>
+
+<section class="beat" id="b12">
+  <div class="beat-head">
+    <div class="beat-n">12</div>
+    <div>
+      <h2>Potential Improvements</h2>
+      <div class="sub"><span>4 min</span> <span>code</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li><strong>getMin on an empty heap</strong> reads <span class="mono">a[0]</span> of an empty vector — undefined behaviour. Check first.</li>
+        <li><strong>buildHeap</strong> makes a heap from a whole array at once: heapify every non-leaf node, from the last one back to the root. That is O(n), not O(n log n).</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>1 · Add a size check</h4><pre><span class="k">int</span> getMin() {
+    <span class="k">if</span> (a.empty()) {
+        throw runtime_error(<span class="s">"Heap is empty"</span>);
+    }
+    <span class="k">return</span> a[0];
+}</pre></div>
+    <div class="card pad board"><h4>2 · Add a build-heap method</h4><pre><span class="k">void</span> buildHeap(vector&lt;<span class="k">int</span>&gt; arr) {
+    a = arr;
+    <span class="c">// Start from last non-leaf node</span>
+    <span class="k">for</span> (<span class="k">int</span> i = a.size() / 2 - 1; i &gt;= 0; i--) {
+        heapify(i);
+    }
+}</pre><p style="margin-top:12px">The last non-leaf node is at <span class="mono">n / 2 − 1</span>; everything after it is a leaf and already a heap.</p></div>
+    <div class="card pad board"><h4>3 · Add a print function</h4><pre><span class="k">void</span> printHeap() {
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; a.size(); i++)
+        cout &lt;&lt; a[i] &lt;&lt; <span class="s">" "</span>;
+    cout &lt;&lt; endl;
+}</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b13">
+  <div class="beat-head">
+    <div class="beat-n">13</div>
+    <div>
+      <h2>Max-Heap Implementation</h2>
+      <div class="sub"><span>4 min</span> <span>code</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>For a max-heap, <strong>reverse the comparisons</strong> — three places, each marked <em>Change</em> in the code.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Three comparisons flipped</h4><pre><span class="k">class</span> MaxHeap {
+<span class="k">public</span>:
+    vector&lt;<span class="k">int</span>&gt; a;
+
+    <span class="k">int</span> parent(<span class="k">int</span> i) { <span class="k">return</span> (i - 1) / 2; }
+    <span class="k">int</span> left(<span class="k">int</span> i) { <span class="k">return</span> 2 * i + 1; }
+    <span class="k">int</span> right(<span class="k">int</span> i) { <span class="k">return</span> 2 * i + 2; }
+
+    <span class="k">int</span> getMax() { <span class="k">return</span> a[0]; }
+
+    <span class="k">void</span> insert(<span class="k">int</span> k) {
+        a.push_back(k);
+        <span class="k">int</span> ind = a.size() - 1;
+        <span class="c">// Change: bubble up if GREATER than parent</span>
+        <span class="k">while</span> (ind &gt; 0 &amp;&amp; a[ind] &gt; a[parent(ind)]) {
+            swap(a[ind], a[parent(ind)]);
+            ind = parent(ind);
+        }
+    }
+
+    <span class="k">void</span> heapify(<span class="k">int</span> i) {
+        <span class="k">if</span> (left(i) &gt; a.size() - 1)
+            <span class="k">return</span>;
+        <span class="k">int</span> j = left(i);
+        <span class="c">// Change: find LARGEST child</span>
+        <span class="k">if</span> (right(i) &lt; a.size() &amp;&amp; a[right(i)] &gt; a[left(i)])
+            j = right(i);
+        <span class="c">// Change: swap if parent is SMALLER</span>
+        <span class="k">if</span> (a[i] &lt; a[j]) {
+            swap(a[i], a[j]);
+            heapify(j);
+        }
+    }
+
+    <span class="k">int</span> extractMax() {
+        <span class="k">int</span> root_value = getMax();
+        swap(a[0], a[a.size() - 1]);
+        a.pop_back();
+        <span class="k">if</span> (a.size() &gt; 0)
+            heapify(0);
+        <span class="k">return</span> root_value;
+    }
+};</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b14">
+  <div class="beat-head">
+    <div class="beat-n">14</div>
+    <div>
+      <h2>Sample Run</h2>
+      <div class="sub"><span>3 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Input → process → output</h4><div class="out-lbl" style="margin-top:0">input</div><pre class="out">7
+64 34 25 12 22 11 90</pre><div class="out-lbl">building the heap</div><pre class="out">Insert 64: [64]
+Insert 34: [34, 64]
+Insert 25: [25, 64, 34]
+Insert 12: [12, 25, 34, 64]
+Insert 22: [12, 22, 34, 64, 25]
+Insert 11: [11, 22, 12, 64, 25, 34]
+Insert 90: [11, 22, 12, 64, 25, 34, 90]</pre><div class="out-lbl">heap structure</div><pre class="out">        11
+       /  \
+      22   12
+     / \  / \
+    64 25 34 90</pre><div class="out-lbl">output</div><pre class="out">11 12 22 25 34 64 90</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b15">
+  <div class="beat-head">
+    <div class="beat-n">15</div>
+    <div>
+      <h2>Common Questions</h2>
+      <div class="sub"><span>5 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Q1 · Why is heapify O(log n)?</h4><p>At each step we compare and possibly swap with one child, moving down one level. The heap height is log n, so there are at most log n steps.</p></div>
+    <div class="card pad board"><h4>Q2 · Build heap — O(n) or O(n log n)?</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Inserting n elements one by one</strong>: O(n log n)</li><li><strong>Building from an array (heapify from the bottom)</strong>: O(n) — more efficient</li></ul></div>
+    <div class="card pad board"><h4>Q3 · Why use a heap for sorting?</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Guaranteed O(n log n) time</li><li>In-place if implemented correctly</li><li>No worst-case degradation like Quick Sort</li></ul></div>
+    <div class="card pad board"><h4>Q4 · When to use a min-heap and when a max-heap?</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Min-Heap</strong>: find the smallest elements, sort in ascending order</li><li><strong>Max-Heap</strong>: find the largest elements, sort in descending order</li></ul></div>
+  </div>
+</section>
+
+<section class="beat" id="b16">
+  <div class="beat-head">
+    <div class="beat-n">16</div>
+    <div>
+      <h2>Comparison with Other Data Structures</h2>
+      <div class="sub"><span>3 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Heap against the rest</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Array</th><th class="n">Sorted Array</th><th class="n">Linked List</th><th class="n">Min-Heap</th></tr></thead><tbody><tr><td class="k">Find Min</td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)"><strong>O(1)</strong></span></td></tr><tr><td class="k">Extract Min</td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)"><strong>O(log n)</strong></span></td></tr><tr><td class="k">Insert</td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--prime)"><strong>O(log n)</strong></span></td></tr><tr><td class="k">Sort</td><td class="n">O(n log n)</td><td class="n">—</td><td class="n">O(n log n)</td><td class="n"><strong>O(n log n)</strong></td></tr></tbody></table></div></div>
+  </div>
+</section>
+
+<section class="beat" id="b17">
+  <div class="beat-head">
+    <div class="beat-n">17</div>
+    <div>
+      <h2>Key Takeaways</h2>
+      <div class="sub"><span>2 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Eight things to remember</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li><strong>A min-heap always has the minimum at the root</strong> — O(1) access</li><li><strong>Insert and extract are O(log n)</strong></li><li><strong>Heapify maintains the heap property</strong> by comparing with the children</li><li><strong>A complete binary tree stored in an array</strong> — space efficient</li><li><strong>Heap sort achieves O(n log n)</strong> by repeated extract operations</li><li><strong>Parent–child relationships</strong> are given by simple formulas</li><li><strong>No pointer manipulation</strong> — array indices handle the structure</li><li><strong>Perfect for a priority queue</strong></li></ol></div>
+  </div>
+</section>
+
+<section class="beat" id="b18">
+  <div class="beat-head">
+    <div class="beat-n">18</div>
+    <div>
+      <h2>Practice Problems</h2>
+      <div class="sub"><span>2 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Try these</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li>Find the k-th smallest element in an array</li><li>Merge k sorted arrays</li><li>Find the median in a data stream</li><li>Sort a nearly sorted array</li><li>Connect n ropes with minimum cost</li><li>Find the k largest elements in an array</li><li>Implement a heap using only insert and extractMin</li></ol></div>
+  </div>
+</section>
+
+<section class="beat" id="b19">
+  <div class="beat-head">
+    <div class="beat-n">19</div>
+    <div>
+      <h2>Lab 5 — the problems</h2>
+      <div class="sub"><span>8 min</span> <span>ADS-Lab-05</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Optimizing Program</span><span class="pill key">key</span><div class="map-why">A priority queue over the tasks; TL 2 s</div></div></div>
+<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Rock Game</span><span class="pill key">key</span><div class="map-why">Take the two smallest, push their sum back — "connect ropes" from the practice list</div></div></div>
+<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Standard problem about soccer</span><span class="pill key">key</span><div class="map-why">Event simulation — always process the earliest next</div></div></div>
+<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Experiment with Mixtures</span><div class="map-why">Heaviest of the five, TL 3 s — not on the defence</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">K-th sum</span><span class="pill key">key</span><div class="map-why">k-th smallest sum without ever building all n² sums</div></div></div><div class="trap" style="margin-top:16px"><b>On the defence:</b> D is excluded as disproportionately heavy — say so, so nobody spends the evening on it thinking it is required.</div></div>
   </div>
 </section>
 </main>
 </div>
 
 <footer>
-  <span>ADS 2026 · KBTU · Lecture 5 — Heap and Priority Queue</span>
+  <span>ADS 2026 · KBTU · Lecture 5 — Heap and Heap Sort</span>
   <span><a href="index.html">All lectures</a></span>
 </footer>
 </div>
 
 <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-<script src="assets/notes.js?v=202609281051"></script>
-<script src="assets/present.js?v=202609281051"></script>
-<script src="assets/cpp.js?v=202609281051"></script>
+<script src="assets/notes.js?v=202609281239"></script>
+<script src="assets/present.js?v=202609281239"></script>
+<script src="assets/cpp.js?v=202609281239"></script>
 <script>
 
 (function(){
