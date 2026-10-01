@@ -6,39 +6,44 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
-<link rel="stylesheet" href="assets/notes.css?v=202609281811">
-<link rel="stylesheet" href="assets/present.css?v=202609281811">
-<link rel="stylesheet" href="assets/cpp.css?v=202609281811">
+<link rel="stylesheet" href="assets/notes.css?v=202610011756">
+<link rel="stylesheet" href="assets/present.css?v=202610011756">
+<link rel="stylesheet" href="assets/cpp.css?v=202610011756">
 </head><body>
 <div class="wrap">
 
 <header class="masthead">
   <div class="eyebrow">ADS 2026 · KBTU · Lecture 9 · Lab 9</div>
   <h1>Prefix Function and <em>KMP</em></h1>
-  <p class="dek">Last week substring search was fast and almost always right. This week it is fast and always right. The whole lecture rests on one array of n numbers — and once you see what those numbers mean, half the string problems in the course become one-liners.</p>
-  <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>6</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 9 · 8 problems</b></span></div>
+  <p class="dek">One array, π, where π[i] is the longest proper prefix of s[0…i] that is also its suffix. It is computed in O(n), and run on pattern + "#" + text it finds every occurrence in O(n + m) with no false positives — then the same array answers periods, borders, rotations and palindromic prefixes.</p>
+  <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>10</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 9 · 8 problems</b></span></div>
 </header>
 
 <div class="cols">
 
 <nav class="rail" aria-label="Running order">
   <div class="rail-h">Running order</div>
-  <div class="part">I · The array</div>
+  <div class="part">I · Prefix function</div>
   <ol>
-    <li><a href="#b1"><span class="n">01</span><span>What π[i] means</span><span class="t">18′</span></a></li>
+    <li><a href="#b1"><span class="n">01</span><span>Introduction</span><span class="t">3′</span></a></li>
+    <li><a href="#b2"><span class="n">02</span><span>Prefix function</span><span class="t">32′</span></a></li>
   </ol>
-  <div class="part">II · Search</div>
+  <div class="part">II · KMP</div>
   <ol>
-    <li><a href="#b2"><span class="n">02</span><span>KMP search</span><span class="t">16′</span></a></li>
+    <li><a href="#b3"><span class="n">03</span><span>KMP algorithm</span><span class="t">25′</span></a></li>
   </ol>
-  <div class="part">III · What else it answers</div>
+  <div class="part">III · Applications</div>
   <ol>
-    <li><a href="#b3"><span class="n">03</span><span>Periods and borders</span><span class="t">22′</span></a></li>
+    <li><a href="#b4"><span class="n">04</span><span>Problems it solves</span><span class="t">25′</span></a></li>
+    <li><a href="#b5"><span class="n">05</span><span>KMP vs Rabin–Karp</span><span class="t">4′</span></a></li>
+    <li><a href="#b6"><span class="n">06</span><span>Advantages and disadvantages</span><span class="t">3′</span></a></li>
   </ol>
-  <div class="part">IV · Practice</div>
+  <div class="part">IV · Wrap-up</div>
   <ol>
-    <li><a href="#b4"><span class="n">04</span><span>Lab 9 walkthrough</span><span class="t">12′</span></a></li>
-    <li><a href="#b5"><span class="n">05</span><span>What comes next</span><span class="t">3′</span></a></li>
+    <li><a href="#b7"><span class="n">07</span><span>Common questions</span><span class="t">6′</span></a></li>
+    <li><a href="#b8"><span class="n">08</span><span>Key takeaways</span><span class="t">2′</span></a></li>
+    <li><a href="#b9"><span class="n">09</span><span>Practice problems</span><span class="t">2′</span></a></li>
+    <li><a href="#b10"><span class="n">10</span><span>Lab 9</span><span class="t">8′</span></a></li>
   </ol>
 </nav>
 
@@ -47,32 +52,19 @@
   <div class="beat-head">
     <div class="beat-n">01</div>
     <div>
-      <h2>The prefix function</h2>
-      <div class="sub"><span>18 min</span> <span>demo: π table</span></div>
+      <h2>Introduction</h2>
+      <div class="sub"><span>3 min</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Definition first, slowly: <strong>π[i] is the length of the longest proper prefix of s[0..i] that is also a suffix of s[0..i]</strong>. Proper means it is not the whole thing.</li>
-        <li>Do <code>abacaba</code> by hand on the board before any code: 0 0 1 0 1 2 3. Ask what π[6] = 3 is telling us — <em>the first three characters equal the last three</em>. That sentence is the entire lecture.</li>
-        <li>Naive computation is O(n³), and it is worth writing just to throw away. Then the improvement: when extending, <strong>if the next character does not match, fall back to π[j−1]</strong> instead of starting over.</li>
-        <li>The cost argument is the elegant part: <code>j</code> increases at most once per step and never goes below zero, so <strong>total fallbacks are at most n</strong>. Linear, amortised.</li>
-        <li>Step the demo on <code>aabaaab</code> and read the fallback chain out loud when it happens. Students accept the code long before they believe the complexity.</li>
+        <li>The <strong>Knuth–Morris–Pratt</strong> algorithm finds all occurrences of a pattern in a text in <strong>O(n + m)</strong> — n is the length of the text, m of the pattern.</li>
+        <li>Its key is the <strong>prefix function</strong>, which lets it search without redundant comparisons.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre>vector&lt;<span class="k">int</span>&gt; pi(n, 0);
-<span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; ++i) {
-    <span class="k">int</span> j = pi[i - 1];
-    <span class="k">while</span> (j &gt; 0 &amp;&amp; s[i] != s[j])
-        j = pi[j - 1];          <span class="c">// fall back</span>
-    <span class="k">if</span> (s[i] == s[j]) ++j;
-    pi[i] = j;
-}</pre><div class="formula" style="margin-top:13px">a b a c a b a<br>0 0 1 0 1 2 3</div><div class="trap" style="margin-top:14px"><b>Six lines, and two of them are traps.</b> It is <code>pi[j-1]</code>, not <code>pi[j]</code> — falling back to the wrong index loops forever. And the <code>while</code> must come before the <code>if</code>, or a failed match still increments.</div></div>
-      <div class="card pad demo"><h4>Demo · the prefix function, step by step</h4><div class="ctl"><label class="f" style="flex:1 1 220px"><span>string</span><input type="text" id="pfs" value="abacaba"></label><button class="pri" id="pfrun">Compute</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-pf="abacaba">abacaba</button><button class="chip" data-pf="aabaaab">aabaaab</button><button class="chip" data-pf="aaaaa">aaaaa</button><button class="chip" data-pf="abcdef">no repeats</button><button class="chip" data-pf="abababab">abababab</button></div><div class="track" id="pftrack" style="flex-wrap:wrap"></div><div class="readout"><div class="stat"><div class="lab">π of the last position</div><div class="val" id="pflast">—</div></div><div class="stat good"><div class="lab">shortest period</div><div class="val" id="pfper">—</div></div><div class="stat"><div class="lab">fallbacks total</div><div class="val" id="pffb">—</div></div></div><div class="log" id="pflog"></div></div>
-    </div>
+    <div class="card pad board"><h4>KMP in one sentence</h4><p>Find every occurrence of a pattern in a text in <strong>O(n + m)</strong>, using one precomputed array — the <strong>prefix function</strong>.</p></div>
   </div>
 </section>
 
@@ -80,30 +72,276 @@
   <div class="beat-head">
     <div class="beat-n">02</div>
     <div>
-      <h2>Searching without ever going back</h2>
-      <div class="sub"><span>16 min</span> <span>board</span></div>
+      <h2>Prefix Function</h2>
+      <div class="sub"><span>32 min</span> <span>board</span> <span>code</span> <span>demo: π table</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>The naive search, on a mismatch, moves the pattern one step and <strong>rereads the text</strong>. KMP never rereads — the text pointer only moves forward.</li>
-        <li>The trick is the concatenation: build <strong>pattern + separator + text</strong> and compute π over the whole thing. Wherever <strong>π[i] equals the pattern length</strong>, you have found an occurrence.</li>
-        <li>The separator must be a character that appears in neither string — <code>#</code> for lowercase input. Say why: without it a match can straddle the join and you count occurrences that do not exist.</li>
-        <li>Total cost <strong>O(n + m)</strong>, deterministic, no probability, no collisions. That is the improvement over last week, and it is the whole reason this lecture exists.</li>
-        <li>Position arithmetic is where marks are lost: a match ending at index i in the combined string starts at <code>i − 2·len</code> in the original text. Derive it on the board rather than asserting it.</li>
+        <li><strong>π[i]</strong> is the length of the longest <strong>proper</strong> prefix of s[0…i] that is also a suffix of s[0…i]. Proper means not the whole substring.</li>
+        <li>Do example 1 by the definition on the board — list the prefixes and suffixes for every i. Then examples 2 and 3 quickly.</li>
+        <li>The naive computation tries every length at every position: O(n³).</li>
+        <li>The efficient one starts from the previous answer j = π[i−1]. If s[i] == s[j], the answer is j + 1; otherwise fall back to π[j−1] and try again.</li>
+        <li>Trace "abcabcd" step by step, then let the demo step through other strings.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre>string cur = pat + <span class="s">'#'</span> + txt;
-vector&lt;<span class="k">int</span>&gt; pi = prefixFunction(cur);
+    <div class="card pad board"><h4>Definition</h4><div class="formula">π[i] = length of the longest proper prefix of s[0…i]<br>       that is also a suffix of s[0…i]</div><p style="margin-top:12px"><strong>Proper prefix</strong> — a prefix that is not equal to the entire substring.</p></div>
+    <div class="card pad board"><h4>Example 1 · s = "abcabcd"</h4><pre class="out">i = 0: s[0...0] = "a"
+       Proper prefixes: (none)
+       Suffixes: (none)
+       π[0] = 0
 
-<span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; (<span class="k">int</span>)cur.size(); ++i)
-    <span class="k">if</span> (pi[i] == (<span class="k">int</span>)pat.size())
-        cout &lt;&lt; i - 2 * pat.size() &lt;&lt; <span class="s">" "</span>;</pre><div class="trap" style="margin-top:14px"><b>Memory, and it bites in this lab.</b> The combined string is n + m + 1 characters and π is an <code>int</code> per character. With |s| = 5·10⁶ that is 20 MB for the array alone — fine at 256 MB, but do not also keep three copies of the string.</div><div class="trap" style="margin-top:10px"><b>Overlapping matches count.</b> Searching <code>aa</code> in <code>aaaa</code> gives three occurrences, not two. KMP reports all of them for free; a hand-rolled loop that resets on a match will not.</div></div>
-      <div class="card pad board"><h4>Three ways to find a substring</h4><div class="tw"><table><thead><tr><th>Method</th><th class="n">Time</th><th>Always right</th><th>Extra memory</th></tr></thead><tbody><tr><td class="k">Naive</td><td class="n" style="color:var(--mark)">O(n·m)</td><td style="color:var(--prime)">yes</td><td class="n">O(1)</td></tr><tr><td class="k">Rabin–Karp, one hash</td><td class="n" style="color:var(--prime)">O(n+m)</td><td style="color:var(--mark)">probably</td><td class="n">O(n)</td></tr><tr><td class="k">Rabin–Karp, two hashes</td><td class="n" style="color:var(--prime)">O(n+m)</td><td>almost surely</td><td class="n">O(n)</td></tr><tr><td class="k">KMP</td><td class="n" style="color:var(--prime)">O(n+m)</td><td style="color:var(--prime)">yes</td><td class="n">O(n+m)</td></tr></tbody></table></div><p style="margin-top:12px">Worth saying out loud: in a contest most people reach for hashing because it is shorter to type. KMP is what you use when a wrong answer is not survivable — and when the problem wants π itself, which is most of this lab.</p></div>
-    </div>
+i = 1: s[0...1] = "ab"
+       Proper prefixes: "a"
+       Suffixes: "b"
+       No match → π[1] = 0
+
+i = 2: s[0...2] = "abc"
+       Proper prefixes: "a", "ab"
+       Suffixes: "c", "bc"
+       No match → π[2] = 0
+
+i = 3: s[0...3] = "abca"
+       Proper prefixes: "a", "ab", "abc"
+       Suffixes: "a", "ca", "bca"
+       Match: "a" → π[3] = 1
+
+i = 4: s[0...4] = "abcab"
+       Proper prefixes: "a", "ab", "abc", "abca"
+       Suffixes: "b", "ab", "cab", "bcab"
+       Match: "ab" → π[4] = 2
+
+i = 5: s[0...5] = "abcabc"
+       Proper prefixes: "a", "ab", "abc", "abca", "abcab"
+       Suffixes: "c", "bc", "abc", "cabc", "bcabc"
+       Match: "abc" → π[5] = 3
+
+i = 6: s[0...6] = "abcabcd"
+       Proper prefixes: "a", "ab", "abc", "abca", "abcab", "abcabc"
+       Suffixes: "d", "cd", "bcd", "abcd", "cabcd", "bcabcd"
+       No match → π[6] = 0
+
+Result: π = [0, 0, 0, 1, 2, 3, 0]</pre></div>
+    <div class="card pad board"><h4>Example 2 · s = "aabaaab"</h4><pre class="out">i = 0: π[0] = 0
+i = 1: "aa" → prefix "a" = suffix "a" → π[1] = 1
+i = 2: "aab" → no match → π[2] = 0
+i = 3: "aaba" → prefix "a" = suffix "a" → π[3] = 1
+i = 4: "aabaa" → prefix "aa" = suffix "aa" → π[4] = 2
+i = 5: "aabaaa" → prefix "aa" = suffix "aa" → π[5] = 2
+i = 6: "aabaaab" → prefix "aab" = suffix "aab" → π[6] = 3
+
+Result: π = [0, 1, 0, 1, 2, 2, 3]</pre></div>
+    <div class="card pad board"><h4>Example 3 · s = "aaaa"</h4><pre class="out">i = 0: π[0] = 0
+i = 1: "aa" → prefix "a" = suffix "a" → π[1] = 1
+i = 2: "aaa" → prefix "aa" = suffix "aa" → π[2] = 2
+i = 3: "aaaa" → prefix "aaa" = suffix "aaa" → π[3] = 3
+
+Result: π = [0, 1, 2, 3]</pre></div>
+    <div class="card pad board"><h4>Naive approach — O(n³)</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+vector&lt;<span class="k">int</span>&gt; prefix_function_naive(string s) {
+    <span class="k">int</span> n = s.size();
+    vector&lt;<span class="k">int</span>&gt; pi(n);
+
+    pi[0] = 0;  <span class="c">// By definition</span>
+
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++) {
+        <span class="c">// Try all possible lengths from longest to shortest</span>
+        <span class="k">for</span> (<span class="k">int</span> len = i; len &gt; 0; len--) {
+            <span class="c">// Check if prefix of length len equals suffix of length len</span>
+            <span class="k">bool</span> match = <span class="k">true</span>;
+            <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; len; j++) {
+                <span class="k">if</span> (s[j] != s[i - len + 1 + j]) {
+                    match = <span class="k">false</span>;
+                    break;
+                }
+            }
+            <span class="k">if</span> (match) {
+                pi[i] = len;
+                break;
+            }
+        }
+    }
+
+    <span class="k">return</span> pi;
+}
+
+<span class="k">int</span> main() {
+    string s = <span class="s">"abcabcd"</span>;
+    vector&lt;<span class="k">int</span>&gt; pi = prefix_function_naive(s);
+
+    cout &lt;&lt; <span class="s">"String: "</span> &lt;&lt; s &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"Prefix function: "</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; pi.size(); i++)
+        cout &lt;&lt; pi[i] &lt;&lt; <span class="s">" "</span>;
+    cout &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">String: abcabcd
+Prefix function: 0 0 0 1 2 3 0</pre></div>
+    <div class="card pad board"><h4>Another version · naive with substr</h4><p>The same brute force, written with <code>substr</code>: every length from 1 to i, and the last match wins.</p><div style="margin-top:12px"><details class="code"><summary>the full program — substr<span class="lines">25 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+vector&lt;<span class="k">int</span>&gt; prefix_function(string s) {
+    <span class="k">int</span> n = s.size();
+    vector&lt;<span class="k">int</span>&gt; p(n);
+    p[0] = 0;
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++) {
+        <span class="k">for</span> (<span class="k">int</span> len = 1; len &lt;= i; len++)
+            <span class="k">if</span> (s.substr(0, len) == s.substr(i - len + 1, len))
+                p[i] = len;
+    }
+    <span class="k">return</span> p;
+}
+
+<span class="k">int</span> main() {
+    string s;
+    cin &gt;&gt; s;
+    vector&lt;<span class="k">int</span>&gt; p = prefix_function(s);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++)
+        cout &lt;&lt; p[i] &lt;&lt; <span class="s">" "</span>;
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">abcabcd</pre><div class="out-lbl">output</div><pre class="out">0 0 0 1 2 3 0</pre></div>
+    <div class="card pad board"><h4>Efficient approach — O(n)</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li>Start with π[0] = 0</li><li>For each position i, look at the previous match length j = π[i−1]</li><li>If s[i] == s[j], then π[i] = j + 1</li><li>If s[i] != s[j], fall back to j = π[j−1] and try again</li><li>Continue falling back until a match is found or j reaches 0</li></ol><div style="margin-top:12px"></div><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+vector&lt;<span class="k">int</span>&gt; prefix_function(string s) {
+    <span class="k">int</span> n = s.size();
+    vector&lt;<span class="k">int</span>&gt; pi(n);
+
+    pi[0] = 0;  <span class="c">// First element is always 0</span>
+
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++) {
+        <span class="k">int</span> j = pi[i - 1];  <span class="c">// Previous prefix length</span>
+
+        <span class="c">// Fall back until we find a match or reach 0</span>
+        <span class="k">while</span> (j &gt; 0 &amp;&amp; s[i] != s[j]) {
+            j = pi[j - 1];
+        }
+
+        <span class="c">// If characters match, increment the length</span>
+        <span class="k">if</span> (s[i] == s[j]) {
+            j++;
+        }
+
+        pi[i] = j;
+    }
+
+    <span class="k">return</span> pi;
+}
+
+<span class="k">int</span> main() {
+    string s;
+    cout &lt;&lt; <span class="s">"Enter string: "</span>;
+    cin &gt;&gt; s;
+
+    vector&lt;<span class="k">int</span>&gt; pi = prefix_function(s);
+
+    cout &lt;&lt; <span class="s">"\nString:          "</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++)
+        cout &lt;&lt; s[i] &lt;&lt; <span class="s">" "</span>;
+    cout &lt;&lt; endl;
+
+    cout &lt;&lt; <span class="s">"Index:           "</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++)
+        cout &lt;&lt; i &lt;&lt; <span class="s">" "</span>;
+    cout &lt;&lt; endl;
+
+    cout &lt;&lt; <span class="s">"Prefix function: "</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; pi.size(); i++)
+        cout &lt;&lt; pi[i] &lt;&lt; <span class="s">" "</span>;
+    cout &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">input</div><pre class="out">abcabcd</pre><div class="out-lbl">output</div><pre class="out">Enter string: 
+String:          a b c a b c d 
+Index:           0 1 2 3 4 5 6 
+Prefix function: 0 0 0 1 2 3 0</pre><p style="margin-top:12px"><strong>Time:</strong> O(n) · <strong>Space:</strong> O(n)</p></div>
+    <div class="card pad board"><h4>Step-by-step trace · s = "abcabcd"</h4><pre class="out">i = 0: pi[0] = 0 (by definition)
+
+i = 1:
+  j = pi[0] = 0
+  s[1] = 'b', s[0] = 'a' → no match
+  pi[1] = 0
+
+i = 2:
+  j = pi[1] = 0
+  s[2] = 'c', s[0] = 'a' → no match
+  pi[2] = 0
+
+i = 3:
+  j = pi[2] = 0
+  s[3] = 'a', s[0] = 'a' → match!
+  pi[3] = 1
+
+i = 4:
+  j = pi[3] = 1
+  s[4] = 'b', s[1] = 'b' → match!
+  pi[4] = 2
+
+i = 5:
+  j = pi[4] = 2
+  s[5] = 'c', s[2] = 'c' → match!
+  pi[5] = 3
+
+i = 6:
+  j = pi[5] = 3
+  s[6] = 'd', s[3] = 'a' → no match
+  Fall back: j = pi[2] = 0
+  s[6] = 'd', s[0] = 'a' → no match
+  pi[6] = 0
+
+Result: π = [0, 0, 0, 1, 2, 3, 0]</pre></div>
+    <div class="card pad board"><h4>Another version · both versions in one file</h4><p>The brute force and the fast version side by side; <span class="mono">main</span> uses the fast one.</p><div style="margin-top:12px"><details class="code"><summary>the full program — two versions<span class="lines">42 lines</span></summary><pre><span class="c">// abababaa</span>
+<span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+vector&lt;<span class="k">int</span>&gt; prefix_function(string s) {
+    <span class="k">int</span> n = s.size();
+    vector&lt;<span class="k">int</span>&gt; pi(n);
+    pi[0] = 0;
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++) {
+        <span class="k">for</span> (<span class="k">int</span> l = 1; l &lt;= i; l++) {
+            <span class="k">if</span> (s.substr(0, l) == s.substr(i - l + 1, l))
+                pi[i] = l;
+        }
+    }
+    <span class="k">return</span> pi;
+}
+
+vector&lt;<span class="k">int</span>&gt; prefix_functionv2(string s) {
+    <span class="k">int</span> n = s.size();
+    vector&lt;<span class="k">int</span>&gt; pi(n);
+    pi[0] = 0;
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++) {
+        <span class="k">int</span> j = pi[i - 1];
+        <span class="k">while</span> (j &gt; 0 &amp;&amp; s[i] != s[j])
+            j = pi[j - 1];
+        <span class="k">if</span> (s[i] == s[j])
+            j++;
+        pi[i] = j;
+    }
+    <span class="k">return</span> pi;
+}
+
+<span class="k">int</span> main() {
+    string s;
+    cin &gt;&gt; s;
+    vector&lt;<span class="k">int</span>&gt; pi = prefix_functionv2(s);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++)
+        cout &lt;&lt; pi[i] &lt;&lt; <span class="s">" "</span>;
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">abababaa</pre><div class="out-lbl">output</div><pre class="out">0 0 1 2 3 4 5 1</pre></div>
+    <div class="card pad demo"><h4>Demo · the prefix function, step by step</h4><div class="ctl"><label class="f" style="flex:1 1 220px"><span>string</span><input type="text" id="pfs" value="abacaba"></label><button class="pri" id="pfrun">Compute</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-pf="abacaba">abacaba</button><button class="chip" data-pf="aabaaab">aabaaab</button><button class="chip" data-pf="aaaaa">aaaaa</button><button class="chip" data-pf="abcdef">no repeats</button><button class="chip" data-pf="abababab">abababab</button></div><div class="track" id="pftrack" style="flex-wrap:wrap"></div><div class="readout"><div class="stat"><div class="lab">π of the last position</div><div class="val" id="pflast">—</div></div><div class="stat good"><div class="lab">shortest period</div><div class="val" id="pfper">—</div></div><div class="stat"><div class="lab">fallbacks total</div><div class="val" id="pffb">—</div></div></div><div class="log" id="pflog"></div></div>
   </div>
 </section>
 
@@ -111,33 +349,99 @@ vector&lt;<span class="k">int</span>&gt; pi = prefixFunction(cur);
   <div class="beat-head">
     <div class="beat-n">03</div>
     <div>
-      <h2>The array is worth more than the search</h2>
-      <div class="sub"><span>22 min</span> <span>demo: period</span></div>
+      <h2>Knuth-Morris-Pratt (KMP) Algorithm</h2>
+      <div class="sub"><span>25 min</span> <span>board</span> <span>code</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Here is the part that pays for the lecture. From π alone, with no extra work, you get several things that look like different problems.</li>
-        <li><strong>Shortest period.</strong> <code>n − π[n−1]</code>. If it divides n, the string is that block repeated; otherwise it is a partial repetition. Problem G is this single expression.</li>
-        <li><strong>All borders.</strong> π[n−1], then π of that minus one, and so on down to zero — the whole chain of prefixes that are also suffixes. This is the fallback chain made explicit.</li>
-        <li><strong>Occurrence counting.</strong> Walk π backwards adding cnt[π[i]−1] += cnt[i] and you get how many times each prefix occurs in the string. Problem B needs exactly this.</li>
-        <li><strong>Cyclic shift detection.</strong> t is a rotation of s if and only if t is a substring of <code>s + s</code>. One concatenation plus one KMP — problem C in two lines.</li>
-        <li>Let the demo show the period on <code>abababab</code> and on <code>abababa</code>: 2 in the first case, and in the second the period does not divide the length. That difference is the edge case every statement here hinges on.</li>
+        <li>Find all occurrences of a pattern in a text. Glue them: <code>pattern + "#" + text</code>, where # appears in neither.</li>
+        <li>Compute π of the combined string. Wherever π[i] equals the pattern length, the pattern ends at i — it starts in the text at i − 2m.</li>
+        <li>The separator stops a match from running across the border between the pattern and the text.</li>
+        <li>Work the first example on the board column by column, then the second one with overlapping occurrences.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>The four one-liners</h4><div class="formula">shortest period = n − π[n−1]<br>is fully periodic ⟺ n mod (n − π[n−1]) = 0</div><pre style="margin-top:13px"><span class="c">// how many times each prefix occurs</span>
-vector&lt;<span class="k">int</span>&gt; cnt(n + 1, 0);
-<span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; ++i) cnt[pi[i]]++;
-<span class="k">for</span> (<span class="k">int</span> i = n - 1; i &gt; 0; --i)
-    cnt[pi[i - 1]] += cnt[i];
-<span class="k">for</span> (<span class="k">int</span> i = 0; i &lt;= n; ++i) cnt[i]++;   <span class="c">// itself</span></pre><pre style="margin-top:13px"><span class="c">// is t a rotation of s?</span>
-<span class="k">bool</span> rotation = s.size() == t.size() &amp;&amp;
-                (s + s).find(t) != string::npos;</pre></div>
-      <div class="card pad demo"><h4>Demo · period and borders</h4><div class="ctl"><label class="f" style="flex:1 1 230px"><span>string</span><input type="text" id="pds" value="abababab"></label><button class="pri" id="pdrun">Analyse</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-pd="abababab">abababab</button><button class="chip" data-pd="abababa">abababa</button><button class="chip" data-pd="aaaaaa">aaaaaa</button><button class="chip" data-pd="abcabcabc">abcabcabc</button><button class="chip" data-pd="abcdef">abcdef</button></div><div class="readout"><div class="stat good"><div class="lab">shortest period</div><div class="val" id="pdp">—</div></div><div class="stat"><div class="lab">fully periodic?</div><div class="val" id="pdf">—</div></div><div class="stat"><div class="lab">repetitions</div><div class="val" id="pdr">—</div></div></div><div style="margin-top:14px;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600">borders, longest first</div><div class="track" id="pdb" style="flex-wrap:wrap;min-height:58px"></div><div class="log" id="pdlog"></div></div>
-    </div>
+    <div class="card pad board"><h4>Problem and idea</h4><p>Given a text (length n) and a pattern (length m), find all occurrences of the pattern in the text.</p><div class="formula" style="margin-top:12px">s = pattern + '#' + text</div><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Compute the prefix function of the combined string</li><li>When π[i] equals the pattern length, a match is found</li><li>The separator keeps the pattern from matching across the boundary</li></ul></div>
+    <div class="card pad board"><h4>KMP implementation</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+vector&lt;<span class="k">int</span>&gt; prefix_function(string s) {
+    <span class="k">int</span> n = s.size();
+    vector&lt;<span class="k">int</span>&gt; pi(n);
+    pi[0] = 0;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++) {
+        <span class="k">int</span> j = pi[i - 1];
+
+        <span class="k">while</span> (j &gt; 0 &amp;&amp; s[i] != s[j]) {
+            j = pi[j - 1];
+        }
+
+        <span class="k">if</span> (s[i] == s[j]) {
+            j++;
+        }
+
+        pi[i] = j;
+    }
+
+    <span class="k">return</span> pi;
+}
+
+<span class="k">void</span> KMP(string text, string pattern) {
+    <span class="c">// Create combined string: pattern + '#' + text</span>
+    string s = pattern + <span class="s">"#"</span> + text;
+
+    <span class="k">int</span> n = s.size();
+    <span class="k">int</span> m = pattern.size();
+
+    <span class="c">// Compute prefix function</span>
+    vector&lt;<span class="k">int</span>&gt; pi = prefix_function(s);
+
+    <span class="c">// Find all occurrences</span>
+    <span class="k">for</span> (<span class="k">int</span> i = m + 1; i &lt; n; i++) {
+        <span class="c">// If prefix length equals pattern length, we found a match</span>
+        <span class="k">if</span> (pi[i] == m) {
+            <span class="c">// Position in text = i - m - m</span>
+            <span class="k">int</span> pos = i - 2 * m;
+            cout &lt;&lt; <span class="s">"Pattern found at index "</span> &lt;&lt; pos &lt;&lt; endl;
+        }
+    }
+}
+
+<span class="k">int</span> main() {
+    string text, pattern;
+
+    cout &lt;&lt; <span class="s">"Enter text: "</span>;
+    cin &gt;&gt; text;
+
+    cout &lt;&lt; <span class="s">"Enter pattern: "</span>;
+    cin &gt;&gt; pattern;
+
+    cout &lt;&lt; <span class="s">"\nSearching for pattern in text...\n"</span> &lt;&lt; endl;
+    KMP(text, pattern);
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">input</div><pre class="out">ababcabcabababd
+ababd</pre><div class="out-lbl">output</div><pre class="out">Enter text: Enter pattern: 
+Searching for pattern in text...
+
+Pattern found at index 10</pre></div>
+    <div class="card pad board"><h4>Example · text = "ababcabcabababd", pattern = "ababd"</h4><div class="out-lbl" style="margin-top:0">step 1 · combined string</div><pre class="out">s = "ababd#ababcabcabababd"</pre><div class="out-lbl">step 2 · prefix function</div><pre class="out">Index:  0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+String: a b a b d # a b a b c  a  b  c  a  b  a  b  a  b  d 
+π:      0 0 1 2 0 0 1 2 3 4 0  1  2  0  1  2  3  4  3  4  5 </pre><div class="out-lbl">step 3 · matches</div><pre class="out">π[20] = 5: position in text = 20 - 2×5 = 10</pre><div class="out-lbl">verification</div><pre class="out">text  = "ababcabcabababd"
+index    012345678901234
+                   ^^^^^   (index 10–14: "ababd")</pre></div>
+    <div class="card pad board"><h4>Another example · text = "aabaacaabaa", pattern = "aaba"</h4><pre class="out">s = "aaba#aabaacaabaa"</pre><div style="margin-top:12px"></div><pre class="out">Index:  0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+String: a a b a # a a b a a c  a  a  b  a  a 
+π:      0 1 0 1 0 1 2 3 4 2 0  1  2  3  4  2 </pre><div class="out-lbl">matches, where π[i] = 4</div><pre class="out">π[8] = 4 → position = 8 - 2×4 = 0
+π[14] = 4 → position = 14 - 2×4 = 6</pre><div class="out-lbl">verification</div><pre class="out">text  = "aabaacaabaa"
+index    01234567890
+         ^^^^   (index 0–3: "aaba")
+               ^^^^   (index 6–9: "aaba")</pre></div>
+    <div class="card pad board"><h4>Time complexity</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Time</th></tr></thead><tbody><tr><td class="k">Create the combined string</td><td class="n">O(n + m)</td></tr><tr><td class="k">Compute the prefix function</td><td class="n">O(n + m)</td></tr><tr><td class="k">Find matches</td><td class="n">O(n + m)</td></tr><tr><td class="k"><strong>Total</strong></td><td class="n"><span style="color:var(--prime)"><strong>O(n + m)</strong></span></td></tr></tbody></table></div></div>
   </div>
 </section>
 
@@ -145,29 +449,159 @@ vector&lt;<span class="k">int</span>&gt; cnt(n + 1, 0);
   <div class="beat-head">
     <div class="beat-n">04</div>
     <div>
-      <h2>Lab 9 — how it maps onto today</h2>
-      <div class="sub"><span>12 min</span> <span>ADS-Lab-09</span></div>
+      <h2>Problems Solved Using Prefix Function and KMP</h2>
+      <div class="sub"><span>25 min</span> <span>code</span> <span>demo: period</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>F is the plain search from beat 02 and should be done first — it is the template, and everything else reuses it.</li>
-        <li>G is beat 03's first formula, literally <code>n − π[n−1]</code>. If they have the array, the problem is one line; if they do not, it is impossible. Good demonstration of why the array matters more than the search.</li>
-        <li>C is the rotation trick, B is occurrence counting, D is longest overlap between a suffix and a prefix — all three are beat 03.</li>
-        <li><strong>E and H are the heavy pair and neither is on the defence.</strong> E mixes the prefix function with arithmetic that overflows int at 5·10¹¹; H runs on a string of 5·10⁶ characters.</li>
-        <li>A is the awkward one to read: repeat A until B fits inside it. The answer is bounded by ⌈|B|/|A|⌉ + 1 — derive that bound with them, or they will loop forever.</li>
+        <li>One array, eight problems. Each of them is "build the right string, compute π, read one or a few values".</li>
+        <li>The period: if π[n−1] = k, the first k characters equal the last k, the shortest period has length n − k, and the string is periodic when n is divisible by it. Use the demo here.</li>
+        <li>Borders: π[n−1] is the longest one; jump k = π[k−1] to get every shorter one.</li>
       </ul>
     </div>
-    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Substring of a Repeated String</span><span class="pill key">key</span><div class="map-why">Repeat A until B fits — bound the count by ⌈|B|/|A|⌉ + 1, then one KMP</div></div></div>
-<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Password</span><span class="pill key">key</span><div class="map-why">Beat 03 · count occurrences, at least K times</div></div></div>
-<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Cyclic Shift</span><span class="pill key">key</span><div class="map-why">Beat 03 · cyclic shift — search t inside s + s</div></div></div>
-<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Modified Towns game</span><span class="pill key">key</span><div class="map-why">Beat 03 · longest overlap between a suffix and a prefix</div></div></div>
-<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Chainsaw Man: 13th generation</span><div class="map-why">Prefix function plus arithmetic that overflows int at 5·10¹¹ — not on the defence</div></div></div>
-<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Simple KMP</span><span class="pill key">key</span><div class="map-why">Beat 02 · the plain KMP search, print all occurrence indices</div></div></div>
-<div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Another one prefix function problem</span><span class="pill key">key</span><div class="map-why">Beat 03 · shortest period, literally n − π[n−1]</div></div></div>
-<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">Splitting</span><div class="map-why">|s| up to 5·10⁶ — heaviest in the lab, not on the defence</div></div></div></div>
+    <div class="card pad board"><h4>1 · Pattern matching</h4><p>Find all occurrences of a pattern: create <code>pattern + '#' + text</code> and compute the prefix function.</p><div style="margin-top:12px"></div><pre><span class="k">void</span> find_all_occurrences(string text, string pattern) {
+    string s = pattern + <span class="s">"#"</span> + text;
+    vector&lt;<span class="k">int</span>&gt; pi = prefix_function(s);
+    <span class="k">int</span> m = pattern.size();
+
+    cout &lt;&lt; <span class="s">"Pattern found at positions: "</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = m + 1; i &lt; s.size(); i++) {
+        <span class="k">if</span> (pi[i] == m) {
+            cout &lt;&lt; (i - 2 * m) &lt;&lt; <span class="s">" "</span>;
+        }
+    }
+    cout &lt;&lt; endl;
+}</pre></div>
+    <div class="card pad board"><h4>2 · Counting occurrences, overlapping included</h4><p>Count how many times π[i] equals the pattern length.</p><div style="margin-top:12px"></div><pre><span class="k">int</span> count_occurrences(string text, string pattern) {
+    string s = pattern + <span class="s">"#"</span> + text;
+    vector&lt;<span class="k">int</span>&gt; pi = prefix_function(s);
+    <span class="k">int</span> m = pattern.size();
+    <span class="k">int</span> count = 0;
+
+    <span class="k">for</span> (<span class="k">int</span> i = m + 1; i &lt; s.size(); i++) {
+        <span class="k">if</span> (pi[i] == m) {
+            count++;
+        }
+    }
+
+    <span class="k">return</span> count;
+}
+
+<span class="c">// Example: text = "aaaa", pattern = "aa"</span>
+<span class="c">// s = "aa#aaaa"</span>
+<span class="c">// Occurrences at: 0, 1, 2 → count = 3</span></pre><div class="out-lbl">example</div><pre class="out">text = "aaaa", pattern = "aa"
+s = "aa#aaaa"
+Occurrences at: 0, 1, 2 → count = 3</pre></div>
+    <div class="card pad board"><h4>3 · Shortest period of a string</h4><p>"abcabcabc" has period "abc" — length 3.</p><div style="margin-top:12px"></div><pre><span class="k">int</span> shortest_period(string s) {
+    <span class="k">int</span> n = s.size();
+    vector&lt;<span class="k">int</span>&gt; pi = prefix_function(s);
+
+    <span class="k">int</span> len = n - pi[n - 1];  <span class="c">// Length of shortest period</span>
+
+    <span class="c">// Check if string is actually periodic</span>
+    <span class="k">if</span> (n % len == 0) {
+        <span class="k">return</span> len;
+    } <span class="k">else</span> {
+        <span class="k">return</span> n;  <span class="c">// No period (entire string)</span>
+    }
+}
+
+<span class="c">// Example: s = "abcabcabc"</span>
+<span class="c">// pi[8] = 6 (prefix "abcabc" = suffix "abcabc")</span>
+<span class="c">// len = 9 - 6 = 3</span>
+<span class="c">// 9 % 3 == 0 → period length is 3</span></pre><div class="out-lbl">example</div><pre class="out">s = "abcabcabc"
+pi[8] = 6 (prefix "abcabc" = suffix "abcabc")
+len = 9 - 6 = 3
+9 % 3 == 0 → period length is 3</pre><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>If π[n−1] = k, the first k characters match the last k</li><li>The shortest period has length n − k</li><li>If n is divisible by n − k, the string is periodic</li></ul></div>
+    <div class="card pad board"><h4>4 · String compression</h4><p>Can the string be written as a repeated pattern? Check whether the shortest period divides its length.</p><div style="margin-top:12px"></div><pre>string compress(string s) {
+    <span class="k">int</span> n = s.size();
+    <span class="k">int</span> period_len = shortest_period(s);
+
+    <span class="k">if</span> (period_len &lt; n) {
+        <span class="k">int</span> count = n / period_len;
+        string pattern = s.substr(0, period_len);
+        <span class="k">return</span> pattern + <span class="s">" × "</span> + to_string(count);
+    }
+
+    <span class="k">return</span> s;  <span class="c">// Cannot compress</span>
+}
+
+<span class="c">// Example: "abcabcabc" → "abc × 3"</span>
+<span class="c">// Example: "abcdef" → "abcdef" (no compression)</span></pre><div class="out-lbl">example</div><pre class="out">"abcabcabc" → "abc × 3"
+"abcdef"    → "abcdef" (period 6 = whole string, no compression)</pre></div>
+    <div class="card pad board"><h4>5 · Pattern in a cyclic string</h4><p>Does the pattern occur in some rotation of the text? Search in <code>text + text</code>.</p><div style="margin-top:12px"></div><pre><span class="k">bool</span> pattern_in_rotation(string text, string pattern) {
+    string doubled = text + text;
+    string s = pattern + <span class="s">"#"</span> + doubled;
+    vector&lt;<span class="k">int</span>&gt; pi = prefix_function(s);
+    <span class="k">int</span> m = pattern.size();
+
+    <span class="k">for</span> (<span class="k">int</span> i = m + 1; i &lt; s.size(); i++) {
+        <span class="k">if</span> (pi[i] == m) {
+            <span class="k">return</span> <span class="k">true</span>;
+        }
+    }
+
+    <span class="k">return</span> <span class="k">false</span>;
+}
+
+<span class="c">// Example: text = "abcde", pattern = "dea"</span>
+<span class="c">// s = "dea#abcdeabcde"</span>
+<span class="c">// Pattern "dea" found → true</span></pre><div class="out-lbl">example</div><pre class="out">text = "abcde", pattern = "dea"
+s = "dea#abcdeabcde"
+"dea" found at index 3 of the doubled text → true</pre></div>
+    <div class="card pad board"><h4>6 · Longest palindromic prefix</h4><p>Compute the prefix function of <code>s + '#' + reverse(s)</code>; the last value is the answer.</p><div style="margin-top:12px"></div><pre><span class="k">int</span> longest_palindrome_prefix(string s) {
+    string rev = s;
+    reverse(rev.begin(), rev.end());
+
+    string combined = s + <span class="s">"#"</span> + rev;
+    vector&lt;<span class="k">int</span>&gt; pi = prefix_function(combined);
+
+    <span class="k">return</span> pi[combined.size() - 1];
+}
+
+<span class="c">// Example: s = "abacaba"</span>
+<span class="c">// rev = "abacaba"</span>
+<span class="c">// combined = "abacaba#abacaba"</span>
+<span class="c">// π[14] = 7 → entire string is palindrome</span></pre><div class="out-lbl">example</div><pre class="out">s = "abacaba", rev = "abacaba"
+combined = "abacaba#abacaba"
+π[14] = 7 → the entire string is a palindrome</pre></div>
+    <div class="card pad board"><h4>7 · All borders</h4><p>All lengths k for which the prefix of length k equals the suffix of length k: start from π[n−1] and keep jumping back.</p><div style="margin-top:12px"></div><pre>vector&lt;<span class="k">int</span>&gt; find_all_borders(string s) {
+    <span class="k">int</span> n = s.size();
+    vector&lt;<span class="k">int</span>&gt; pi = prefix_function(s);
+    vector&lt;<span class="k">int</span>&gt; borders;
+
+    <span class="k">int</span> k = pi[n - 1];
+    <span class="k">while</span> (k &gt; 0) {
+        borders.push_back(k);
+        k = pi[k - 1];
+    }
+
+    reverse(borders.begin(), borders.end());
+    <span class="k">return</span> borders;
+}
+
+<span class="c">// Example: s = "abcabcab"</span>
+<span class="c">// Borders: lengths 2, 5 ("ab", "abcab")</span></pre><div class="out-lbl">example</div><pre class="out">s = "abcabcab"
+Borders: lengths 2, 5 ("ab", "abcab")</pre></div>
+    <div class="card pad board"><h4>8 · Several patterns</h4><p>For each pattern, build its own <code>pattern + '#' + text</code>.</p><div style="margin-top:12px"></div><pre><span class="k">void</span> find_multiple_patterns(string text, vector&lt;string&gt; patterns) {
+    <span class="k">for</span> (<span class="k">int</span> k = 0; k &lt; patterns.size(); k++) {
+        string s = patterns[k] + <span class="s">"#"</span> + text;
+        vector&lt;<span class="k">int</span>&gt; pi = prefix_function(s);
+        <span class="k">int</span> m = patterns[k].size();
+
+        <span class="k">for</span> (<span class="k">int</span> i = m + 1; i &lt; s.size(); i++) {
+            <span class="k">if</span> (pi[i] == m) {
+                cout &lt;&lt; <span class="s">"Pattern "</span> &lt;&lt; k &lt;&lt; <span class="s">" (\""</span> &lt;&lt; patterns[k];
+                cout &lt;&lt; <span class="s">"\") found at index "</span> &lt;&lt; (i - 2 * m) &lt;&lt; endl;
+                break;  <span class="c">// Found first occurrence</span>
+            }
+        }
+    }
+}</pre></div>
+    <div class="card pad demo"><h4>Demo · period and borders</h4><div class="ctl"><label class="f" style="flex:1 1 230px"><span>string</span><input type="text" id="pds" value="abababab"></label><button class="pri" id="pdrun">Analyse</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-pd="abababab">abababab</button><button class="chip" data-pd="abababa">abababa</button><button class="chip" data-pd="aaaaaa">aaaaaa</button><button class="chip" data-pd="abcabcabc">abcabcabc</button><button class="chip" data-pd="abcdef">abcdef</button></div><div class="readout"><div class="stat good"><div class="lab">shortest period</div><div class="val" id="pdp">—</div></div><div class="stat"><div class="lab">fully periodic?</div><div class="val" id="pdf">—</div></div><div class="stat"><div class="lab">repetitions</div><div class="val" id="pdr">—</div></div></div><div style="margin-top:14px;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600">borders, longest first</div><div class="track" id="pdb" style="flex-wrap:wrap;min-height:58px"></div><div class="log" id="pdlog"></div></div>
   </div>
 </section>
 
@@ -175,12 +609,106 @@ vector&lt;<span class="k">int</span>&gt; cnt(n + 1, 0);
   <div class="beat-head">
     <div class="beat-n">05</div>
     <div>
-      <h2>What comes next</h2>
+      <h2>Comparison: KMP vs Rabin-Karp</h2>
+      <div class="sub"><span>4 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="two">
+      <div class="card pad board"><h4>Side by side</h4><div class="tw"><table><thead><tr><th>Feature</th><th>KMP</th><th>Rabin–Karp</th></tr></thead><tbody><tr><td class="k">Time complexity</td><td><span style="color:var(--prime)">O(n + m) guaranteed</span></td><td>O(n + m) average, <span style="color:var(--mark)">O(n × m) worst</span></td></tr><tr><td class="k">Space</td><td>O(n + m)</td><td>O(n) for prefix hashes</td></tr><tr><td class="k">False positives</td><td><span style="color:var(--prime)">none</span></td><td><span style="color:var(--mark)">possible (hash collisions)</span></td></tr><tr><td class="k">Implementation</td><td>prefix function</td><td>hash function</td></tr><tr><td class="k">Multiple patterns</td><td>need modification</td><td>easy to extend</td></tr><tr><td class="k">Preprocessing</td><td>prefix function</td><td>hash computation</td></tr></tbody></table></div></div>
+      <div class="card pad board"><h4>When to use which</h4><p><strong>KMP</strong></p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Guaranteed O(n + m) time is needed</li><li>No false positives are acceptable</li><li>A single pattern</li></ul><p style="margin-top:12px"><strong>Rabin–Karp</strong></p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Multiple patterns</li><li>A simpler implementation is preferred</li><li>A small probability of collision is acceptable</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b6">
+  <div class="beat-head">
+    <div class="beat-n">06</div>
+    <div>
+      <h2>Advantages and Disadvantages</h2>
       <div class="sub"><span>3 min</span></div>
     </div>
   </div>
   <div class="stack">
-    <div class="card pad board"><p>Strings are done. Lecture 10 starts the last block of the course — <strong>graphs</strong>, which is where the remaining four lectures live and where the final exam is heaviest. The first question is unglamorous and decides everything after it: <em>how do you even store a graph?</em></p><p style="margin-top:12px">Homework is Lab 9. Ask for <strong>F and G</strong> — the search and the one-line period, which together prove the array was understood.</p></div>
+    <div class="two">
+      <div class="card pad board"><h4>Advantages</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Guaranteed O(n + m) time</strong> — no worst-case degradation</li><li><strong>No false positives</strong> — always correct</li><li><strong>Simple, elegant approach</strong> — using <code>pattern + '#' + text</code></li><li><strong>The prefix function is versatile</strong> — it solves many problems</li><li><strong>No backtracking</strong> — one linear scan</li></ul></div>
+      <div class="card pad board"><h4>Disadvantages</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Extra space</strong> — O(n + m) for the combined string</li><li><strong>Preprocessing required</strong> — compute the prefix function</li><li><strong>Very long texts</strong> — the whole combined string has to be stored</li><li><strong>Single pattern</strong> — repeat the work for each pattern</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b7">
+  <div class="beat-head">
+    <div class="beat-n">07</div>
+    <div>
+      <h2>Common Questions</h2>
+      <div class="sub"><span>6 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Q1 · Why do we need the separator '#'?</h4><p>Without it the pattern could match across the boundary between the pattern and the text, giving wrong results.</p><pre class="out">pattern = "ab", text = "cab"
+Without #: "abcab" → would match at position 0 (wrong!)
+With #:    "ab#cab" → no match (correct!)</pre><p style="margin-top:12px">In "abcab", π[4] = 2 = m, so the formula reports position 4 − 2×2 = 0 — but in "cab" the pattern starts at index 1.</p></div>
+    <div class="card pad board"><h4>Q2 · What if '#' appears in the text or the pattern?</h4><p>Choose a separator that appears in neither:</p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><code>'#'</code> if only letters are used</li><li><code>'$'</code> for printable ASCII</li><li>any character with a code larger than every character of the alphabet</li></ul></div>
+    <div class="card pad board"><h4>Q3 · Why is this simpler than traditional KMP?</h4><p>Traditional KMP moves a pointer in the pattern and a pointer in the text and has to handle both carefully. The combined string reduces it to one loop that checks π[i] == m.</p></div>
+    <div class="card pad board"><h4>Q4 · Can we save space?</h4><p>Yes — the prefix function can be computed on the fly without storing the whole combined string, but the code becomes more complex.</p></div>
+    <div class="card pad board"><h4>Q5 · Why is the prefix function O(n)?</h4><p>There is a while loop inside the for loop, but j grows by at most 1 per iteration — at most n times in total — so it can also decrease at most n times in total. Overall: O(n).</p></div>
+  </div>
+</section>
+
+<section class="beat" id="b8">
+  <div class="beat-head">
+    <div class="beat-n">08</div>
+    <div>
+      <h2>Key Takeaways</h2>
+      <div class="sub"><span>2 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Eight things to remember</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li><strong>The prefix function is the key</strong> — the longest proper prefix that is also a suffix</li><li><strong>Pattern matching with <code>pattern + '#' + text</code></strong> — elegant and simple</li><li><strong>O(n + m) guaranteed</strong> — no worst-case degradation</li><li><strong>When π[i] = m, the pattern is found</strong> — at position i − 2m</li><li><strong>The separator '#' is essential</strong> — it prevents false matches</li><li><strong>The prefix function is O(n)</strong></li><li><strong>Many applications</strong> — periods, compression, palindromes</li><li><strong>No false positives</strong> — unlike hashing</li></ol></div>
+  </div>
+</section>
+
+<section class="beat" id="b9">
+  <div class="beat-head">
+    <div class="beat-n">09</div>
+    <div>
+      <h2>Practice Problems</h2>
+      <div class="sub"><span>2 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Try these</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li>Implement KMP to find all occurrences of a pattern in a text</li><li>Find the shortest period of a string</li><li>Count overlapping pattern occurrences</li><li>Check if a string is a concatenation of a repeated substring</li><li>Find the longest palindromic prefix using the prefix function</li><li>Find if a pattern exists in any rotation of a string</li><li>Compress a string using a repeating pattern</li><li>Find all borders of a string</li><li>Count how many times each pattern appears in a text</li><li>Find the lexicographically smallest rotation of a string</li></ol></div>
+  </div>
+</section>
+
+<section class="beat" id="b10">
+  <div class="beat-head">
+    <div class="beat-n">10</div>
+    <div>
+      <h2>Lab 9 — the problems</h2>
+      <div class="sub"><span>8 min</span> <span>ADS-Lab-09</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>F is the plain KMP search and should be done first — it is the template, and everything else reuses it.</li>
+        <li>G is the period formula, literally <code>n − π[n−1]</code>. With the array the problem is one line; without it, it is impossible.</li>
+        <li>C is the rotation trick, B is occurrence counting, D is the longest overlap between a suffix and a prefix.</li>
+        <li><strong>E and H are the heavy pair and neither is on the defence.</strong> E mixes the prefix function with arithmetic that overflows int at 5·10¹¹; H runs on a string of 5·10⁶ characters.</li>
+        <li>A is the awkward one to read: repeat A until B fits inside it. The answer is bounded by ⌈|B|/|A|⌉ + 1 — derive that bound with them, or they will loop forever.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Substring of a Repeated String</span><span class="pill key">key</span><div class="map-why">Repeat A until B fits — bound the count by ⌈|B|/|A|⌉ + 1, then one KMP</div></div></div>
+<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Password</span><span class="pill key">key</span><div class="map-why">Count occurrences, at least K times</div></div></div>
+<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Cyclic Shift</span><span class="pill key">key</span><div class="map-why">Cyclic shift — search t inside s + s</div></div></div>
+<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Modified Towns game</span><span class="pill key">key</span><div class="map-why">Longest overlap between a suffix and a prefix</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Chainsaw Man: 13th generation</span><div class="map-why">Prefix function plus arithmetic that overflows int at 5·10¹¹ — not on the defence</div></div></div>
+<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Simple KMP</span><span class="pill key">key</span><div class="map-why">The plain KMP search, print all occurrence indices</div></div></div>
+<div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Another one prefix function problem</span><span class="pill key">key</span><div class="map-why">Shortest period, literally n − π[n−1]</div></div></div>
+<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">Splitting</span><div class="map-why">|s| up to 5·10⁶ — heaviest in the lab, not on the defence</div></div></div></div>
   </div>
 </section>
 </main>
@@ -193,9 +721,9 @@ vector&lt;<span class="k">int</span>&gt; cnt(n + 1, 0);
 </div>
 
 <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-<script src="assets/notes.js?v=202609281811"></script>
-<script src="assets/present.js?v=202609281811"></script>
-<script src="assets/cpp.js?v=202609281811"></script>
+<script src="assets/notes.js?v=202610011756"></script>
+<script src="assets/present.js?v=202610011756"></script>
+<script src="assets/cpp.js?v=202610011756"></script>
 <script>
 
 (function(){

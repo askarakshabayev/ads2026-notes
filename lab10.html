@@ -6,39 +6,72 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
-<link rel="stylesheet" href="assets/notes.css?v=202609281811">
-<link rel="stylesheet" href="assets/present.css?v=202609281811">
-<link rel="stylesheet" href="assets/cpp.css?v=202609281811">
+<link rel="stylesheet" href="assets/notes.css?v=202610011756">
+<link rel="stylesheet" href="assets/present.css?v=202610011756">
+<link rel="stylesheet" href="assets/cpp.css?v=202610011756">
 </head><body>
 <div class="wrap">
 
 <header class="masthead">
   <div class="eyebrow">ADS 2026 · KBTU · Lectures 10–11 · Lab 10</div>
   <h1>Graphs · BFS and <em>DFS</em></h1>
-  <p class="dek">Two lectures and one lab. First how to store a graph at all — the decision that quietly caps what you can solve — then the two traversals. They differ by one word, queue against stack, and that word decides which problems each can answer.</p>
-  <div class="facts"><span class="fact">Length <b>2 × ~105 min</b></span><span class="fact">Beats <b>8</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 10 · 10 problems</b></span></div>
+  <p class="dek">Two lectures and one lab. What a graph is and the three ways to store one; breadth-first search, which walks level by level and finds shortest paths; then depth-first search and what it is used for — components, bipartite check, cycles, topological order, paths, strongly connected components and bridges.</p>
+  <div class="facts"><span class="fact">Length <b>2 × ~105 min</b></span><span class="fact">Beats <b>29</b></span><span class="fact">Live demo <b>1</b></span><span class="fact">Practice <b>Lab 10 · 10 problems</b></span></div>
 </header>
 
 <div class="cols">
 
 <nav class="rail" aria-label="Running order">
   <div class="rail-h">Running order</div>
-  <div class="part">I · Representation</div>
+  <div class="part">I · Graphs</div>
   <ol>
-    <li><a href="#b1"><span class="n">01</span><span>Storing a graph</span><span class="t">18′</span></a></li>
+    <li><a href="#b1"><span class="n">01</span><span>Introduction to graphs</span><span class="t">6′</span></a></li>
+    <li><a href="#b2"><span class="n">02</span><span>Types of graphs</span><span class="t">14′</span></a></li>
+    <li><a href="#b3"><span class="n">03</span><span>Graph terminology</span><span class="t">4′</span></a></li>
   </ol>
-  <div class="part">II · BFS</div>
+  <div class="part">II · Storing a graph</div>
   <ol>
-    <li><a href="#b2"><span class="n">02</span><span>Breadth-first search</span><span class="t">20′</span></a></li>
+    <li><a href="#b4"><span class="n">04</span><span>Graph representations</span><span class="t">28′</span></a></li>
   </ol>
-  <div class="part">III · DFS</div>
+  <div class="part">III · BFS</div>
   <ol>
-    <li><a href="#b3"><span class="n">03</span><span>Depth-first search</span><span class="t">18′</span></a></li>
+    <li><a href="#b5"><span class="n">05</span><span>Breadth-first search</span><span class="t">12′</span></a></li>
+    <li><a href="#b6"><span class="n">06</span><span>BFS implementation</span><span class="t">14′</span></a></li>
+    <li><a href="#b7"><span class="n">07</span><span>BFS step by step</span><span class="t">8′</span></a></li>
+    <li><a href="#b8"><span class="n">08</span><span>BFS applications</span><span class="t">18′</span></a></li>
+    <li><a href="#b9"><span class="n">09</span><span>BFS complexity</span><span class="t">3′</span></a></li>
+    <li><a href="#b10"><span class="n">10</span><span>BFS vs DFS</span><span class="t">3′</span></a></li>
   </ol>
-  <div class="part">IV · Practice</div>
+  <div class="part">IV · Graphs and BFS — wrap-up</div>
   <ol>
-    <li><a href="#b4"><span class="n">04</span><span>Lab 10 walkthrough</span><span class="t">14′</span></a></li>
-    <li><a href="#b5"><span class="n">05</span><span>What comes next</span><span class="t">3′</span></a></li>
+    <li><a href="#b11"><span class="n">11</span><span>Common questions · BFS</span><span class="t">5′</span></a></li>
+    <li><a href="#b12"><span class="n">12</span><span>Key takeaways · BFS</span><span class="t">2′</span></a></li>
+    <li><a href="#b13"><span class="n">13</span><span>Practice problems · BFS</span><span class="t">2′</span></a></li>
+  </ol>
+  <div class="part">V · DFS</div>
+  <ol>
+    <li><a href="#b14"><span class="n">14</span><span>Introduction to DFS</span><span class="t">8′</span></a></li>
+    <li><a href="#b15"><span class="n">15</span><span>DFS algorithm</span><span class="t">10′</span></a></li>
+    <li><a href="#b16"><span class="n">16</span><span>DFS step by step</span><span class="t">8′</span></a></li>
+  </ol>
+  <div class="part">VI · DFS applications</div>
+  <ol>
+    <li><a href="#b17"><span class="n">17</span><span>Connected components</span><span class="t">10′</span></a></li>
+    <li><a href="#b18"><span class="n">18</span><span>Bipartite check</span><span class="t">8′</span></a></li>
+    <li><a href="#b19"><span class="n">19</span><span>Cycle detection</span><span class="t">12′</span></a></li>
+    <li><a href="#b20"><span class="n">20</span><span>Topological sort</span><span class="t">14′</span></a></li>
+    <li><a href="#b21"><span class="n">21</span><span>Finding paths</span><span class="t">8′</span></a></li>
+    <li><a href="#b22"><span class="n">22</span><span>Strongly connected components</span><span class="t">10′</span></a></li>
+    <li><a href="#b23"><span class="n">23</span><span>Bridges</span><span class="t">10′</span></a></li>
+  </ol>
+  <div class="part">VII · DFS — wrap-up</div>
+  <ol>
+    <li><a href="#b24"><span class="n">24</span><span>DFS complexity</span><span class="t">3′</span></a></li>
+    <li><a href="#b25"><span class="n">25</span><span>Summary of DFS applications</span><span class="t">3′</span></a></li>
+    <li><a href="#b26"><span class="n">26</span><span>When to use DFS vs BFS</span><span class="t">3′</span></a></li>
+    <li><a href="#b27"><span class="n">27</span><span>Key takeaways · DFS</span><span class="t">2′</span></a></li>
+    <li><a href="#b28"><span class="n">28</span><span>Practice problems · DFS</span><span class="t">2′</span></a></li>
+    <li><a href="#b29"><span class="n">29</span><span>Lab 10</span><span class="t">10′</span></a></li>
   </ol>
 </nav>
 
@@ -47,32 +80,26 @@
   <div class="beat-head">
     <div class="beat-n">01</div>
     <div>
-      <h2>Matrix, list, edge list</h2>
-      <div class="sub"><span>18 min</span> <span>board</span></div>
+      <h2>Introduction to Graphs</h2>
+      <div class="sub"><span>6 min</span> <span>board</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Before any algorithm: a graph is <strong>vertices plus edges</strong>, and there are three ways to hold it. Picking wrong is how a correct algorithm still fails.</li>
-        <li><strong>Adjacency matrix</strong> — <code>a[i][j]</code>, O(1) to ask "is there an edge", but <strong>O(n²) memory</strong>. At n = 10⁵ that is 10¹⁰ cells. Dead on arrival. Only usable up to about n = 2000.</li>
-        <li><strong>Adjacency list</strong> — <code>vector&lt;vector&lt;int&gt;&gt;</code>, O(n + m) memory, iterate a vertex's neighbours directly. <strong>This is the default</strong> and should be their reflex.</li>
-        <li><strong>Edge list</strong> — just the triples. Useless for traversal, essential for Kruskal in two weeks. Mention it and move on.</li>
-        <li>Then the reading habit: look at the constraints <em>first</em>. n ≤ 500 with a matrix in the statement means the matrix is intended; n ≤ 10⁵ means a list and nothing else.</li>
-        <li>Undirected means <strong>push both directions</strong>. Say it, write it, and say it again — a one-direction push in an undirected graph is the single most common silent bug in this lab.</li>
+        <li>A <strong>graph</strong> is a set of <strong>vertices</strong> and a set of <strong>edges</strong> between pairs of them: G = (V, E).</li>
+        <li>Graphs model relationships — friendships, roads, network links, hyperlinks, dependencies between tasks.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre>vector&lt;vector&lt;<span class="k">int</span>&gt;&gt; g(n + 1);
+    <div class="card pad board"><h4>G = (V, E)</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>a set of <strong>vertices</strong> (or <strong>nodes</strong>)</li><li>a set of <strong>edges</strong> connecting pairs of vertices</li></ul><p style="margin-top:12px"><strong>Notation:</strong> G = (V, E), where V is the set of vertices and E the set of edges.</p><p style="margin-top:12px"><strong>Example:</strong></p><pre class="out">Vertices: {A, B, C, D}
+Edges: {(A,B), (B,C), (C,D), (A,D)}
 
-<span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; ++i) {
-    <span class="k">int</span> u, v; cin &gt;&gt; u &gt;&gt; v;
-    g[u].push_back(v);
-    g[v].push_back(u);   <span class="c">// undirected — both ways</span>
-}</pre><div class="tw" style="margin-top:14px"><table><thead><tr><th>Form</th><th class="n">Memory</th><th class="n">Edge query</th><th class="n">Neighbours</th></tr></thead><tbody><tr><td class="k">Matrix</td><td class="n" style="color:var(--mark)">O(n²)</td><td class="n" style="color:var(--prime)">O(1)</td><td class="n">O(n)</td></tr><tr><td class="k">List</td><td class="n" style="color:var(--prime)">O(n+m)</td><td class="n">O(deg)</td><td class="n" style="color:var(--prime)">O(deg)</td></tr><tr><td class="k">Edge list</td><td class="n" style="color:var(--prime)">O(m)</td><td class="n" style="color:var(--mark)">O(m)</td><td class="n" style="color:var(--mark)">O(m)</td></tr></tbody></table></div></div>
-      <div class="card pad board"><h4>Reading the constraints</h4><div class="tw"><table><thead><tr><th class="n">n</th><th>What is intended</th></tr></thead><tbody><tr><td class="n k">≤ 500</td><td>matrix is fine; even O(n³) Floyd fits</td></tr><tr><td class="n k">≤ 2 000</td><td>matrix fits in memory, O(n²) algorithms fit in time</td></tr><tr><td class="n k">≤ 10⁵</td><td>adjacency list, one linear traversal</td></tr><tr><td class="n k">≤ 10⁶</td><td>list, and watch recursion depth</td></tr></tbody></table></div><div class="trap" style="margin-top:14px"><b>Two problems in this lab hand you a matrix</b> (B and E, both with n ≤ 1000). Do not let that become a habit — it is a property of those statements, not of graphs.</div></div>
-    </div>
+Visual representation:
+    A --- B
+    |     |
+    D --- C</pre></div>
+    <div class="card pad board"><h4>Why use graphs?</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Social networks</strong>: people are vertices, friendships are edges</li><li><strong>Maps and navigation</strong>: cities are vertices, roads are edges</li><li><strong>Computer networks</strong>: computers are vertices, connections are edges</li><li><strong>Web pages</strong>: pages are vertices, hyperlinks are edges</li><li><strong>Dependencies</strong>: tasks are vertices, dependencies are edges</li></ul></div>
   </div>
 </section>
 
@@ -80,37 +107,108 @@
   <div class="beat-head">
     <div class="beat-n">02</div>
     <div>
-      <h2>BFS and why it finds shortest paths</h2>
-      <div class="sub"><span>20 min</span> <span>demo: grid</span></div>
+      <h2>Types of Graphs</h2>
+      <div class="sub"><span>14 min</span> <span>board</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>One rule: <strong>visit everything at distance 1, then everything at distance 2</strong>, and so on. The queue is what enforces that order.</li>
-        <li>Because of that layering, <strong>the first time BFS reaches a vertex it has reached it by a shortest path</strong> — in edges, on an unweighted graph. That is the theorem and it is worth stating precisely, including the two conditions.</li>
-        <li>The implementation detail that decides correctness: <strong>mark visited when you push, not when you pop</strong>. Marking on pop lets a vertex enter the queue several times and the complexity degrades.</li>
-        <li>Run the grid demo. Watch the wavefront expand ring by ring, and note the distance numbers appearing in non-decreasing order.</li>
-        <li>Complexity is <strong>O(n + m)</strong> — every vertex enters the queue once, every edge is examined once from each end.</li>
-        <li>Then the variants that cover most of the lab: <strong>multi-source</strong> (push every source with distance 0 — problem A), and <strong>BFS over states rather than places</strong> (problem C, where a vertex is a number and the edges are "×2" and "−1").</li>
+        <li>Eleven words, in pairs where possible: directed or undirected, weighted or unweighted, cyclic or acyclic, connected or disconnected — then complete, tree and bipartite.</li>
+        <li>A <strong>DAG</strong> — directed and acyclic — is the graph of the topological sort in the next lecture.</li>
+        <li>A <strong>tree</strong> is a connected acyclic graph: n vertices, exactly n − 1 edges, exactly one path between any two vertices.</li>
+        <li><strong>Bipartite</strong>: the vertices split into two sets and every edge goes between the sets. A triangle is the smallest graph that is not bipartite.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre>vector&lt;<span class="k">int</span>&gt; dist(n + 1, -1);
-queue&lt;<span class="k">int</span>&gt; q;
-q.push(s); dist[s] = 0;
+    <div class="card pad board"><h4>1 · Directed graph (digraph)</h4><p>Edges have a <strong>direction</strong> — from one vertex to another.</p><pre class="out">    A --&gt; B
+    ↑     ↓
+    D &lt;-- C
 
-<span class="k">while</span> (!q.empty()) {
-    <span class="k">int</span> v = q.front(); q.pop();
-    <span class="k">for</span> (<span class="k">int</span> to : g[v])
-        <span class="k">if</span> (dist[to] == -1) {
-            dist[to] = dist[v] + 1;   <span class="c">// mark on push</span>
-            q.push(to);
-        }
-}</pre><div class="trap" style="margin-top:14px"><b>Two conditions on the theorem.</b> Shortest in <em>number of edges</em>, and only on an <em>unweighted</em> graph. Put weights on the edges and BFS is simply wrong — that is lecture 13's problem, and Dijkstra is the fix.</div><div class="trap" style="margin-top:10px"><b>The start-equals-finish case.</b> The answer is 0, and a loop that only checks on expansion returns −1. Our own tests missed this until a test was added for it.</div></div>
-      <div class="card pad demo"><h4>Demo · BFS and DFS on a grid</h4><div class="ctl"><div class="seg" id="gvmode"><button data-m="bfs" class="on">BFS</button><button data-m="dfs">DFS</button></div><button class="pri" id="gvplay">▶ Play</button><button id="gvstep">Step</button><button id="gvreset">Reset</button><label class="f" style="flex:1 1 140px"><span>speed</span><input type="range" id="gvspeed" min="1" max="10" value="7"></label></div><div class="readout" style="margin-top:0;margin-bottom:14px"><div class="stat"><div class="lab">frontier size</div><div class="val" id="gvfr">0</div></div><div class="stat good"><div class="lab">visited</div><div class="val" id="gvvis">0</div></div><div class="stat"><div class="lab">max distance</div><div class="val" id="gvmax">0</div></div></div><div class="sieve" id="gvgrid" style="--cell:30px"></div><p style="margin-top:12px;font-size:.83rem;color:var(--ink-3)">Same grid, same start. BFS fans out in rings; DFS drives down one corridor to the end before backing up. Cells show the distance BFS assigns.</p></div>
-    </div>
+Edges: (A,B), (B,C), (C,D), (D,A)</pre><p style="margin-top:12px"><strong>Applications:</strong> web page links (one-way), task dependencies, state transitions.</p></div>
+    <div class="card pad board"><h4>2 · Undirected graph</h4><p>Edges have <strong>no direction</strong> — the connection goes both ways.</p><pre class="out">    A --- B
+    |     |
+    D --- C
+
+Edges: (A,B), (B,C), (C,D), (A,D)</pre><p style="margin-top:12px"><strong>Applications:</strong> social networks (friendship is mutual), road networks (two-way roads).</p></div>
+    <div class="card pad board"><h4>3 · Weighted graph</h4><p>Edges have <strong>weights</strong> — costs, distances, capacities.</p><pre class="out">    A --5-- B
+    |       |
+    3       7
+    |       |
+    D --2-- C
+
+Edges: (A,B,5), (A,D,3), (B,C,7), (C,D,2)</pre><p style="margin-top:12px"><strong>Applications:</strong> road networks (distances), network routing (latency), flight routes (costs).</p></div>
+    <div class="card pad board"><h4>4 · Unweighted graph</h4><p>All edges have <strong>equal weight</strong> (or weight = 1).</p><pre class="out">    A --- B
+    |     |
+    D --- C</pre></div>
+    <div class="card pad board"><h4>5 · Cyclic graph</h4><p>Contains at least one <strong>cycle</strong> — a path from a vertex back to itself.</p><pre class="out">    A --- B
+    |     |
+    D --- C
+
+Cycle: A → B → C → D → A</pre></div>
+    <div class="card pad board"><h4>6 · Acyclic graph</h4><p>Contains <strong>no cycles</strong>.</p><pre class="out">    A --- B --- C
+          |
+          D</pre><p style="margin-top:12px"><strong>DAG (Directed Acyclic Graph)</strong> — a directed graph with no cycles:</p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>used in task scheduling</li><li>dependency resolution</li><li>topological sorting</li></ul></div>
+    <div class="card pad board"><h4>7 · Connected graph</h4><p>There is a <strong>path</strong> between every pair of vertices.</p><pre class="out">    A --- B
+    |     |
+    D --- C</pre></div>
+    <div class="card pad board"><h4>8 · Disconnected graph</h4><p>Some vertices are <strong>not reachable</strong> from others.</p><pre class="out">    A --- B     E --- F
+    |     |
+    D --- C</pre></div>
+    <div class="card pad board"><h4>9 · Complete graph</h4><p>Every pair of vertices is <strong>directly connected</strong>.</p><pre class="out">    A --- B
+    |\   /|
+    | \ / |
+    |  X  |
+    | / \ |
+    |/   \|
+    D --- C
+
+Edges: (A,B), (A,C), (A,D), (B,C), (B,D), (C,D)</pre></div>
+    <div class="card pad board"><h4>10 · Tree</h4><p>A <strong>connected acyclic graph</strong>.</p><pre class="out">        A
+       / \
+      B   C
+     / \
+    D   E</pre><p style="margin-top:12px"><strong>Properties:</strong></p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>N vertices have exactly N − 1 edges</li><li>exactly one path between any two vertices</li><li>removing any edge disconnects the graph</li></ul></div>
+    <div class="card pad board"><h4>11 · Bipartite graph</h4><p>Vertices can be divided into <strong>two sets</strong> such that edges only connect vertices from different sets. <strong>No edges exist within the same set.</strong></p><pre class="out">Set 1          Set 2
+
+  0 ----------- 1
+   \           /
+    \         /
+     \       /
+      \     /
+       \   /
+        \ /
+         X
+        / \
+       /   \
+      /     \
+     /       \
+    /         \
+   /           \
+  2 ----------- 3
+
+Set 1: {0, 2}
+Set 2: {1, 3}
+
+Edges: (0,1), (0,3), (2,1), (2,3)
+
+Verification:
+- 0 connects to 1: Set 1 → Set 2 ✓
+- 0 connects to 3: Set 1 → Set 2 ✓
+- 2 connects to 1: Set 1 → Set 2 ✓
+- 2 connects to 3: Set 1 → Set 2 ✓
+- No edges within Set 1 (0 and 2 NOT connected) ✓
+- No edges within Set 2 (1 and 3 NOT connected) ✓
+
+This IS a bipartite graph!</pre></div>
+    <div class="card pad board"><h4>Not bipartite — the triangle</h4><pre class="out">    0
+   / \
+  1---2
+
+This is NOT bipartite because:
+- If we put 0 in Set 1, then 1 and 2 must be in Set 2
+- But 1 and 2 are connected to each other
+- This violates the bipartite rule!</pre><p style="margin-top:12px"><strong>Applications of bipartite graphs:</strong> matching problems (students to projects), job assignments (workers to tasks), task scheduling.</p></div>
   </div>
 </section>
 
@@ -118,41 +216,12 @@ q.push(s); dist[s] = 0;
   <div class="beat-head">
     <div class="beat-n">03</div>
     <div>
-      <h2>DFS — one word different</h2>
-      <div class="sub"><span>18 min</span> <span>board</span></div>
+      <h2>Graph Terminology</h2>
+      <div class="sub"><span>4 min</span> <span>board</span></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Swap the queue for a stack — or just recurse — and the traversal goes <strong>deep first</strong>. Same O(n + m), completely different order.</li>
-        <li>State the asymmetry clearly: <strong>DFS does not give shortest paths.</strong> It finds <em>a</em> path, usually a long one. Every year somebody submits DFS for problem B.</li>
-        <li>What DFS gives instead is <strong>structure</strong>: connected components, cycle detection, topological order, bridges and articulation points.</li>
-        <li><strong>Components</strong> — loop over all vertices, run DFS from each unvisited one, count the runs. Four lines, and it is problem F.</li>
-        <li><strong>Cycle detection</strong> differs by graph type: undirected, any edge to a visited vertex that is not your parent; directed, you need three colours, because reaching a <em>finished</em> vertex is fine and only reaching a <em>grey</em> one is a cycle.</li>
-        <li>The practical warning: <strong>recursion depth equals path length</strong>. At n = 10⁵ a path graph overflows a default stack. On ejudge the import sets 256 MB so it survives — elsewhere convert to an explicit stack.</li>
-      </ul>
-    </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre><span class="k">void</span> dfs(<span class="k">int</span> v) {
-    used[v] = <span class="k">true</span>;
-    <span class="k">for</span> (<span class="k">int</span> to : g[v])
-        <span class="k">if</span> (!used[to]) dfs(to);
-}
-
-<span class="c">// count components</span>
-<span class="k">int</span> comp = 0;
-<span class="k">for</span> (<span class="k">int</span> v = 1; v &lt;= n; ++v)
-    <span class="k">if</span> (!used[v]) { ++comp; dfs(v); }</pre><div class="trap" style="margin-top:14px"><b>Three colours for directed cycles.</b> white = untouched, grey = on the current stack, black = finished. An edge to grey is a cycle; an edge to black is not. Using a single <code>used</code> array reports cycles that do not exist.</div></div>
-      <div class="card pad board"><h4>Topological sort</h4><p>Order the vertices of a <strong>directed acyclic graph</strong> so every edge points forward. "Do the prerequisites first" — which is problem I word for word.</p><pre style="margin-top:12px"><span class="k">void</span> dfs(<span class="k">int</span> v) {
-    used[v] = <span class="k">true</span>;
-    <span class="k">for</span> (<span class="k">int</span> to : g[v])
-        <span class="k">if</span> (!used[to]) dfs(to);
-    order.push_back(v);      <span class="c">// AFTER the children</span>
-}
-<span class="c">// then reverse(order)</span></pre><div class="trap" style="margin-top:14px"><b>Two things to check.</b> The push must come <em>after</em> the recursion, and the result must be reversed. And if the graph has a cycle there is no valid order at all — the statement will have a word for that case, and you must detect it rather than print garbage.</div></div>
-    </div>
+    <div class="card pad board"><h4>The words we will use</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Vertex (node)</strong>: a point in the graph</li><li><strong>Edge</strong>: a connection between two vertices</li><li><strong>Adjacent vertices</strong>: two vertices connected by an edge</li><li><strong>Degree</strong>: the number of edges at a vertex — <strong>in-degree</strong> (incoming) and <strong>out-degree</strong> (outgoing) in a directed graph</li><li><strong>Path</strong>: a sequence of vertices connected by edges</li><li><strong>Cycle</strong>: a path that starts and ends at the same vertex</li><li><strong>Connected</strong>: a path exists between every pair of vertices</li><li><strong>Component</strong>: a maximal connected subgraph</li></ul></div>
   </div>
 </section>
 
@@ -160,31 +229,423 @@ q.push(s); dist[s] = 0;
   <div class="beat-head">
     <div class="beat-n">04</div>
     <div>
-      <h2>Lab 10 — how it maps onto today</h2>
-      <div class="sub"><span>14 min</span> <span>ADS-Lab-10</span></div>
+      <h2>Graph Representations</h2>
+      <div class="sub"><span>28 min</span> <span>code</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Ten problems covering both lectures. The split is clean: <strong>A–D are BFS, F–J are DFS</strong>, and E is the outlier.</li>
-        <li>Start them on B and H. B is BFS on a matrix with n ≤ 100, H is DFS flood fill on a grid — between them they cover both traversals at minimum difficulty.</li>
-        <li>C is the one worth dwelling on: <strong>the vertices are numbers, not places</strong>. From A you can reach 2A and A−1. Once they see that, BFS-over-states unlocks a whole category.</li>
-        <li>F needs the undirected warning from beat 01 — a test exists specifically for the one-direction bug.</li>
-        <li><strong>D and E are excluded from the defence.</strong> D is the heaviest (TL 5 s, repeated BFS with an amortisation argument); E is not a graph problem at all despite its name — it is three lookups in a matrix.</li>
+        <li>Three ways to store the same graph. Use the 4-cycle 0 — 1 — 2 — 3 — 0 for all three and keep it on the board.</li>
+        <li><strong>Adjacency matrix</strong>: <code>matrix[i][j]</code> says whether there is an edge. O(1) to check an edge, but <strong>O(V²) memory</strong>.</li>
+        <li><strong>Adjacency list</strong>: <code>adj[i]</code> holds the neighbours of i. O(V + E) memory — <strong>the default</strong> for traversals.</li>
+        <li><strong>Edge list</strong>: just the pairs. Simple, and exactly what Kruskal needs later; bad for traversal.</li>
+        <li>Undirected means <strong>both directions</strong>: every edge is written into the matrix or the list twice.</li>
       </ul>
     </div>
-    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Marios War</span><span class="pill key">key</span><div class="map-why">Beat 02 · multi-source BFS on a grid — push every source at distance 0</div></div></div>
-<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Path</span><span class="pill key">key</span><div class="map-why">Beat 02 · plain BFS, graph given as a matrix, n ≤ 100</div></div></div>
-<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Multiply or Subtract</span><span class="pill key">key</span><div class="map-why">Beat 02 · BFS over states — vertices are numbers, edges are ×2 and −1</div></div></div>
-<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Try Again</span><div class="map-why">Repeated BFS with an amortisation argument, TL 5 s — not on the defence</div></div></div>
-<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">KH2O - potassium hydroxide???</span><div class="map-why">Three lookups in a matrix; no traversal at all — off topic, not on the defence</div></div></div>
-<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">John's graph</span><span class="pill key">key</span><div class="map-why">Beat 03 · connected components — push both directions or it fails</div></div></div>
-<div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Fly Me to the Moon</span><span class="pill key">key</span><div class="map-why">Beat 03 · DFS on a directed graph</div></div></div>
-<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">Number of Island</span><span class="pill key">key</span><div class="map-why">Beat 03 · flood fill on a grid, count the islands</div></div></div>
-<div class="map-row"><span class="map-idx">I</span><div><span class="map-name">Beta Tester</span><span class="pill key">key</span><div class="map-why">Beat 03 · topological sort — push after the children, then reverse</div></div></div>
-<div class="map-row"><span class="map-idx">J</span><div><span class="map-name">Who has a big Family?</span><span class="pill key">key</span><div class="map-why">Beat 03 · DFS over a forest, compare children counts</div></div></div><div class="trap" style="margin-top:16px"><b>On problem C's title:</b> it used to be called "Aho-Corasick", which is an algorithm this course never teaches and which has nothing to do with the task. It has been renamed. If anyone is working from an old list, tell them it is the same problem.</div></div>
+    <div class="card pad board"><h4>1 · Adjacency matrix</h4><p>A <strong>2D array</strong> where <code>matrix[i][j]</code> tells whether there is an edge from vertex i to vertex j.</p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Unweighted:</strong> <code>matrix[i][j] = 1</code> if the edge exists, <code>0</code> if not</li><li><strong>Weighted:</strong> <code>matrix[i][j] = weight</code> if the edge exists, <code>∞</code> or <code>0</code> if not</li></ul><p style="margin-top:12px"><strong>Example.</strong> Graph:</p><pre class="out">    0 --- 1
+    |     |
+    3 --- 2</pre><p style="margin-top:12px">Adjacency matrix (undirected):</p><pre class="out">     0  1  2  3
+  0 [0, 1, 0, 1]
+  1 [1, 0, 1, 0]
+  2 [0, 1, 0, 1]
+  3 [1, 0, 1, 0]</pre></div>
+    <div class="card pad board"><h4>Adjacency matrix · implementation</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;  <span class="c">// Maximum number of vertices</span>
+<span class="k">int</span> adj[MAXN][MAXN];   <span class="c">// Adjacency matrix</span>
+<span class="k">int</span> n;                 <span class="c">// Number of vertices</span>
+
+<span class="c">// Add edge (undirected)</span>
+<span class="k">void</span> addEdge(<span class="k">int</span> u, <span class="k">int</span> v) {
+    adj[u][v] = 1;
+    adj[v][u] = 1;
+}
+
+<span class="c">// Add directed edge</span>
+<span class="k">void</span> addDirectedEdge(<span class="k">int</span> u, <span class="k">int</span> v) {
+    adj[u][v] = 1;
+}
+
+<span class="c">// Add weighted edge</span>
+<span class="k">void</span> addWeightedEdge(<span class="k">int</span> u, <span class="k">int</span> v, <span class="k">int</span> weight) {
+    adj[u][v] = weight;
+    adj[v][u] = weight;
+}
+
+<span class="c">// Check if edge exists</span>
+<span class="k">bool</span> hasEdge(<span class="k">int</span> u, <span class="k">int</span> v) {
+    <span class="k">return</span> adj[u][v] != 0;
+}
+
+<span class="c">// Print adjacency matrix</span>
+<span class="k">void</span> printMatrix() {
+    cout &lt;&lt; <span class="s">"Adjacency Matrix:"</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"   "</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        cout &lt;&lt; i &lt;&lt; <span class="s">" "</span>;
+    cout &lt;&lt; endl;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        cout &lt;&lt; i &lt;&lt; <span class="s">" ["</span>;
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; n; j++) {
+            cout &lt;&lt; adj[i][j];
+            <span class="k">if</span> (j &lt; n - 1) cout &lt;&lt; <span class="s">" "</span>;
+        }
+        cout &lt;&lt; <span class="s">"]"</span> &lt;&lt; endl;
+    }
+}
+
+<span class="k">int</span> main() {
+    n = 4;  <span class="c">// Number of vertices</span>
+
+    <span class="c">// Initialize matrix with zeros</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; n; j++)
+            adj[i][j] = 0;
+
+    <span class="c">// Add edges</span>
+    addEdge(0, 1);
+    addEdge(0, 3);
+    addEdge(1, 2);
+    addEdge(2, 3);
+
+    printMatrix();
+
+    <span class="c">// Print neighbors of vertex 0</span>
+    cout &lt;&lt; <span class="s">"\nNeighbors of vertex 0: "</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">if</span> (adj[0][i] != 0) {
+            cout &lt;&lt; i &lt;&lt; <span class="s">" "</span>;
+        }
+    }
+    cout &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">Adjacency Matrix:
+   0 1 2 3 
+0 [0 1 0 1]
+1 [1 0 1 0]
+2 [0 1 0 1]
+3 [1 0 1 0]
+
+Neighbors of vertex 0: 1 3</pre></div>
+    <div class="card pad board"><h4>Adjacency matrix · cost</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Cost</th></tr></thead><tbody><tr><td class="k">Space</td><td class="n"><span style="color:var(--mark)">O(V²)</span></td></tr><tr><td class="k">Add edge</td><td class="n"><span style="color:var(--prime)">O(1)</span></td></tr><tr><td class="k">Check edge</td><td class="n"><span style="color:var(--prime)">O(1)</span></td></tr><tr><td class="k">Get all neighbours</td><td class="n">O(V)</td></tr><tr><td class="k">Iterate all edges</td><td class="n"><span style="color:var(--mark)">O(V²)</span></td></tr></tbody></table></div><p style="margin-top:13px"><strong>Advantages:</strong> fast edge lookup — O(1); simple to implement; good for dense graphs.</p><p style="margin-top:8px"><strong>Disadvantages:</strong> wastes space for sparse graphs — O(V²) even with few edges; iterating all edges takes O(V²).</p></div>
+    <div class="card pad board"><h4>Another version · the matrix read from input</h4><p>Vertices numbered from 1 in the input: read m edges into the matrix, then print the neighbours of vertex k by scanning its row.</p><pre><span class="k">#include</span> &lt;iostream&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+<span class="k">int</span> g[100][100];
+<span class="k">int</span> n, m, x, y, k;
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; n &gt;&gt; m;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
+        cin &gt;&gt; x &gt;&gt; y;
+        x--;
+        y--;
+        g[x][y] = 1;
+        g[y][x] = 1;
+    } 
+
+    <span class="c">// for (int i = 0; i &lt; n; i++) {</span>
+    <span class="c">//     for (int j = 0; j &lt; n; j++)</span>
+    <span class="c">//         cout &lt;&lt; g[i][j] &lt;&lt; " ";</span>
+    <span class="c">//     cout &lt;&lt; endl;</span>
+    <span class="c">// }</span>
+    cin &gt;&gt; k; k--;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        <span class="k">if</span> (g[k][i] == 1)
+            cout &lt;&lt; i + 1 &lt;&lt; <span class="s">" "</span>;
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">input</div><pre class="out">5 7
+1 2
+2 3
+3 1
+3 4
+4 1
+4 5
+5 1
+1</pre><div class="out-lbl">output</div><pre class="out">2 3 4 5</pre><p style="margin-top:12px">And a matrix given directly in the input — n, then n rows:</p><pre><span class="k">#include</span> &lt;iostream&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+<span class="k">int</span> n;
+<span class="k">int</span> a[100][100];
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; n;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; n; j++)
+            cin &gt;&gt; a[i][j];
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; n; j++)
+            cout &lt;&lt; a[i][j] &lt;&lt; <span class="s">" "</span>;
+        cout &lt;&lt; endl;
+    }
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">input</div><pre class="out">4
+0 1 0 1
+1 0 1 0
+0 1 0 1
+1 0 1 0</pre><div class="out-lbl">output</div><pre class="out">0 1 0 1
+1 0 1 0
+0 1 0 1
+1 0 1 0</pre></div>
+    <div class="card pad board"><h4>2 · Adjacency list</h4><p>An <strong>array of lists</strong> where <code>adj[i]</code> contains all neighbours of vertex i.</p><p style="margin-top:12px"><strong>Example.</strong> The same graph:</p><pre class="out">    0 --- 1
+    |     |
+    3 --- 2</pre><p style="margin-top:12px">Adjacency list:</p><pre class="out">0: [1, 3]
+1: [0, 2]
+2: [1, 3]
+3: [0, 2]</pre></div>
+    <div class="card pad board"><h4>Adjacency list · implementation</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;     <span class="c">// Maximum number of vertices</span>
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];    <span class="c">// Adjacency list</span>
+<span class="k">int</span> n;                    <span class="c">// Number of vertices</span>
+
+<span class="c">// Add edge (undirected)</span>
+<span class="k">void</span> addEdge(<span class="k">int</span> u, <span class="k">int</span> v) {
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+}
+
+<span class="c">// Add directed edge</span>
+<span class="k">void</span> addDirectedEdge(<span class="k">int</span> u, <span class="k">int</span> v) {
+    adj[u].push_back(v);
+}
+
+<span class="c">// Check if edge exists</span>
+<span class="k">bool</span> hasEdge(<span class="k">int</span> u, <span class="k">int</span> v) {
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[u].size(); i++) {
+        <span class="k">if</span> (adj[u][i] == v)
+            <span class="k">return</span> <span class="k">true</span>;
+    }
+    <span class="k">return</span> <span class="k">false</span>;
+}
+
+<span class="c">// Print adjacency list</span>
+<span class="k">void</span> printList() {
+    cout &lt;&lt; <span class="s">"Adjacency List:"</span> &lt;&lt; endl;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        cout &lt;&lt; i &lt;&lt; <span class="s">": ["</span>;
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; adj[i].size(); j++) {
+            cout &lt;&lt; adj[i][j];
+            <span class="k">if</span> (j &lt; adj[i].size() - 1)
+                cout &lt;&lt; <span class="s">", "</span>;
+        }
+        cout &lt;&lt; <span class="s">"]"</span> &lt;&lt; endl;
+    }
+}
+
+<span class="k">int</span> main() {
+    n = 4;  <span class="c">// Number of vertices</span>
+
+    <span class="c">// Add edges</span>
+    addEdge(0, 1);
+    addEdge(0, 3);
+    addEdge(1, 2);
+    addEdge(2, 3);
+
+    printList();
+
+    <span class="c">// Print neighbors of vertex 0</span>
+    cout &lt;&lt; <span class="s">"\nNeighbors of vertex 0: "</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[0].size(); i++) {
+        cout &lt;&lt; adj[0][i] &lt;&lt; <span class="s">" "</span>;
+    }
+    cout &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">Adjacency List:
+0: [1, 3]
+1: [0, 2]
+2: [1, 3]
+3: [0, 2]
+
+Neighbors of vertex 0: 1 3</pre></div>
+    <div class="card pad board"><h4>Adjacency list · weighted graphs</h4><p>Each entry becomes a pair <code>{neighbour, weight}</code>.</p><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt;&gt; adj[MAXN];  <span class="c">// {neighbor, weight}</span>
+<span class="k">int</span> n;
+
+<span class="k">void</span> addWeightedEdge(<span class="k">int</span> u, <span class="k">int</span> v, <span class="k">int</span> weight) {
+    adj[u].push_back({v, weight});
+    adj[v].push_back({u, weight});
+}
+
+<span class="k">void</span> printWeightedList() {
+    cout &lt;&lt; <span class="s">"Weighted Adjacency List:"</span> &lt;&lt; endl;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        cout &lt;&lt; i &lt;&lt; <span class="s">": ["</span>;
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; adj[i].size(); j++) {
+            cout &lt;&lt; <span class="s">"("</span> &lt;&lt; adj[i][j].first &lt;&lt; <span class="s">","</span> &lt;&lt; adj[i][j].second &lt;&lt; <span class="s">")"</span>;
+            <span class="k">if</span> (j &lt; adj[i].size() - 1)
+                cout &lt;&lt; <span class="s">", "</span>;
+        }
+        cout &lt;&lt; <span class="s">"]"</span> &lt;&lt; endl;
+    }
+}
+
+<span class="k">int</span> main() {
+    n = 4;
+
+    addWeightedEdge(0, 1, 5);
+    addWeightedEdge(0, 3, 3);
+    addWeightedEdge(1, 2, 7);
+    addWeightedEdge(2, 3, 2);
+
+    printWeightedList();
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">Weighted Adjacency List:
+0: [(1,5), (3,3)]
+1: [(0,5), (2,7)]
+2: [(1,7), (3,2)]
+3: [(0,3), (2,2)]</pre></div>
+    <div class="card pad board"><h4>Adjacency list · cost</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Cost</th></tr></thead><tbody><tr><td class="k">Space</td><td class="n"><span style="color:var(--prime)">O(V + E)</span></td></tr><tr><td class="k">Add edge</td><td class="n"><span style="color:var(--prime)">O(1)</span></td></tr><tr><td class="k">Check edge</td><td class="n">O(degree(v))</td></tr><tr><td class="k">Get all neighbours</td><td class="n"><span style="color:var(--prime)">O(degree(v))</span></td></tr><tr><td class="k">Iterate all edges</td><td class="n"><span style="color:var(--prime)">O(V + E)</span></td></tr></tbody></table></div><p style="margin-top:13px"><strong>Advantages:</strong> space efficient for sparse graphs; fast iteration over neighbours; the most common representation.</p><p style="margin-top:8px"><strong>Disadvantages:</strong> slower edge lookup than the matrix; a little more to implement.</p></div>
+    <div class="card pad board"><h4>Another version · the list read from input</h4><p>The same input as the matrix version — the neighbours now come straight from <code>g[k]</code>, in the order the edges were read.</p><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+vector&lt;<span class="k">int</span>&gt; g[100];
+<span class="k">int</span> n, m, x, y, k;
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; n &gt;&gt; m;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
+        cin &gt;&gt; x &gt;&gt; y;
+        x--;
+        y--;
+        g[x].push_back(y);
+        g[y].push_back(x);
+    }
+
+    <span class="c">// for (int i = 0; i &lt; n; i++) {</span>
+    <span class="c">//     cout &lt;&lt; i + 1 &lt;&lt; " --- ";</span>
+    <span class="c">//     for (int j = 0; j &lt; g[i].size(); j++)</span>
+    <span class="c">//         cout &lt;&lt; g[i][j] + 1 &lt;&lt; " ";</span>
+    <span class="c">//     cout &lt;&lt; endl;</span>
+    <span class="c">// }</span>
+    cin &gt;&gt; k;
+    k--;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; g[k].size(); i++)
+        cout &lt;&lt; g[k][i] + 1 &lt;&lt; <span class="s">" "</span>;
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">input</div><pre class="out">5 7
+1 2
+2 3
+3 1
+3 4
+4 1
+4 5
+5 1
+1</pre><div class="out-lbl">output</div><pre class="out">2 3 4 5</pre><p style="margin-top:12px">Weighted: n and m, then m triples <span class="mono">x y w</span>, then k — print each neighbour of k with the weight of the edge.</p><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+vector&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt; g[100];
+<span class="k">int</span> n, m, x, y, w, k;
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; n &gt;&gt; m;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
+        cin &gt;&gt; x &gt;&gt; y &gt;&gt; w;
+        x--;
+        y--;
+        g[x].push_back(make_pair(y, w));
+        g[y].push_back(make_pair(x, w));
+    }
+
+    <span class="c">// for (int i = 0; i &lt; n; i++) {</span>
+    <span class="c">//     cout &lt;&lt; i + 1 &lt;&lt; " --- ";</span>
+    <span class="c">//     for (int j = 0; j &lt; g[i].size(); j++)</span>
+    <span class="c">//         cout &lt;&lt; g[i][j] + 1 &lt;&lt; " ";</span>
+    <span class="c">//     cout &lt;&lt; endl;</span>
+    <span class="c">// }</span>
+    cin &gt;&gt; k;
+    k--;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; g[k].size(); i++)
+        cout &lt;&lt; g[k][i].first + 1 &lt;&lt; <span class="s">" "</span> &lt;&lt; g[k][i].second &lt;&lt; endl;
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">input</div><pre class="out">6 9
+1 2 5
+1 3 2
+2 3 6
+2 5 9
+3 4 10
+3 5 11
+4 5 12
+4 6 13 
+5 6 14
+3</pre><div class="out-lbl">output</div><pre class="out">1 2
+2 6
+4 10
+5 11</pre></div>
+    <div class="card pad board"><h4>3 · Edge list</h4><p>A <strong>list of edges</strong>, each a pair — or a triple for weighted graphs.</p><p style="margin-top:12px"><strong>Example.</strong> The same graph:</p><pre class="out">    0 --- 1
+    |     |
+    3 --- 2</pre><p style="margin-top:12px">Edge list:</p><pre class="out">[(0, 1), (0, 3), (1, 2), (2, 3)]</pre></div>
+    <div class="card pad board"><h4>Edge list · implementation</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">struct</span> Edge {
+    <span class="k">int</span> u, v;
+    <span class="k">int</span> weight;
+};
+
+<span class="k">const</span> <span class="k">int</span> MAXE = 1000;  <span class="c">// Maximum number of edges</span>
+Edge edges[MAXE];
+<span class="k">int</span> edgeCount = 0;
+<span class="k">int</span> n;  <span class="c">// Number of vertices</span>
+
+<span class="c">// Add edge</span>
+<span class="k">void</span> addEdge(<span class="k">int</span> u, <span class="k">int</span> v, <span class="k">int</span> weight = 1) {
+    edges[edgeCount].u = u;
+    edges[edgeCount].v = v;
+    edges[edgeCount].weight = weight;
+    edgeCount++;
+}
+
+<span class="c">// Print edge list</span>
+<span class="k">void</span> printEdges() {
+    cout &lt;&lt; <span class="s">"Edge List:"</span> &lt;&lt; endl;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; edgeCount; i++) {
+        cout &lt;&lt; <span class="s">"("</span> &lt;&lt; edges[i].u &lt;&lt; <span class="s">", "</span> &lt;&lt; edges[i].v;
+        <span class="k">if</span> (edges[i].weight != 1)
+            cout &lt;&lt; <span class="s">", "</span> &lt;&lt; edges[i].weight;
+        cout &lt;&lt; <span class="s">")"</span> &lt;&lt; endl;
+    }
+}
+
+<span class="k">int</span> main() {
+    n = 4;  <span class="c">// Number of vertices</span>
+
+    <span class="c">// Add edges</span>
+    addEdge(0, 1);
+    addEdge(0, 3);
+    addEdge(1, 2);
+    addEdge(2, 3);
+
+    printEdges();
+
+    cout &lt;&lt; <span class="s">"\nTotal edges: "</span> &lt;&lt; edgeCount &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">Edge List:
+(0, 1)
+(0, 3)
+(1, 2)
+(2, 3)
+
+Total edges: 4</pre><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Cost</th></tr></thead><tbody><tr><td class="k">Space</td><td class="n"><span style="color:var(--prime)">O(E)</span></td></tr><tr><td class="k">Add edge</td><td class="n"><span style="color:var(--prime)">O(1)</span></td></tr><tr><td class="k">Check edge</td><td class="n"><span style="color:var(--mark)">O(E)</span></td></tr><tr><td class="k">Iterate all edges</td><td class="n"><span style="color:var(--prime)">O(E)</span></td></tr></tbody></table></div><p style="margin-top:13px"><strong>Advantages:</strong> very simple; space efficient; good for edge-focused algorithms (Kruskal's MST).</p><p style="margin-top:8px"><strong>Disadvantages:</strong> slow neighbour lookup; slow edge-existence check; not good for traversal.</p></div>
+    <div class="card pad board"><h4>Comparison of representations</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Adjacency Matrix</th><th class="n">Adjacency List</th><th class="n">Edge List</th></tr></thead><tbody><tr><td class="k">Space</td><td class="n"><span style="color:var(--mark)">O(V²)</span></td><td class="n"><span style="color:var(--prime)">O(V + E)</span></td><td class="n"><span style="color:var(--prime)">O(E)</span></td></tr><tr><td class="k">Add edge</td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td></tr><tr><td class="k">Check edge</td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n">O(degree)</td><td class="n"><span style="color:var(--mark)">O(E)</span></td></tr><tr><td class="k">Get neighbours</td><td class="n">O(V)</td><td class="n"><span style="color:var(--prime)">O(degree)</span></td><td class="n"><span style="color:var(--mark)">O(E)</span></td></tr><tr><td class="k">Iterate edges</td><td class="n"><span style="color:var(--mark)">O(V²)</span></td><td class="n"><span style="color:var(--prime)">O(V + E)</span></td><td class="n"><span style="color:var(--prime)">O(E)</span></td></tr><tr><td class="k">Best for</td><td class="n">dense graphs</td><td class="n">sparse graphs</td><td class="n">edge algorithms</td></tr></tbody></table></div><p style="margin-top:13px"><strong>When to use:</strong></p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Adjacency matrix</strong>: dense graphs, frequent edge queries</li><li><strong>Adjacency list</strong>: sparse graphs, traversal algorithms (most common)</li><li><strong>Edge list</strong>: simple storage, edge-based algorithms</li></ul></div>
   </div>
 </section>
 
@@ -192,12 +653,2645 @@ q.push(s); dist[s] = 0;
   <div class="beat-head">
     <div class="beat-n">05</div>
     <div>
-      <h2>What comes next</h2>
-      <div class="sub"><span>3 min</span></div>
+      <h2>Breadth-First Search (BFS)</h2>
+      <div class="sub"><span>12 min</span> <span>board</span> <span>demo: grid</span></div>
     </div>
   </div>
   <div class="stack">
-    <div class="card pad board"><p>Both remaining lectures are graphs with <strong>weights</strong> on the edges, which is exactly what breaks BFS. Lecture 12 asks for the cheapest way to connect everything — spanning trees, Kruskal and Prim. Lecture 13 asks for the cheapest way between two points — Dijkstra, Floyd and Bellman–Ford.</p><p style="margin-top:12px">Note the calendar: <strong>the endterm falls between this lab and its defence</strong>. Lab 10 is defended in week 14, not week 13. Say the date explicitly.</p><p style="margin-top:12px">Homework is Lab 10. Ask for <strong>B and H</strong> — one BFS, one DFS, both short.</p></div>
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li><strong>BFS</strong> explores the graph <strong>level by level</strong> from a source: first all neighbours, then all neighbours of neighbours, and so on.</li>
+        <li>The order is kept by a <strong>queue</strong> — first in, first out.</li>
+        <li>Mark a vertex visited <strong>when it is put into the queue</strong>, not when it is taken out — otherwise it can enter the queue several times.</li>
+        <li>Run the demo in BFS mode: the visited area grows in rings, and the numbers are the distances.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>BFS algorithm</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li>Start from the source vertex</li><li>Visit all its neighbours (level 1)</li><li>Visit all neighbours of neighbours (level 2)</li><li>Continue until all reachable vertices are visited</li></ol><p style="margin-top:12px"><strong>Uses a queue</strong> (FIFO — First In, First Out).</p></div>
+    <div class="card pad board"><h4>BFS visualization</h4><p>Graph:</p><pre class="out">        0
+       / \
+      1   2
+     / \   \
+    3   4   5</pre><p style="margin-top:12px">BFS starting from vertex 0:</p><pre class="out">Level 0: [0]
+Level 1: [1, 2]
+Level 2: [3, 4, 5]
+
+Visit order: 0 → 1 → 2 → 3 → 4 → 5</pre></div>
+    <div class="card pad board"><h4>BFS algorithm steps</h4><pre class="out">1. Create a queue Q
+2. Mark source vertex as visited
+3. Enqueue source vertex
+4. While Q is not empty:
+   a. Dequeue vertex v from Q
+   b. Process vertex v
+   c. For each neighbor u of v:
+      - If u is not visited:
+        * Mark u as visited
+        * Enqueue u</pre></div>
+    <div class="card pad demo"><h4>Demo · BFS and DFS on a grid</h4><div class="ctl"><div class="seg" id="gvmode"><button data-m="bfs" class="on">BFS</button><button data-m="dfs">DFS</button></div><button class="pri" id="gvplay">▶ Play</button><button id="gvstep">Step</button><button id="gvreset">Reset</button><label class="f" style="flex:1 1 140px"><span>speed</span><input type="range" id="gvspeed" min="1" max="10" value="7"></label></div><div class="readout" style="margin-top:0;margin-bottom:14px"><div class="stat"><div class="lab">frontier size</div><div class="val" id="gvfr">0</div></div><div class="stat good"><div class="lab">visited</div><div class="val" id="gvvis">0</div></div><div class="stat"><div class="lab">max distance</div><div class="val" id="gvmax">0</div></div></div><div class="sieve" id="gvgrid" style="--cell:30px"></div><p style="margin-top:12px;font-size:.83rem;color:var(--ink-3)">Same grid, same start. BFS fans out in rings; DFS drives down one corridor to the end before backing up. Cells show the distance BFS assigns.</p></div>
+  </div>
+</section>
+
+<section class="beat" id="b6">
+  <div class="beat-head">
+    <div class="beat-n">06</div>
+    <div>
+      <h2>BFS Implementation</h2>
+      <div class="sub"><span>14 min</span> <span>code</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Three functions over the same globals: plain BFS that prints the order, BFS that records the <strong>distance</strong> of each vertex, and BFS that records the <strong>parent</strong> of each vertex to restore a path.</li>
+        <li>Distance: <code>distance[u] = distance[v] + 1</code> at the moment u is discovered.</li>
+        <li>Path: follow <code>parent[]</code> back from the target to the source, then reverse.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>1 · The graph</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">#include</span> &lt;queue&gt;
+<span class="k">#include</span> &lt;algorithm&gt;   <span class="c">// added: reverse() lives here</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">bool</span> visited[MAXN];
+<span class="k">int</span> n;</pre></div>
+    <div class="card pad board"><h4>2 · BFS from a source</h4><pre><span class="c">// BFS from source vertex</span>
+<span class="k">void</span> BFS(<span class="k">int</span> source) {
+    queue&lt;<span class="k">int</span>&gt; q;
+
+    <span class="c">// Initialize visited array</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    <span class="c">// Start from source</span>
+    visited[source] = <span class="k">true</span>;
+    q.push(source);
+
+    cout &lt;&lt; <span class="s">"BFS traversal: "</span>;
+
+    <span class="k">while</span> (!q.empty()) {
+        <span class="k">int</span> v = q.front();
+        q.pop();
+
+        cout &lt;&lt; v &lt;&lt; <span class="s">" "</span>;
+
+        <span class="c">// Visit all neighbors</span>
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+            <span class="k">int</span> u = adj[v][i];
+            <span class="k">if</span> (!visited[u]) {
+                visited[u] = <span class="k">true</span>;
+                q.push(u);
+            }
+        }
+    }
+
+    cout &lt;&lt; endl;
+}</pre></div>
+    <div class="card pad board"><h4>3 · BFS with distances</h4><pre><span class="c">// BFS with distance tracking</span>
+<span class="k">void</span> BFS_with_distance(<span class="k">int</span> source) {
+    queue&lt;<span class="k">int</span>&gt; q;
+    <span class="k">int</span> distance[MAXN];
+
+    <span class="c">// Initialize</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        visited[i] = <span class="k">false</span>;
+        distance[i] = -1;
+    }
+
+    visited[source] = <span class="k">true</span>;
+    distance[source] = 0;
+    q.push(source);
+
+    <span class="k">while</span> (!q.empty()) {
+        <span class="k">int</span> v = q.front();
+        q.pop();
+
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+            <span class="k">int</span> u = adj[v][i];
+            <span class="k">if</span> (!visited[u]) {
+                visited[u] = <span class="k">true</span>;
+                distance[u] = distance[v] + 1;
+                q.push(u);
+            }
+        }
+    }
+
+    cout &lt;&lt; <span class="s">"Distances from vertex "</span> &lt;&lt; source &lt;&lt; <span class="s">":"</span> &lt;&lt; endl;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        cout &lt;&lt; <span class="s">"Vertex "</span> &lt;&lt; i &lt;&lt; <span class="s">": "</span>;
+        <span class="k">if</span> (distance[i] == -1)
+            cout &lt;&lt; <span class="s">"unreachable"</span> &lt;&lt; endl;
+        <span class="k">else</span>
+            cout &lt;&lt; distance[i] &lt;&lt; endl;
+    }
+}</pre><p style="margin-top:12px"><code>-1</code> means "not reached yet" — it doubles as the visited mark for distances.</p></div>
+    <div class="card pad board"><h4>4 · BFS with parents — the shortest path</h4><pre><span class="c">// BFS with parent tracking (for shortest path)</span>
+<span class="k">void</span> BFS_with_path(<span class="k">int</span> source, <span class="k">int</span> target) {
+    queue&lt;<span class="k">int</span>&gt; q;
+    <span class="k">int</span> parent[MAXN];
+
+    <span class="c">// Initialize</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        visited[i] = <span class="k">false</span>;
+        parent[i] = -1;
+    }
+
+    visited[source] = <span class="k">true</span>;
+    q.push(source);
+
+    <span class="k">while</span> (!q.empty()) {
+        <span class="k">int</span> v = q.front();
+        q.pop();
+
+        <span class="k">if</span> (v == target)
+            break;
+
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+            <span class="k">int</span> u = adj[v][i];
+            <span class="k">if</span> (!visited[u]) {
+                visited[u] = <span class="k">true</span>;
+                parent[u] = v;
+                q.push(u);
+            }
+        }
+    }
+
+    <span class="c">// Reconstruct path</span>
+    <span class="k">if</span> (!visited[target]) {
+        cout &lt;&lt; <span class="s">"No path exists"</span> &lt;&lt; endl;
+        <span class="k">return</span>;
+    }
+
+    vector&lt;<span class="k">int</span>&gt; path;
+    <span class="k">int</span> current = target;
+    <span class="k">while</span> (current != -1) {
+        path.push_back(current);
+        current = parent[current];
+    }
+
+    reverse(path.begin(), path.end());
+
+    cout &lt;&lt; <span class="s">"Shortest path from "</span> &lt;&lt; source &lt;&lt; <span class="s">" to "</span> &lt;&lt; target &lt;&lt; <span class="s">": "</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; path.size(); i++) {
+        cout &lt;&lt; path[i];
+        <span class="k">if</span> (i &lt; path.size() - 1)
+            cout &lt;&lt; <span class="s">" -&gt; "</span>;
+    }
+    cout &lt;&lt; endl;
+}</pre><p style="margin-top:12px">The path is collected from the target backwards, so it has to be reversed before printing.</p></div>
+    <div class="card pad board"><h4>5 · main — and what it prints</h4><pre><span class="k">int</span> main() {
+    n = 6;  <span class="c">// Number of vertices</span>
+
+    <span class="c">// Add edges</span>
+    adj[0].push_back(1);
+    adj[1].push_back(0);
+
+    adj[0].push_back(2);
+    adj[2].push_back(0);
+
+    adj[1].push_back(3);
+    adj[3].push_back(1);
+
+    adj[1].push_back(4);
+    adj[4].push_back(1);
+
+    adj[2].push_back(5);
+    adj[5].push_back(2);
+
+    cout &lt;&lt; <span class="s">"Graph structure:"</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"    0"</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"   / \\"</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"  1   2"</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">" / \\   \\"</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"3   4   5"</span> &lt;&lt; endl;
+    cout &lt;&lt; endl;
+
+    BFS(0);
+    cout &lt;&lt; endl;
+
+    BFS_with_distance(0);
+    cout &lt;&lt; endl;
+
+    BFS_with_path(0, 5);
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">Graph structure:
+    0
+   / \
+  1   2
+ / \   \
+3   4   5
+
+BFS traversal: 0 1 2 3 4 5
+
+Distances from vertex 0:
+Vertex 0: 0
+Vertex 1: 1
+Vertex 2: 1
+Vertex 3: 2
+Vertex 4: 2
+Vertex 5: 2
+
+Shortest path from 0 to 5: 0 -&gt; 2 -&gt; 5</pre></div>
+    <div class="card pad board"><h4>The whole program</h4><p>Everything above in one file — open it and press <strong>▶ edit &amp; run</strong>.</p><div style="margin-top:12px"><details class="code"><summary>BFS — the full program<span class="lines">175 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">#include</span> &lt;queue&gt;
+<span class="k">#include</span> &lt;algorithm&gt;   <span class="c">// added: reverse() lives here</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">bool</span> visited[MAXN];
+<span class="k">int</span> n;
+
+<span class="c">// BFS from source vertex</span>
+<span class="k">void</span> BFS(<span class="k">int</span> source) {
+    queue&lt;<span class="k">int</span>&gt; q;
+
+    <span class="c">// Initialize visited array</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    <span class="c">// Start from source</span>
+    visited[source] = <span class="k">true</span>;
+    q.push(source);
+
+    cout &lt;&lt; <span class="s">"BFS traversal: "</span>;
+
+    <span class="k">while</span> (!q.empty()) {
+        <span class="k">int</span> v = q.front();
+        q.pop();
+
+        cout &lt;&lt; v &lt;&lt; <span class="s">" "</span>;
+
+        <span class="c">// Visit all neighbors</span>
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+            <span class="k">int</span> u = adj[v][i];
+            <span class="k">if</span> (!visited[u]) {
+                visited[u] = <span class="k">true</span>;
+                q.push(u);
+            }
+        }
+    }
+
+    cout &lt;&lt; endl;
+}
+
+<span class="c">// BFS with distance tracking</span>
+<span class="k">void</span> BFS_with_distance(<span class="k">int</span> source) {
+    queue&lt;<span class="k">int</span>&gt; q;
+    <span class="k">int</span> distance[MAXN];
+
+    <span class="c">// Initialize</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        visited[i] = <span class="k">false</span>;
+        distance[i] = -1;
+    }
+
+    visited[source] = <span class="k">true</span>;
+    distance[source] = 0;
+    q.push(source);
+
+    <span class="k">while</span> (!q.empty()) {
+        <span class="k">int</span> v = q.front();
+        q.pop();
+
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+            <span class="k">int</span> u = adj[v][i];
+            <span class="k">if</span> (!visited[u]) {
+                visited[u] = <span class="k">true</span>;
+                distance[u] = distance[v] + 1;
+                q.push(u);
+            }
+        }
+    }
+
+    cout &lt;&lt; <span class="s">"Distances from vertex "</span> &lt;&lt; source &lt;&lt; <span class="s">":"</span> &lt;&lt; endl;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        cout &lt;&lt; <span class="s">"Vertex "</span> &lt;&lt; i &lt;&lt; <span class="s">": "</span>;
+        <span class="k">if</span> (distance[i] == -1)
+            cout &lt;&lt; <span class="s">"unreachable"</span> &lt;&lt; endl;
+        <span class="k">else</span>
+            cout &lt;&lt; distance[i] &lt;&lt; endl;
+    }
+}
+
+<span class="c">// BFS with parent tracking (for shortest path)</span>
+<span class="k">void</span> BFS_with_path(<span class="k">int</span> source, <span class="k">int</span> target) {
+    queue&lt;<span class="k">int</span>&gt; q;
+    <span class="k">int</span> parent[MAXN];
+
+    <span class="c">// Initialize</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        visited[i] = <span class="k">false</span>;
+        parent[i] = -1;
+    }
+
+    visited[source] = <span class="k">true</span>;
+    q.push(source);
+
+    <span class="k">while</span> (!q.empty()) {
+        <span class="k">int</span> v = q.front();
+        q.pop();
+
+        <span class="k">if</span> (v == target)
+            break;
+
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+            <span class="k">int</span> u = adj[v][i];
+            <span class="k">if</span> (!visited[u]) {
+                visited[u] = <span class="k">true</span>;
+                parent[u] = v;
+                q.push(u);
+            }
+        }
+    }
+
+    <span class="c">// Reconstruct path</span>
+    <span class="k">if</span> (!visited[target]) {
+        cout &lt;&lt; <span class="s">"No path exists"</span> &lt;&lt; endl;
+        <span class="k">return</span>;
+    }
+
+    vector&lt;<span class="k">int</span>&gt; path;
+    <span class="k">int</span> current = target;
+    <span class="k">while</span> (current != -1) {
+        path.push_back(current);
+        current = parent[current];
+    }
+
+    reverse(path.begin(), path.end());
+
+    cout &lt;&lt; <span class="s">"Shortest path from "</span> &lt;&lt; source &lt;&lt; <span class="s">" to "</span> &lt;&lt; target &lt;&lt; <span class="s">": "</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; path.size(); i++) {
+        cout &lt;&lt; path[i];
+        <span class="k">if</span> (i &lt; path.size() - 1)
+            cout &lt;&lt; <span class="s">" -&gt; "</span>;
+    }
+    cout &lt;&lt; endl;
+}
+
+<span class="k">int</span> main() {
+    n = 6;  <span class="c">// Number of vertices</span>
+
+    <span class="c">// Add edges</span>
+    adj[0].push_back(1);
+    adj[1].push_back(0);
+
+    adj[0].push_back(2);
+    adj[2].push_back(0);
+
+    adj[1].push_back(3);
+    adj[3].push_back(1);
+
+    adj[1].push_back(4);
+    adj[4].push_back(1);
+
+    adj[2].push_back(5);
+    adj[5].push_back(2);
+
+    cout &lt;&lt; <span class="s">"Graph structure:"</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"    0"</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"   / \\"</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"  1   2"</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">" / \\   \\"</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"3   4   5"</span> &lt;&lt; endl;
+    cout &lt;&lt; endl;
+
+    BFS(0);
+    cout &lt;&lt; endl;
+
+    BFS_with_distance(0);
+    cout &lt;&lt; endl;
+
+    BFS_with_path(0, 5);
+
+    <span class="k">return</span> 0;
+}</pre></details></div></div>
+  </div>
+</section>
+
+<section class="beat" id="b7">
+  <div class="beat-head">
+    <div class="beat-n">07</div>
+    <div>
+      <h2>BFS Step-by-Step Example</h2>
+      <div class="sub"><span>8 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Write the visited array and the queue after every step. A vertex is marked the moment it enters the queue.</li>
+        <li>Vertex 4 is discovered from 1, so when 2 is dequeued there is nothing new left.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>BFS from vertex 0</h4><p>Graph:</p><pre class="out">    0 --- 1 --- 3
+    |     |
+    2 --- 4</pre><div style="margin-top:12px"></div><pre class="out">Initial:
+  visited = [false, false, false, false, false]
+  queue = []
+
+Step 1: Start from vertex 0
+  visited = [true, false, false, false, false]
+  queue = [0]
+
+Step 2: Dequeue 0, visit neighbors 1 and 2
+  visited = [true, true, true, false, false]
+  queue = [1, 2]
+  Output: 0
+
+Step 3: Dequeue 1, visit neighbors 3 and 4
+  visited = [true, true, true, true, true]
+  queue = [2, 3, 4]
+  Output: 0 1
+
+Step 4: Dequeue 2, no new neighbors
+  queue = [3, 4]
+  Output: 0 1 2
+
+Step 5: Dequeue 3, no new neighbors
+  queue = [4]
+  Output: 0 1 2 3
+
+Step 6: Dequeue 4, no new neighbors
+  queue = []
+  Output: 0 1 2 3 4
+
+Final output: 0 1 2 3 4</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b8">
+  <div class="beat-head">
+    <div class="beat-n">08</div>
+    <div>
+      <h2>BFS Applications</h2>
+      <div class="sub"><span>18 min</span> <span>code</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Five uses of the same loop: shortest path in an unweighted graph, "is the graph connected", counting components, the bipartite check and printing by levels.</li>
+        <li>Components: start a new BFS from every vertex that is still unvisited and count the starts.</li>
+        <li>The bipartite check colours each newly found vertex with the opposite colour; meeting a neighbour of the same colour means "not bipartite". It has to be started from <strong>every</strong> uncoloured vertex, or a second component is never checked.</li>
+        <li>Then the same BFS on a grid: the cells are vertices, the four (or eight knight) moves are the edges.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>1 · Shortest path in an unweighted graph</h4><p>BFS finds the shortest path — the minimum number of edges — from the source to every other vertex.</p><pre><span class="k">int</span> shortestPath(Graph&amp; g, <span class="k">int</span> source, <span class="k">int</span> target) {
+    vector&lt;<span class="k">bool</span>&gt; visited(n, <span class="k">false</span>);
+    vector&lt;<span class="k">int</span>&gt; distance(n, -1);
+    queue&lt;<span class="k">int</span>&gt; q;
+
+    visited[source] = <span class="k">true</span>;
+    distance[source] = 0;
+    q.push(source);
+
+    <span class="k">while</span> (!q.empty()) {
+        <span class="k">int</span> v = q.front();
+        q.pop();
+
+        <span class="k">if</span> (v == target)
+            <span class="k">return</span> distance[target];
+
+        <span class="k">for</span> (<span class="k">int</span> u : adj[v]) {
+            <span class="k">if</span> (!visited[u]) {
+                visited[u] = <span class="k">true</span>;
+                distance[u] = distance[v] + 1;
+                q.push(u);
+            }
+        }
+    }
+
+    <span class="k">return</span> -1;  <span class="c">// No path exists</span>
+}</pre></div>
+    <div class="card pad board"><h4>2 · Check if the graph is connected</h4><p>One BFS from vertex 0 and count how many vertices it reaches.</p><pre><span class="k">bool</span> isConnected(Graph&amp; g) {
+    vector&lt;<span class="k">bool</span>&gt; visited(n, <span class="k">false</span>);
+    queue&lt;<span class="k">int</span>&gt; q;
+
+    visited[0] = <span class="k">true</span>;
+    q.push(0);
+    <span class="k">int</span> count = 1;
+
+    <span class="k">while</span> (!q.empty()) {
+        <span class="k">int</span> v = q.front();
+        q.pop();
+
+        <span class="k">for</span> (<span class="k">int</span> u : adj[v]) {
+            <span class="k">if</span> (!visited[u]) {
+                visited[u] = <span class="k">true</span>;
+                q.push(u);
+                count++;
+            }
+        }
+    }
+
+    <span class="k">return</span> count == n;
+}</pre></div>
+    <div class="card pad board"><h4>3 · Find connected components</h4><pre><span class="k">int</span> countComponents(Graph&amp; g) {
+    vector&lt;<span class="k">bool</span>&gt; visited(n, <span class="k">false</span>);
+    <span class="k">int</span> components = 0;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">if</span> (!visited[i]) {
+            components++;
+
+            <span class="c">// BFS from vertex i</span>
+            queue&lt;<span class="k">int</span>&gt; q;
+            visited[i] = <span class="k">true</span>;
+            q.push(i);
+
+            <span class="k">while</span> (!q.empty()) {
+                <span class="k">int</span> v = q.front();
+                q.pop();
+
+                <span class="k">for</span> (<span class="k">int</span> u : adj[v]) {
+                    <span class="k">if</span> (!visited[u]) {
+                        visited[u] = <span class="k">true</span>;
+                        q.push(u);
+                    }
+                }
+            }
+        }
+    }
+
+    <span class="k">return</span> components;
+}</pre></div>
+    <div class="card pad board"><h4>4 · Bipartite graph check</h4><p>Check whether the graph can be coloured with 2 colours.</p><pre><span class="k">bool</span> isBipartite(Graph&amp; g) {
+    vector&lt;<span class="k">int</span>&gt; color(n, -1);
+    queue&lt;<span class="k">int</span>&gt; q;
+
+    <span class="k">for</span> (<span class="k">int</span> s = 0; s &lt; n; s++) {   <span class="c">// added: start from every vertex, not only 0 —</span>
+        <span class="k">if</span> (color[s] != -1)          <span class="c">// otherwise a second component is never checked</span>
+            continue;
+        color[s] = 0;
+        q.push(s);
+
+        <span class="k">while</span> (!q.empty()) {
+            <span class="k">int</span> v = q.front();
+            q.pop();
+
+            <span class="k">for</span> (<span class="k">int</span> u : adj[v]) {
+                <span class="k">if</span> (color[u] == -1) {
+                    color[u] = 1 - color[v];
+                    q.push(u);
+                } <span class="k">else</span> <span class="k">if</span> (color[u] == color[v]) {
+                    <span class="k">return</span> <span class="k">false</span>;  <span class="c">// Same color as neighbor</span>
+                }
+            }
+        }
+    }
+
+    <span class="k">return</span> <span class="k">true</span>;
+}</pre></div>
+    <div class="card pad board"><h4>5 · Level order traversal</h4><p>Print the vertices level by level — <code>q.size()</code> at the start of a level is exactly that level.</p><pre><span class="k">void</span> levelOrder(Graph&amp; g, <span class="k">int</span> source) {
+    vector&lt;<span class="k">bool</span>&gt; visited(n, <span class="k">false</span>);
+    queue&lt;<span class="k">int</span>&gt; q;
+
+    visited[source] = <span class="k">true</span>;
+    q.push(source);
+
+    <span class="k">int</span> level = 0;
+
+    <span class="k">while</span> (!q.empty()) {
+        <span class="k">int</span> size = q.size();
+        cout &lt;&lt; <span class="s">"Level "</span> &lt;&lt; level &lt;&lt; <span class="s">": "</span>;
+
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; size; i++) {
+            <span class="k">int</span> v = q.front();
+            q.pop();
+            cout &lt;&lt; v &lt;&lt; <span class="s">" "</span>;
+
+            <span class="k">for</span> (<span class="k">int</span> u : adj[v]) {
+                <span class="k">if</span> (!visited[u]) {
+                    visited[u] = <span class="k">true</span>;
+                    q.push(u);
+                }
+            }
+        }
+
+        cout &lt;&lt; endl;
+        level++;
+    }
+}</pre></div>
+    <div class="card pad board"><h4>Another version · counting components on a matrix</h4><p>BFS over an adjacency matrix: the neighbours of x are all y with <code>g[x][y] == 1</code>, so one BFS costs O(V²). The loop in <span class="mono">main</span> starts a new BFS from every unvisited vertex and counts them.</p><div style="margin-top:12px"></div><pre><span class="k">void</span> bfs(<span class="k">int</span> x) {
+    q.push(x);
+    u[x] = 1;
+    d[x] = 0;
+    <span class="k">while</span> (!q.empty()) {
+        x = q.front();
+        <span class="k">for</span> (<span class="k">int</span> y = 0; y &lt; n; y++) {
+            <span class="k">if</span> (u[y] == 0 &amp;&amp; g[x][y] == 1) {
+                u[y] = 1;
+                d[y] = d[x] + 1;
+                q.push(y);
+            }
+        }
+        q.pop();
+    }
+}</pre><div style="margin-top:14px"><details class="code"><summary>the full program<span class="lines">47 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;queue&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+<span class="k">int</span> g[100][100];
+queue&lt;<span class="k">int</span>&gt; q;
+<span class="k">int</span> u[100];
+<span class="k">int</span> d[100];
+<span class="k">int</span> n, m, x, y;
+
+<span class="k">void</span> bfs(<span class="k">int</span> x) {
+    q.push(x);
+    u[x] = 1;
+    d[x] = 0;
+    <span class="k">while</span> (!q.empty()) {
+        x = q.front();
+        <span class="k">for</span> (<span class="k">int</span> y = 0; y &lt; n; y++) {
+            <span class="k">if</span> (u[y] == 0 &amp;&amp; g[x][y] == 1) {
+                u[y] = 1;
+                d[y] = d[x] + 1;
+                q.push(y);
+            }
+        }
+        q.pop();
+    }
+}
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; n &gt;&gt; m;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
+        cin &gt;&gt; x &gt;&gt; y; 
+        x--; y--;
+        g[x][y] = 1;
+        g[y][x] = 1;
+    }
+    <span class="k">int</span> cnt = 0;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) <span class="c">// i = 10</span>
+        <span class="k">if</span> (u[i] == 0) {
+            bfs(i);
+            cnt++;
+        }
+    cout &lt;&lt; cnt;
+    <span class="c">// for (int i = 0; i &lt; n; i++)</span>
+    <span class="c">//     cout &lt;&lt; d[i] &lt;&lt; " ";</span>
+
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">5 7
+1 2
+2 3
+3 1
+3 4
+4 1
+4 5
+5 1</pre><div class="out-lbl">output</div><pre class="out">1</pre></div>
+    <div class="card pad board"><h4>Another version · BFS on a grid</h4><p>Every cell is a vertex, its four side neighbours are the edges. Free cells are 0, walls are 1; the start gets 2 and every reached cell gets its parent's value + 1 — so a cell holds <strong>distance + 2</strong>.</p><div style="margin-top:12px"></div><pre><span class="k">int</span> dx[4] = {1, -1, 0,  0};
+<span class="k">int</span> dy[4] = {0,  0, 1, -1};
+
+<span class="k">bool</span> ok(<span class="k">int</span> x, <span class="k">int</span> y) {
+    <span class="k">return</span> (x &gt;= 0) &amp;&amp; (x &lt; n) &amp;&amp; (y &gt;= 0) &amp;&amp; (y &lt; m);
+}
+
+<span class="k">void</span> solve(<span class="k">int</span> x, <span class="k">int</span> y) {
+    queue&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt; q;
+    q.push(make_pair(x, y));
+    <span class="k">while</span> (!q.empty()) {
+        x = q.front().first;
+        y = q.front().second;
+        q.pop();
+
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; 4; i++) {
+            <span class="k">int</span> x1 = x + dx[i];
+            <span class="k">int</span> y1 = y + dy[i];
+            <span class="k">if</span> (ok(x1, y1) &amp;&amp; a[x1][y1] == 0) {
+                a[x1][y1] = a[x][y] + 1;
+                q.push(make_pair(x1, y1));
+            }
+        }
+        <span class="c">// if (x + 1 &lt; n &amp;&amp; a[x + 1][y] == 0) {</span>
+        <span class="c">//     a[x + 1][y] = a[x][y] + 1;</span>
+        <span class="c">//     q.push(make_pair(x + 1, y));</span>
+        <span class="c">// }</span>
+        <span class="c">// if (x - 1 &gt;= 0 &amp;&amp; a[x - 1][y] == 0) {</span>
+        <span class="c">//     a[x - 1][y] = a[x][y] + 1;</span>
+        <span class="c">//     q.push(make_pair(x - 1, y));</span>
+        <span class="c">// }</span>
+
+        <span class="c">// if (y + 1 &lt; m &amp;&amp; a[x][y + 1] == 0) {</span>
+        <span class="c">//     a[x][y + 1] = a[x][y] + 1;</span>
+        <span class="c">//     q.push(make_pair(x, y + 1));</span>
+        <span class="c">// }</span>
+        <span class="c">// if (y - 1 &gt;= 0 &amp;&amp; a[x][y - 1] == 0) {</span>
+        <span class="c">//     a[x][y - 1] = a[x][y] + 1;</span>
+        <span class="c">//     q.push(make_pair(x, y - 1));</span>
+        <span class="c">// }</span>
+    }
+}</pre><div style="margin-top:14px"><details class="code"><summary>the full program<span class="lines">67 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;queue&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">int</span> n, m;
+<span class="k">int</span> a[100][100];
+
+<span class="k">int</span> dx[4] = {1, -1, 0,  0};
+<span class="k">int</span> dy[4] = {0,  0, 1, -1};
+
+<span class="k">bool</span> ok(<span class="k">int</span> x, <span class="k">int</span> y) {
+    <span class="k">return</span> (x &gt;= 0) &amp;&amp; (x &lt; n) &amp;&amp; (y &gt;= 0) &amp;&amp; (y &lt; m);
+}
+
+<span class="k">void</span> solve(<span class="k">int</span> x, <span class="k">int</span> y) {
+    queue&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt; q;
+    q.push(make_pair(x, y));
+    <span class="k">while</span> (!q.empty()) {
+        x = q.front().first;
+        y = q.front().second;
+        q.pop();
+
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; 4; i++) {
+            <span class="k">int</span> x1 = x + dx[i];
+            <span class="k">int</span> y1 = y + dy[i];
+            <span class="k">if</span> (ok(x1, y1) &amp;&amp; a[x1][y1] == 0) {
+                a[x1][y1] = a[x][y] + 1;
+                q.push(make_pair(x1, y1));
+            }
+        }
+        <span class="c">// if (x + 1 &lt; n &amp;&amp; a[x + 1][y] == 0) {</span>
+        <span class="c">//     a[x + 1][y] = a[x][y] + 1;</span>
+        <span class="c">//     q.push(make_pair(x + 1, y));</span>
+        <span class="c">// }</span>
+        <span class="c">// if (x - 1 &gt;= 0 &amp;&amp; a[x - 1][y] == 0) {</span>
+        <span class="c">//     a[x - 1][y] = a[x][y] + 1;</span>
+        <span class="c">//     q.push(make_pair(x - 1, y));</span>
+        <span class="c">// }</span>
+
+        <span class="c">// if (y + 1 &lt; m &amp;&amp; a[x][y + 1] == 0) {</span>
+        <span class="c">//     a[x][y + 1] = a[x][y] + 1;</span>
+        <span class="c">//     q.push(make_pair(x, y + 1));</span>
+        <span class="c">// }</span>
+        <span class="c">// if (y - 1 &gt;= 0 &amp;&amp; a[x][y - 1] == 0) {</span>
+        <span class="c">//     a[x][y - 1] = a[x][y] + 1;</span>
+        <span class="c">//     q.push(make_pair(x, y - 1));</span>
+        <span class="c">// }</span>
+    }
+}
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> x, y;
+    cin &gt;&gt; n &gt;&gt; m;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; m; j++)
+            cin &gt;&gt; a[i][j];
+    cin &gt;&gt; x &gt;&gt; y;
+    a[x][y] = 2;
+    solve(x, y);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; m; j++) 
+            cout &lt;&lt; a[i][j] &lt;&lt; <span class="s">" "</span>;
+        cout &lt;&lt; endl;
+    }
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">4 5
+0 0 0 1 0
+0 1 0 1 0
+0 1 0 0 0
+0 0 0 1 0
+0 0</pre><div class="out-lbl">output</div><pre class="out">2 3 4 1 10
+3 1 5 1 9
+4 1 6 7 8
+5 6 7 1 9</pre><p style="margin-top:12px">The same BFS with the four moves written out as four <code>if</code>s:</p><div style="margin-top:12px"><details class="code"><summary>the full program — four ifs<span class="lines">53 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;queue&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+<span class="k">int</span> a[100][100];
+<span class="k">int</span> n;
+
+<span class="k">void</span> modify(<span class="k">int</span> x, <span class="k">int</span> y) {
+    a[x][y] = 2;
+    queue&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt; q;
+    q.push(make_pair(x, y));
+    <span class="k">while</span> (!q.empty()) {
+        <span class="c">// x + 1, y</span>
+        x = q.front().first;
+        y = q.front().second;
+        <span class="c">// cout &lt;&lt; x &lt;&lt; " " &lt;&lt; y &lt;&lt; endl;</span>
+        q.pop();
+        <span class="k">if</span> (x + 1 &lt; n &amp;&amp; a[x + 1][y] == 0) {
+            q.push(make_pair(x + 1, y));
+            a[x + 1][y] = a[x][y] + 1;
+        }
+        <span class="k">if</span> (x - 1 &gt;= 0 &amp;&amp; a[x - 1][y] == 0) {
+            q.push(make_pair(x - 1, y));
+            a[x - 1][y] = a[x][y] + 1;
+        }
+        <span class="k">if</span> (y - 1 &gt;= 0 &amp;&amp; a[x][y - 1] == 0) {
+            q.push(make_pair(x, y - 1));
+            a[x][y - 1] = a[x][y] + 1;
+        }
+        <span class="k">if</span> (y + 1 &lt; n &amp;&amp; a[x][y + 1] == 0) {
+            q.push(make_pair(x, y + 1));
+            a[x][y + 1] = a[x][y] + 1;
+        }
+    }
+}
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; n;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; n; j++)
+            cin &gt;&gt; a[i][j];
+
+    <span class="k">int</span> x, y;
+    cin &gt;&gt; x &gt;&gt; y;
+    modify(x, y);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; n; j++) {
+            cout &lt;&lt; a[i][j];
+        }
+        cout &lt;&lt; endl;
+    }
+    <span class="k">return</span> 0;
+}</pre></details></div></div>
+    <div class="card pad board"><h4>Another version · knight moves</h4><p>A chessboard 8 × 8, the knight's eight moves are the edges. The start gets 1, so the answer for the target cell is its value − 1.</p><div style="margin-top:12px"></div><pre><span class="k">int</span> dx[8] = {-2, -2,  2, 2, -1, -1,  1, 1};
+<span class="k">int</span> dy[8] = {-1,  1, -1, 1, -2,  2, -2, 2};</pre><div style="margin-top:14px"><details class="code"><summary>the full program<span class="lines">51 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;queue&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">int</span> n, m;
+<span class="k">int</span> a[100][100];
+
+
+<span class="k">int</span> dx[8] = {-2, -2,  2, 2, -1, -1,  1, 1};
+<span class="k">int</span> dy[8] = {-1,  1, -1, 1, -2,  2, -2, 2};
+
+<span class="k">bool</span> ok(<span class="k">int</span> x, <span class="k">int</span> y) {
+    <span class="k">return</span> (x &gt;= 0) &amp;&amp; (x &lt; n) &amp;&amp; (y &gt;= 0) &amp;&amp; (y &lt; m);
+}
+
+<span class="k">void</span> solve(<span class="k">int</span> x, <span class="k">int</span> y) {
+    queue&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt; q;
+    q.push(make_pair(x, y));
+    <span class="k">while</span> (!q.empty()) {
+        x = q.front().first;
+        y = q.front().second;
+        q.pop();
+
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; 8; i++) {
+            <span class="k">int</span> x1 = x + dx[i];
+            <span class="k">int</span> y1 = y + dy[i];
+            <span class="k">if</span> (ok(x1, y1) &amp;&amp; a[x1][y1] == 0) {
+                a[x1][y1] = a[x][y] + 1;
+                q.push(make_pair(x1, y1));
+            }
+        }
+    }
+}
+
+<span class="k">int</span> main() {
+    n = 8;
+    m = 8;
+    <span class="k">int</span> x, y, x1, y1;
+    cin &gt;&gt; x &gt;&gt; y &gt;&gt; x1 &gt;&gt; y1;
+    a[x][y] = 1;
+    solve(x, y);
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">for</span> (<span class="k">int</span> j = 0;j &lt; m; j++) 
+            cout &lt;&lt; a[i][j] &lt;&lt; <span class="s">" "</span>;
+        cout &lt;&lt; endl;
+    }
+    cout &lt;&lt; a[x1][y1] - 1;
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">0 0 7 7</pre><div class="out-lbl">output</div><pre class="out">1 4 3 4 3 4 5 6
+4 5 2 3 4 5 4 5
+3 2 5 4 3 4 5 6
+4 3 4 3 4 5 4 5
+3 4 3 4 5 4 5 6
+4 5 4 5 4 5 6 5
+5 4 5 4 5 6 5 6
+6 5 6 5 6 5 6 7
+6</pre><p style="margin-top:12px">From one corner to the opposite one takes <strong>6</strong> moves.</p></div>
+  </div>
+</section>
+
+<section class="beat" id="b9">
+  <div class="beat-head">
+    <div class="beat-n">09</div>
+    <div>
+      <h2>BFS Time and Space Complexity</h2>
+      <div class="sub"><span>3 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Time</h4><div class="tw"><table><thead><tr><th>Representation</th><th>Time</th><th>Why</th></tr></thead><tbody><tr><td class="k">Adjacency list</td><td><span style="color:var(--prime)">O(V + E)</span></td><td>each vertex is visited once — O(V); each edge is explored once — O(E)</td></tr><tr><td class="k">Adjacency matrix</td><td><span style="color:var(--mark)">O(V²)</span></td><td>each vertex is visited once — O(V); all possible edges are checked — O(V²)</td></tr></tbody></table></div></div>
+    <div class="card pad board"><h4>Space</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Queue: O(V) in the worst case</li><li>Visited array: O(V)</li><li><strong>Total</strong>: O(V)</li></ul></div>
+  </div>
+</section>
+
+<section class="beat" id="b10">
+  <div class="beat-head">
+    <div class="beat-n">10</div>
+    <div>
+      <h2>BFS vs DFS</h2>
+      <div class="sub"><span>3 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Side by side</h4><div class="tw"><table><thead><tr><th>Feature</th><th>BFS</th><th>DFS</th></tr></thead><tbody><tr><td class="k">Data structure</td><td>queue (FIFO)</td><td>stack (LIFO) or recursion</td></tr><tr><td class="k">Traversal</td><td>level by level</td><td>depth first</td></tr><tr><td class="k">Shortest path</td><td><span style="color:var(--prime)">yes (unweighted)</span></td><td><span style="color:var(--mark)">no</span></td></tr><tr><td class="k">Space</td><td>O(V)</td><td>O(V)</td></tr><tr><td class="k">Time</td><td>O(V + E)</td><td>O(V + E)</td></tr><tr><td class="k">Use cases</td><td>shortest path, level order</td><td>cycle detection, topological sort</td></tr></tbody></table></div></div>
+  </div>
+</section>
+
+<section class="beat" id="b11">
+  <div class="beat-head">
+    <div class="beat-n">11</div>
+    <div>
+      <h2>Common Questions</h2>
+      <div class="sub"><span>5 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Q1 · When should I use an adjacency list and when a matrix?</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Adjacency list</strong>: sparse graphs (few edges), most graph algorithms</li><li><strong>Adjacency matrix</strong>: dense graphs, when you need O(1) edge lookup</li></ul></div>
+    <div class="card pad board"><h4>Q2 · Why does BFS find the shortest path?</h4><p>BFS explores vertices level by level. It visits all vertices at distance k before any vertex at distance k + 1. Therefore the first time it reaches a vertex is guaranteed to be via a shortest path.</p></div>
+    <div class="card pad board"><h4>Q3 · Can BFS work on weighted graphs?</h4><p>BFS finds the shortest path in terms of the <strong>number of edges</strong>. For weighted graphs use Dijkstra's algorithm or Bellman–Ford instead.</p></div>
+    <div class="card pad board"><h4>Q4 · What is the difference between BFS and level order traversal?</h4><p>They are essentially the same. Level order traversal is BFS that explicitly tracks the levels.</p></div>
+    <div class="card pad board"><h4>Q5 · How do I handle disconnected graphs in BFS?</h4><p>Run BFS from each unvisited vertex to explore all components.</p></div>
+  </div>
+</section>
+
+<section class="beat" id="b12">
+  <div class="beat-head">
+    <div class="beat-n">12</div>
+    <div>
+      <h2>Key Takeaways</h2>
+      <div class="sub"><span>2 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Graphs and BFS — eight things to remember</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li><strong>Graphs represent relationships</strong> — vertices and edges</li><li><strong>Many types of graphs</strong> — directed, undirected, weighted, cyclic, etc.</li><li><strong>Three main representations</strong> — adjacency matrix, adjacency list, edge list</li><li><strong>The adjacency list is the most common</strong> — space efficient for sparse graphs</li><li><strong>BFS uses a queue</strong> — explores level by level</li><li><strong>BFS finds shortest paths</strong> — in unweighted graphs</li><li><strong>BFS complexity is O(V + E)</strong> — with an adjacency list</li><li><strong>BFS has many applications</strong> — shortest path, connectivity, bipartite check</li></ol></div>
+  </div>
+</section>
+
+<section class="beat" id="b13">
+  <div class="beat-head">
+    <div class="beat-n">13</div>
+    <div>
+      <h2>Practice Problems</h2>
+      <div class="sub"><span>2 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Graphs and BFS — try these</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li>Implement all three graph representations</li><li>Find the shortest path using BFS</li><li>Check if a graph is connected</li><li>Count connected components</li><li>Check if a graph is bipartite</li><li>Find the distance between two vertices</li><li>Print all vertices at distance k from the source</li><li>Find if a path exists between two vertices</li><li>Find the diameter of a graph (the longest shortest path)</li><li>Clone a graph using BFS</li></ol></div>
+  </div>
+</section>
+
+<section class="beat" id="b14">
+  <div class="beat-head">
+    <div class="beat-n">14</div>
+    <div>
+      <h2>Introduction to Depth-First Search (DFS)</h2>
+      <div class="sub"><span>8 min</span> <span>board</span> <span>demo: grid</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li><strong>DFS</strong> goes as deep as possible along one branch, and only then backtracks and tries the next one.</li>
+        <li>BFS goes level by level; DFS goes <strong>deep</strong> first. Switch the grid demo to DFS: it runs down one corridor to the end before coming back.</li>
+        <li>DFS does <strong>not</strong> give shortest paths. What it gives is structure — components, cycles, topological order.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>DFS vs BFS</h4><div class="tw"><table><thead><tr><th>Feature</th><th>DFS</th><th>BFS</th></tr></thead><tbody><tr><td class="k">Data structure</td><td>stack (or recursion)</td><td>queue</td></tr><tr><td class="k">Traversal</td><td>depth first</td><td>level by level</td></tr><tr><td class="k">Implementation</td><td>recursion or an explicit stack</td><td>queue</td></tr><tr><td class="k">Space</td><td>O(H), H is the height</td><td>O(W), W is the width</td></tr><tr><td class="k">Shortest path</td><td><span style="color:var(--mark)">no</span></td><td><span style="color:var(--prime)">yes (unweighted)</span></td></tr><tr><td class="k">Use cases</td><td>cycle detection, topological sort, path finding</td><td>shortest path, level order</td></tr></tbody></table></div></div>
+    <div class="card pad board"><h4>DFS visualization</h4><p>Graph:</p><pre class="out">        0
+       / \
+      1   2
+     / \   \
+    3   4   5</pre><p style="margin-top:12px">DFS starting from vertex 0:</p><pre class="out">Visit order: 0 → 1 → 3 → 4 → 2 → 5
+
+Path taken:
+1. Start at 0
+2. Go to 1
+3. Go to 3
+4. Backtrack to 1
+5. Go to 4
+6. Backtrack to 0
+7. Go to 2
+8. Go to 5</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b15">
+  <div class="beat-head">
+    <div class="beat-n">15</div>
+    <div>
+      <h2>DFS Algorithm</h2>
+      <div class="sub"><span>10 min</span> <span>code</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Recursive DFS is four lines: mark the vertex, then call DFS on every unvisited neighbour.</li>
+        <li>The recursion <strong>is</strong> the stack. The iterative version keeps the stack explicitly: pop a vertex, skip it if already visited, otherwise visit it and push its neighbours.</li>
+        <li>Push the neighbours in <strong>reverse</strong> order and the iterative version visits them in the same order as the recursive one.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Recursive implementation</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">bool</span> visited[MAXN];
+<span class="k">int</span> n;
+
+<span class="k">void</span> DFS(<span class="k">int</span> v) {
+    <span class="c">// Mark current vertex as visited</span>
+    visited[v] = <span class="k">true</span>;
+    cout &lt;&lt; v &lt;&lt; <span class="s">" "</span>;
+
+    <span class="c">// Visit all neighbors</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+        <span class="k">if</span> (!visited[u]) {
+            DFS(u);
+        }
+    }
+}
+
+<span class="k">int</span> main() {
+    n = 6;
+
+    <span class="c">// Initialize visited array</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    <span class="c">// Add edges</span>
+    adj[0].push_back(1);
+    adj[1].push_back(0);
+
+    adj[0].push_back(2);
+    adj[2].push_back(0);
+
+    adj[1].push_back(3);
+    adj[3].push_back(1);
+
+    adj[1].push_back(4);
+    adj[4].push_back(1);
+
+    adj[2].push_back(5);
+    adj[5].push_back(2);
+
+    cout &lt;&lt; <span class="s">"DFS traversal: "</span>;
+    DFS(0);
+    cout &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">DFS traversal: 0 1 3 4 2 5</pre></div>
+    <div class="card pad board"><h4>Another version · recursive and iterative</h4><p>The same graph read from input, and the traversal written both ways. The iterative one marks a vertex when it is <strong>popped</strong>, so a vertex can sit on the stack twice — the <code>if (visited[v]) continue;</code> line handles that.</p><div style="margin-top:12px"></div><pre><span class="k">void</span> DFS_iterative(<span class="k">int</span> start) {
+    stack&lt;<span class="k">int</span>&gt; s;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    s.push(start);
+
+    <span class="k">while</span> (!s.empty()) {
+        <span class="k">int</span> v = s.top();
+        s.pop();
+
+        <span class="k">if</span> (visited[v])
+            continue;
+
+        visited[v] = <span class="k">true</span>;
+        cout &lt;&lt; v + 1 &lt;&lt; <span class="s">" "</span>;   <span class="c">// +1: back to the numbering of the input</span>
+
+        <span class="k">for</span> (<span class="k">int</span> i = adj[v].size() - 1; i &gt;= 0; i--) {
+            <span class="k">int</span> u = adj[v][i];
+            <span class="k">if</span> (!visited[u]) {
+                s.push(u);
+            }
+        }
+    }
+}</pre><div style="margin-top:14px"><details class="code"><summary>the full program<span class="lines">76 lines</span></summary><pre><span class="c">// Basic DFS implementation - recursive and iterative</span>
+<span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">#include</span> &lt;stack&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">bool</span> visited[MAXN];
+<span class="k">int</span> n, m;
+
+<span class="k">void</span> DFS_recursive(<span class="k">int</span> v) {
+    visited[v] = <span class="k">true</span>;
+    cout &lt;&lt; v + 1 &lt;&lt; <span class="s">" "</span>;   <span class="c">// +1: back to the numbering of the input</span>
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+        <span class="k">if</span> (!visited[u]) {
+            DFS_recursive(u);
+        }
+    }
+}
+
+<span class="k">void</span> DFS_iterative(<span class="k">int</span> start) {
+    stack&lt;<span class="k">int</span>&gt; s;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    s.push(start);
+
+    <span class="k">while</span> (!s.empty()) {
+        <span class="k">int</span> v = s.top();
+        s.pop();
+
+        <span class="k">if</span> (visited[v])
+            continue;
+
+        visited[v] = <span class="k">true</span>;
+        cout &lt;&lt; v + 1 &lt;&lt; <span class="s">" "</span>;   <span class="c">// +1: back to the numbering of the input</span>
+
+        <span class="k">for</span> (<span class="k">int</span> i = adj[v].size() - 1; i &gt;= 0; i--) {
+            <span class="k">int</span> u = adj[v][i];
+            <span class="k">if</span> (!visited[u]) {
+                s.push(u);
+            }
+        }
+    }
+}
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; n &gt;&gt; m;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
+        <span class="k">int</span> x, y;
+        cin &gt;&gt; x &gt;&gt; y;
+        x--; y--;
+        adj[x].push_back(y);
+        adj[y].push_back(x);
+    }
+
+    <span class="c">// Initialize visited</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    cout &lt;&lt; <span class="s">"DFS recursive: "</span>;
+    DFS_recursive(0);
+    cout &lt;&lt; endl;
+
+    cout &lt;&lt; <span class="s">"DFS iterative: "</span>;
+    DFS_iterative(0);
+    cout &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">7 7
+1 2
+1 3
+2 4
+2 5
+3 6
+4 7
+5 7</pre><div class="out-lbl">output</div><pre class="out">DFS recursive: 1 2 4 7 5 3 6
+DFS iterative: 1 2 4 7 5 3 6</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b16">
+  <div class="beat-head">
+    <div class="beat-n">16</div>
+    <div>
+      <h2>DFS Step-by-Step Example</h2>
+      <div class="sub"><span>8 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>The same graph as the BFS example, so the two orders can be compared: BFS gives 0 1 2 3 4, DFS gives 0 1 3 4 2.</li>
+        <li>Vertex 2 is reached through 4, not directly from 0 — by the time DFS comes back to 0, 2 is already visited.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>DFS from vertex 0</h4><p>Graph:</p><pre class="out">    0 --- 1 --- 3
+    |     |
+    2 --- 4</pre><div style="margin-top:12px"></div><pre class="out">Initial:
+  visited = [false, false, false, false, false]
+  stack (call stack) = []
+
+Step 1: Visit 0
+  visited = [true, false, false, false, false]
+  Output: 0
+  Neighbors of 0: [1, 2]
+  Call DFS(1)
+
+Step 2: Visit 1
+  visited = [true, true, false, false, false]
+  Output: 0 1
+  Neighbors of 1: [0, 3, 4]
+  0 is visited, skip
+  Call DFS(3)
+
+Step 3: Visit 3
+  visited = [true, true, false, true, false]
+  Output: 0 1 3
+  Neighbors of 3: [1]
+  1 is visited, return
+
+Step 4: Back to 1, next neighbor is 4
+  Call DFS(4)
+
+Step 5: Visit 4
+  visited = [true, true, false, true, true]
+  Output: 0 1 3 4
+  Neighbors of 4: [1, 2]
+  1 is visited, skip
+  Call DFS(2)
+
+Step 6: Visit 2
+  visited = [true, true, true, true, true]
+  Output: 0 1 3 4 2
+  Neighbors of 2: [0, 4]
+  all visited, return
+
+Final output: 0 1 3 4 2</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b17">
+  <div class="beat-head">
+    <div class="beat-n">17</div>
+    <div>
+      <h2>Application 1: Counting Connected Components</h2>
+      <div class="sub"><span>10 min</span> <span>code</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>A <strong>connected component</strong> is a maximal set of vertices where every pair is connected by a path.</li>
+        <li>Loop over all vertices; every time one is still unvisited, start DFS from it and add one to the count.</li>
+        <li>Islands on a grid are the same thing: cells with 1 are vertices, side neighbours are edges, and an island is a component.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Counting components</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">bool</span> visited[MAXN];
+<span class="k">int</span> n;
+
+<span class="k">void</span> DFS(<span class="k">int</span> v) {
+    visited[v] = <span class="k">true</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+        <span class="k">if</span> (!visited[u]) {
+            DFS(u);
+        }
+    }
+}
+
+<span class="k">int</span> countComponents() {
+    <span class="c">// Initialize visited array</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    <span class="k">int</span> components = 0;
+
+    <span class="c">// Try to start DFS from each unvisited vertex</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">if</span> (!visited[i]) {
+            DFS(i);
+            components++;
+        }
+    }
+
+    <span class="k">return</span> components;
+}
+
+<span class="k">int</span> main() {
+    n = 7;
+
+    <span class="c">// Component 1: 0-1-2</span>
+    adj[0].push_back(1);
+    adj[1].push_back(0);
+
+    adj[1].push_back(2);
+    adj[2].push_back(1);
+
+    <span class="c">// Component 2: 3-4</span>
+    adj[3].push_back(4);
+    adj[4].push_back(3);
+
+    <span class="c">// Component 3: 5-6</span>
+    adj[5].push_back(6);
+    adj[6].push_back(5);
+
+    cout &lt;&lt; <span class="s">"Number of connected components: "</span> &lt;&lt; countComponents() &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">Number of connected components: 3</pre></div>
+    <div class="card pad board"><h4>Example</h4><pre class="out">Graph:
+    0 --- 1 --- 2     3 --- 4     5 --- 6
+
+Component 1: {0, 1, 2}
+Component 2: {3, 4}
+Component 3: {5, 6}
+
+Output: 3 components</pre></div>
+    <div class="card pad board"><h4>Another version · from input</h4><details class="code"><summary>the full program<span class="lines">53 lines</span></summary><pre><span class="c">// Count connected components using DFS</span>
+<span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">bool</span> visited[MAXN];
+<span class="k">int</span> n, m;
+
+<span class="k">void</span> DFS(<span class="k">int</span> v) {
+    visited[v] = <span class="k">true</span>;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+        <span class="k">if</span> (!visited[u]) {
+            DFS(u);
+        }
+    }
+}
+
+<span class="k">int</span> countComponents() {
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    <span class="k">int</span> components = 0;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">if</span> (!visited[i]) {
+            DFS(i);
+            components++;
+        }
+    }
+
+    <span class="k">return</span> components;
+}
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; n &gt;&gt; m;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
+        <span class="k">int</span> x, y;
+        cin &gt;&gt; x &gt;&gt; y;
+        x--; y--;
+        adj[x].push_back(y);
+        adj[y].push_back(x);
+    }
+
+    cout &lt;&lt; countComponents() &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre></details><div class="out-lbl">input</div><pre class="out">7 4
+1 2
+2 3
+4 5
+6 7</pre><div class="out-lbl">output</div><pre class="out">3</pre></div>
+    <div class="card pad board"><h4>Another version · counting islands on a grid</h4><p>An island is a group of 1s connected horizontally or vertically — a connected component of the grid. Same loop, the four directions instead of an adjacency list.</p><div style="margin-top:12px"></div><pre><span class="k">int</span> dx[] = {-1, 1, 0, 0};
+<span class="k">int</span> dy[] = {0, 0, -1, 1};
+
+<span class="k">bool</span> isValid(<span class="k">int</span> x, <span class="k">int</span> y) {
+    <span class="k">return</span> x &gt;= 0 &amp;&amp; x &lt; n &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; m;
+}
+
+<span class="k">void</span> DFS(<span class="k">int</span> x, <span class="k">int</span> y) {
+    visited[x][y] = <span class="k">true</span>;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; 4; i++) {
+        <span class="k">int</span> nx = x + dx[i];
+        <span class="k">int</span> ny = y + dy[i];
+
+        <span class="k">if</span> (isValid(nx, ny) &amp;&amp; !visited[nx][ny] &amp;&amp; grid[nx][ny] == 1) {
+            DFS(nx, ny);
+        }
+    }
+}</pre><div style="margin-top:14px"><details class="code"><summary>the full program<span class="lines">63 lines</span></summary><pre><span class="c">// Count number of islands in 2D grid using DFS</span>
+<span class="c">// An island is a group of connected 1s (horizontally or vertically)</span>
+<span class="k">#include</span> &lt;iostream&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+<span class="k">int</span> grid[MAXN][MAXN];
+<span class="k">bool</span> visited[MAXN][MAXN];
+<span class="k">int</span> n, m;
+
+<span class="k">int</span> dx[] = {-1, 1, 0, 0};
+<span class="k">int</span> dy[] = {0, 0, -1, 1};
+
+<span class="k">bool</span> isValid(<span class="k">int</span> x, <span class="k">int</span> y) {
+    <span class="k">return</span> x &gt;= 0 &amp;&amp; x &lt; n &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; m;
+}
+
+<span class="k">void</span> DFS(<span class="k">int</span> x, <span class="k">int</span> y) {
+    visited[x][y] = <span class="k">true</span>;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; 4; i++) {
+        <span class="k">int</span> nx = x + dx[i];
+        <span class="k">int</span> ny = y + dy[i];
+
+        <span class="k">if</span> (isValid(nx, ny) &amp;&amp; !visited[nx][ny] &amp;&amp; grid[nx][ny] == 1) {
+            DFS(nx, ny);
+        }
+    }
+}
+
+<span class="k">int</span> countIslands() {
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; m; j++)
+            visited[i][j] = <span class="k">false</span>;
+
+    <span class="k">int</span> islands = 0;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; m; j++) {
+            <span class="k">if</span> (grid[i][j] == 1 &amp;&amp; !visited[i][j]) {
+                DFS(i, j);
+                islands++;
+            }
+        }
+    }
+
+    <span class="k">return</span> islands;
+}
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; n &gt;&gt; m;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; m; j++) {
+            cin &gt;&gt; grid[i][j];
+        }
+    }
+
+    cout &lt;&lt; countIslands() &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">5 5
+1 1 0 0 0
+1 1 0 0 1
+0 0 0 1 1
+0 0 0 0 0
+1 0 1 0 1</pre><div class="out-lbl">output</div><pre class="out">5</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b18">
+  <div class="beat-head">
+    <div class="beat-n">18</div>
+    <div>
+      <h2>Application 2: Checking if Graph is Bipartite</h2>
+      <div class="sub"><span>8 min</span> <span>code</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>A <strong>bipartite</strong> graph can be coloured with 2 colours so that no two adjacent vertices have the same colour.</li>
+        <li>DFS colours every new vertex with the opposite colour, <code>3 − c</code>. A neighbour that already has colour c means "not bipartite".</li>
+        <li>The outer loop starts from every uncoloured vertex, so every component is checked.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Two colours by DFS</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">int</span> color[MAXN];  <span class="c">// 0 = uncolored, 1 = color1, 2 = color2</span>
+<span class="k">int</span> n;
+
+<span class="k">bool</span> DFS_bipartite(<span class="k">int</span> v, <span class="k">int</span> c) {
+    color[v] = c;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+
+        <span class="k">if</span> (color[u] == 0) {
+            <span class="c">// Not colored yet, color with opposite color</span>
+            <span class="k">if</span> (!DFS_bipartite(u, 3 - c))  <span class="c">// 3-1=2, 3-2=1</span>
+                <span class="k">return</span> <span class="k">false</span>;
+        }
+        <span class="k">else</span> <span class="k">if</span> (color[u] == c) {
+            <span class="c">// Same color as current vertex - not bipartite</span>
+            <span class="k">return</span> <span class="k">false</span>;
+        }
+    }
+
+    <span class="k">return</span> <span class="k">true</span>;
+}
+
+<span class="k">bool</span> isBipartite() {
+    <span class="c">// Initialize color array</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        color[i] = 0;
+
+    <span class="c">// Check all components</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">if</span> (color[i] == 0) {
+            <span class="k">if</span> (!DFS_bipartite(i, 1))
+                <span class="k">return</span> <span class="k">false</span>;
+        }
+    }
+
+    <span class="k">return</span> <span class="k">true</span>;
+}
+
+<span class="k">int</span> main() {
+    <span class="c">// Example 1: Bipartite graph</span>
+    n = 4;
+    adj[0].push_back(1);
+    adj[1].push_back(0);
+
+    adj[0].push_back(3);
+    adj[3].push_back(0);
+
+    adj[2].push_back(1);
+    adj[1].push_back(2);
+
+    adj[2].push_back(3);
+    adj[3].push_back(2);
+
+    cout &lt;&lt; <span class="s">"Graph 1 is "</span>;
+    <span class="k">if</span> (isBipartite())
+        cout &lt;&lt; <span class="s">"bipartite"</span> &lt;&lt; endl;
+    <span class="k">else</span>
+        cout &lt;&lt; <span class="s">"NOT bipartite"</span> &lt;&lt; endl;
+
+    <span class="c">// Example 2: Not bipartite (triangle)</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; MAXN; i++)
+        adj[i].clear();
+
+    n = 3;
+    adj[0].push_back(1);
+    adj[1].push_back(0);
+
+    adj[1].push_back(2);
+    adj[2].push_back(1);
+
+    adj[2].push_back(0);
+    adj[0].push_back(2);
+
+    cout &lt;&lt; <span class="s">"Graph 2 (triangle) is "</span>;
+    <span class="k">if</span> (isBipartite())
+        cout &lt;&lt; <span class="s">"bipartite"</span> &lt;&lt; endl;
+    <span class="k">else</span>
+        cout &lt;&lt; <span class="s">"NOT bipartite"</span> &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">Graph 1 is bipartite
+Graph 2 (triangle) is NOT bipartite</pre></div>
+    <div class="card pad board"><h4>Key idea</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Try to colour the graph with 2 colours using DFS</li><li>If the whole graph can be coloured without conflicts, it is bipartite</li><li>If two adjacent vertices get the same colour, it is NOT bipartite</li></ul></div>
+    <div class="card pad board"><h4>Another version · from input</h4><details class="code"><summary>the full program<span class="lines">61 lines</span></summary><pre><span class="c">// Check if graph is bipartite using DFS</span>
+<span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">int</span> color[MAXN];
+<span class="k">int</span> n, m;
+
+<span class="k">bool</span> DFS_bipartite(<span class="k">int</span> v, <span class="k">int</span> c) {
+    color[v] = c;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+
+        <span class="k">if</span> (color[u] == 0) {
+            <span class="k">if</span> (!DFS_bipartite(u, 3 - c))
+                <span class="k">return</span> <span class="k">false</span>;
+        }
+        <span class="k">else</span> <span class="k">if</span> (color[u] == c) {
+            <span class="k">return</span> <span class="k">false</span>;
+        }
+    }
+
+    <span class="k">return</span> <span class="k">true</span>;
+}
+
+<span class="k">bool</span> isBipartite() {
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        color[i] = 0;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">if</span> (color[i] == 0) {
+            <span class="k">if</span> (!DFS_bipartite(i, 1))
+                <span class="k">return</span> <span class="k">false</span>;
+        }
+    }
+
+    <span class="k">return</span> <span class="k">true</span>;
+}
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; n &gt;&gt; m;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
+        <span class="k">int</span> x, y;
+        cin &gt;&gt; x &gt;&gt; y;
+        x--; y--;
+        adj[x].push_back(y);
+        adj[y].push_back(x);
+    }
+
+    <span class="k">if</span> (isBipartite())
+        cout &lt;&lt; <span class="s">"YES"</span> &lt;&lt; endl;
+    <span class="k">else</span>
+        cout &lt;&lt; <span class="s">"NO"</span> &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre></details><div class="out-lbl">input</div><pre class="out">4 4
+1 2
+1 4
+2 3
+3 4</pre><div class="out-lbl">output</div><pre class="out">YES</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b19">
+  <div class="beat-head">
+    <div class="beat-n">19</div>
+    <div>
+      <h2>Application 3: Cycle Detection</h2>
+      <div class="sub"><span>12 min</span> <span>code</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li><strong>Undirected</strong>: during DFS, an edge to a visited vertex that is <strong>not the parent</strong> closes a cycle. The parent does not count — that is the edge we came by.</li>
+        <li><strong>Directed</strong>: an edge to a visited vertex is a cycle only if that vertex is still <strong>on the current path</strong> — <code>recStack</code>. A vertex that is already finished is not a cycle.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Cycle detection in an undirected graph</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">bool</span> visited[MAXN];
+<span class="k">int</span> n;
+
+<span class="k">bool</span> DFS_cycle(<span class="k">int</span> v, <span class="k">int</span> parent) {
+    visited[v] = <span class="k">true</span>;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+
+        <span class="k">if</span> (!visited[u]) {
+            <span class="k">if</span> (DFS_cycle(u, v))
+                <span class="k">return</span> <span class="k">true</span>;
+        }
+        <span class="k">else</span> <span class="k">if</span> (u != parent) {
+            <span class="c">// Visited vertex that is not parent = cycle found</span>
+            <span class="k">return</span> <span class="k">true</span>;
+        }
+    }
+
+    <span class="k">return</span> <span class="k">false</span>;
+}
+
+<span class="k">bool</span> hasCycle() {
+    <span class="c">// Initialize visited array</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    <span class="c">// Check all components</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">if</span> (!visited[i]) {
+            <span class="k">if</span> (DFS_cycle(i, -1))
+                <span class="k">return</span> <span class="k">true</span>;
+        }
+    }
+
+    <span class="k">return</span> <span class="k">false</span>;
+}
+
+<span class="k">int</span> main() {
+    <span class="c">// Example 1: Graph with cycle</span>
+    n = 4;
+    adj[0].push_back(1);
+    adj[1].push_back(0);
+
+    adj[1].push_back(2);
+    adj[2].push_back(1);
+
+    adj[2].push_back(3);
+    adj[3].push_back(2);
+
+    adj[3].push_back(0);
+    adj[0].push_back(3);
+
+    cout &lt;&lt; <span class="s">"Graph "</span>;
+    <span class="k">if</span> (hasCycle())
+        cout &lt;&lt; <span class="s">"has a cycle"</span> &lt;&lt; endl;
+    <span class="k">else</span>
+        cout &lt;&lt; <span class="s">"does NOT have a cycle"</span> &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">Graph has a cycle</pre></div>
+    <div class="card pad board"><h4>Cycle detection in a directed graph</h4><p>For directed graphs we track the vertices on the current path:</p><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">bool</span> visited[MAXN];
+<span class="k">bool</span> recStack[MAXN];  <span class="c">// Vertices in current recursion stack</span>
+<span class="k">int</span> n;
+
+<span class="k">bool</span> DFS_cycle_directed(<span class="k">int</span> v) {
+    visited[v] = <span class="k">true</span>;
+    recStack[v] = <span class="k">true</span>;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+
+        <span class="k">if</span> (!visited[u]) {
+            <span class="k">if</span> (DFS_cycle_directed(u))
+                <span class="k">return</span> <span class="k">true</span>;
+        }
+        <span class="k">else</span> <span class="k">if</span> (recStack[u]) {
+            <span class="c">// Found back edge to vertex in current path</span>
+            <span class="k">return</span> <span class="k">true</span>;
+        }
+    }
+
+    recStack[v] = <span class="k">false</span>;
+    <span class="k">return</span> <span class="k">false</span>;
+}
+
+<span class="k">bool</span> hasCycleDirected() {
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        visited[i] = <span class="k">false</span>;
+        recStack[i] = <span class="k">false</span>;
+    }
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">if</span> (!visited[i]) {
+            <span class="k">if</span> (DFS_cycle_directed(i))
+                <span class="k">return</span> <span class="k">true</span>;
+        }
+    }
+
+    <span class="k">return</span> <span class="k">false</span>;
+}
+
+<span class="k">int</span> main() {
+    n = 4;
+
+    <span class="c">// Directed edges</span>
+    adj[0].push_back(1);
+    adj[1].push_back(2);
+    adj[2].push_back(3);
+    adj[3].push_back(1);  <span class="c">// Creates cycle: 1 -&gt; 2 -&gt; 3 -&gt; 1</span>
+
+    cout &lt;&lt; <span class="s">"Directed graph "</span>;
+    <span class="k">if</span> (hasCycleDirected())
+        cout &lt;&lt; <span class="s">"has a cycle"</span> &lt;&lt; endl;
+    <span class="k">else</span>
+        cout &lt;&lt; <span class="s">"does NOT have a cycle"</span> &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">Directed graph has a cycle</pre></div>
+    <div class="card pad board"><h4>Another version · from input</h4><p>Undirected:</p><details class="code"><summary>the full program — undirected<span class="lines">61 lines</span></summary><pre><span class="c">// Cycle detection in undirected graph using DFS</span>
+<span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">bool</span> visited[MAXN];
+<span class="k">int</span> n, m;
+
+<span class="k">bool</span> DFS_cycle(<span class="k">int</span> v, <span class="k">int</span> parent) {
+    visited[v] = <span class="k">true</span>;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+
+        <span class="k">if</span> (!visited[u]) {
+            <span class="k">if</span> (DFS_cycle(u, v))
+                <span class="k">return</span> <span class="k">true</span>;
+        }
+        <span class="k">else</span> <span class="k">if</span> (u != parent) {
+            <span class="k">return</span> <span class="k">true</span>;
+        }
+    }
+
+    <span class="k">return</span> <span class="k">false</span>;
+}
+
+<span class="k">bool</span> hasCycle() {
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">if</span> (!visited[i]) {
+            <span class="k">if</span> (DFS_cycle(i, -1))
+                <span class="k">return</span> <span class="k">true</span>;
+        }
+    }
+
+    <span class="k">return</span> <span class="k">false</span>;
+}
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; n &gt;&gt; m;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
+        <span class="k">int</span> x, y;
+        cin &gt;&gt; x &gt;&gt; y;
+        x--; y--;
+        adj[x].push_back(y);
+        adj[y].push_back(x);
+    }
+
+    <span class="k">if</span> (hasCycle())
+        cout &lt;&lt; <span class="s">"Cycle found"</span> &lt;&lt; endl;
+    <span class="k">else</span>
+        cout &lt;&lt; <span class="s">"No cycle"</span> &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre></details><div class="out-lbl">input</div><pre class="out">7 7
+1 2
+1 3
+2 4
+2 5
+3 6
+4 7
+5 7</pre><div class="out-lbl">output</div><pre class="out">Cycle found</pre><p style="margin-top:14px">Directed — on a DAG, so the answer is "no cycle":</p><details class="code"><summary>the full program — directed<span class="lines">66 lines</span></summary><pre><span class="c">// Cycle detection in directed graph using DFS</span>
+<span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">bool</span> visited[MAXN];
+<span class="k">bool</span> recStack[MAXN];
+<span class="k">int</span> n, m;
+
+<span class="k">bool</span> DFS_cycle_directed(<span class="k">int</span> v) {
+    visited[v] = <span class="k">true</span>;
+    recStack[v] = <span class="k">true</span>;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+
+        <span class="k">if</span> (!visited[u]) {
+            <span class="k">if</span> (DFS_cycle_directed(u))
+                <span class="k">return</span> <span class="k">true</span>;
+        }
+        <span class="k">else</span> <span class="k">if</span> (recStack[u]) {
+            <span class="k">return</span> <span class="k">true</span>;
+        }
+    }
+
+    recStack[v] = <span class="k">false</span>;
+    <span class="k">return</span> <span class="k">false</span>;
+}
+
+<span class="k">bool</span> hasCycleDirected() {
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        visited[i] = <span class="k">false</span>;
+        recStack[i] = <span class="k">false</span>;
+    }
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">if</span> (!visited[i]) {
+            <span class="k">if</span> (DFS_cycle_directed(i))
+                <span class="k">return</span> <span class="k">true</span>;
+        }
+    }
+
+    <span class="k">return</span> <span class="k">false</span>;
+}
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; n &gt;&gt; m;
+
+    <span class="c">// Directed edges</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
+        <span class="k">int</span> x, y;
+        cin &gt;&gt; x &gt;&gt; y;
+        x--; y--;
+        adj[x].push_back(y);
+    }
+
+    <span class="k">if</span> (hasCycleDirected())
+        cout &lt;&lt; <span class="s">"Cycle found"</span> &lt;&lt; endl;
+    <span class="k">else</span>
+        cout &lt;&lt; <span class="s">"No cycle (DAG)"</span> &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre></details><div class="out-lbl">input</div><pre class="out">6 6
+6 3
+6 1
+5 1
+5 2
+3 4
+4 2</pre><div class="out-lbl">output</div><pre class="out">No cycle (DAG)</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b20">
+  <div class="beat-head">
+    <div class="beat-n">20</div>
+    <div>
+      <h2>Application 4: Topological Sort</h2>
+      <div class="sub"><span>14 min</span> <span>code</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>A <strong>topological order</strong> of a DAG lists the vertices so that every edge (u, v) has u before v.</li>
+        <li>DFS gives it for free: push a vertex <strong>after</strong> all its descendants are processed. The stack, read from the top, is the order.</li>
+        <li>Only DAGs have one — a cycle makes it impossible. And there can be several valid orders.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Applications of topological sort</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Task scheduling</strong> with dependencies</li><li><strong>Course prerequisites</strong></li><li><strong>Build systems</strong> (compile order)</li><li><strong>Package dependency resolution</strong></li></ul></div>
+    <div class="card pad board"><h4>Example</h4><pre class="out">Task dependencies:
+A → B (A must be done before B)
+A → C
+B → D
+C → D
+
+One valid topological order: A, B, C, D
+Another valid order: A, C, B, D</pre></div>
+    <div class="card pad board"><h4>DFS-based topological sort</h4><p><strong>Key idea:</strong> use DFS and add a vertex to the result when all its descendants are processed (post-order).</p><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">#include</span> &lt;stack&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">bool</span> visited[MAXN];
+stack&lt;<span class="k">int</span>&gt; result;
+<span class="k">int</span> n;
+
+<span class="k">void</span> DFS_topo(<span class="k">int</span> v) {
+    visited[v] = <span class="k">true</span>;
+
+    <span class="c">// Visit all neighbors first</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+        <span class="k">if</span> (!visited[u]) {
+            DFS_topo(u);
+        }
+    }
+
+    <span class="c">// Add current vertex to stack after visiting all descendants</span>
+    result.push(v);
+}
+
+<span class="k">void</span> topologicalSort() {
+    <span class="c">// Initialize</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    <span class="c">// Process all vertices</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">if</span> (!visited[i]) {
+            DFS_topo(i);
+        }
+    }
+
+    <span class="c">// Print result</span>
+    cout &lt;&lt; <span class="s">"Topological order: "</span>;
+    <span class="k">while</span> (!result.empty()) {
+        cout &lt;&lt; result.top() &lt;&lt; <span class="s">" "</span>;
+        result.pop();
+    }
+    cout &lt;&lt; endl;
+}
+
+<span class="k">int</span> main() {
+    n = 6;
+
+    <span class="c">// DAG example</span>
+    adj[5].push_back(2);
+    adj[5].push_back(0);
+    adj[4].push_back(0);
+    adj[4].push_back(1);
+    adj[2].push_back(3);
+    adj[3].push_back(1);
+
+    cout &lt;&lt; <span class="s">"Graph (directed):"</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"5 -&gt; 2, 0"</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"4 -&gt; 0, 1"</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"2 -&gt; 3"</span> &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"3 -&gt; 1"</span> &lt;&lt; endl;
+    cout &lt;&lt; endl;
+
+    topologicalSort();
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">Graph (directed):
+5 -&gt; 2, 0
+4 -&gt; 0, 1
+2 -&gt; 3
+3 -&gt; 1
+
+Topological order: 5 4 2 3 1 0</pre><p style="margin-top:12px"><strong>Output:</strong> <span class="mono">5 4 2 3 1 0</span> — one possible topological order.</p></div>
+    <div class="card pad board"><h4>Topological sort algorithm steps</h4><pre class="out">1. Initialize all vertices as unvisited
+2. For each unvisited vertex v:
+   a. Call DFS(v)
+   b. In DFS, visit all descendants first (recursively)
+   c. After visiting all descendants, push v to stack
+3. The stack contains topological order (top to bottom)</pre></div>
+    <div class="card pad board"><h4>Important notes</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Topological sort only works on <strong>Directed Acyclic Graphs (DAG)</strong></li><li>If the graph has a cycle, topological sort is not possible</li><li>There can be <strong>multiple valid</strong> topological orderings</li><li>Time complexity: <strong>O(V + E)</strong></li></ul></div>
+    <div class="card pad board"><h4>Another version · from input</h4><p>The same DAG, vertices numbered from 1 — the order is printed with + 1.</p><details class="code"><summary>the full program<span class="lines">58 lines</span></summary><pre><span class="c">// Topological sort using DFS</span>
+<span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">#include</span> &lt;stack&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">bool</span> visited[MAXN];
+stack&lt;<span class="k">int</span>&gt; result;
+<span class="k">int</span> n, m;
+
+<span class="k">void</span> DFS_topo(<span class="k">int</span> v) {
+    visited[v] = <span class="k">true</span>;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+        <span class="k">if</span> (!visited[u]) {
+            DFS_topo(u);
+        }
+    }
+
+    result.push(v);
+}
+
+<span class="k">void</span> topologicalSort() {
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">if</span> (!visited[i]) {
+            DFS_topo(i);
+        }
+    }
+
+    <span class="k">while</span> (!result.empty()) {
+        cout &lt;&lt; result.top() + 1 &lt;&lt; <span class="s">" "</span>;
+        result.pop();
+    }
+    cout &lt;&lt; endl;
+}
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; n &gt;&gt; m;
+
+    <span class="c">// Directed graph</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
+        <span class="k">int</span> x, y;
+        cin &gt;&gt; x &gt;&gt; y;
+        x--; y--;
+        adj[x].push_back(y);
+    }
+
+    topologicalSort();
+
+    <span class="k">return</span> 0;
+}</pre></details><div class="out-lbl">input</div><pre class="out">6 6
+6 3
+6 1
+5 1
+5 2
+3 4
+4 2</pre><div class="out-lbl">output</div><pre class="out">6 5 3 4 2 1</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b21">
+  <div class="beat-head">
+    <div class="beat-n">21</div>
+    <div>
+      <h2>Application 5: Finding Paths</h2>
+      <div class="sub"><span>8 min</span> <span>code</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>To check whether a path exists: DFS from the start and stop as soon as the target is reached.</li>
+        <li>To print it: push each vertex onto <code>path</code> on the way in, and pop it on the way out if the target was not found below it.</li>
+        <li>DFS finds <strong>a</strong> path, not the shortest — from 3 to 5 it goes 3 → 1 → 0 → 2 → 5.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Find if a path exists</h4><pre><span class="k">bool</span> DFS_path(<span class="k">int</span> v, <span class="k">int</span> target);   <span class="c">// added: declared before hasPath uses it</span>
+
+<span class="k">bool</span> hasPath(<span class="k">int</span> start, <span class="k">int</span> end) {
+    <span class="c">// Initialize visited array</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    <span class="k">return</span> DFS_path(start, end);
+}
+
+<span class="k">bool</span> DFS_path(<span class="k">int</span> v, <span class="k">int</span> target) {
+    <span class="k">if</span> (v == target)
+        <span class="k">return</span> <span class="k">true</span>;
+
+    visited[v] = <span class="k">true</span>;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+        <span class="k">if</span> (!visited[u]) {
+            <span class="k">if</span> (DFS_path(u, target))
+                <span class="k">return</span> <span class="k">true</span>;
+        }
+    }
+
+    <span class="k">return</span> <span class="k">false</span>;
+}</pre></div>
+    <div class="card pad board"><h4>Find and print the path</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">bool</span> visited[MAXN];
+vector&lt;<span class="k">int</span>&gt; path;
+<span class="k">int</span> n;
+
+<span class="k">bool</span> DFS_printPath(<span class="k">int</span> v, <span class="k">int</span> target) {
+    visited[v] = <span class="k">true</span>;
+    path.push_back(v);
+
+    <span class="k">if</span> (v == target) {
+        <span class="k">return</span> <span class="k">true</span>;
+    }
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+        <span class="k">if</span> (!visited[u]) {
+            <span class="k">if</span> (DFS_printPath(u, target))
+                <span class="k">return</span> <span class="k">true</span>;
+        }
+    }
+
+    <span class="c">// Backtrack</span>
+    path.pop_back();
+    <span class="k">return</span> <span class="k">false</span>;
+}
+
+<span class="k">void</span> findPath(<span class="k">int</span> start, <span class="k">int</span> end) {
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    path.clear();
+
+    <span class="k">if</span> (DFS_printPath(start, end)) {
+        cout &lt;&lt; <span class="s">"Path from "</span> &lt;&lt; start &lt;&lt; <span class="s">" to "</span> &lt;&lt; end &lt;&lt; <span class="s">": "</span>;
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; path.size(); i++) {
+            cout &lt;&lt; path[i];
+            <span class="k">if</span> (i &lt; path.size() - 1)
+                cout &lt;&lt; <span class="s">" -&gt; "</span>;
+        }
+        cout &lt;&lt; endl;
+    } <span class="k">else</span> {
+        cout &lt;&lt; <span class="s">"No path exists"</span> &lt;&lt; endl;
+    }
+}
+
+<span class="k">int</span> main() {
+    n = 6;
+
+    <span class="c">// Add edges</span>
+    adj[0].push_back(1);
+    adj[1].push_back(0);
+    adj[0].push_back(2);
+    adj[2].push_back(0);
+    adj[1].push_back(3);
+    adj[3].push_back(1);
+    adj[1].push_back(4);
+    adj[4].push_back(1);
+    adj[2].push_back(5);
+    adj[5].push_back(2);
+
+    findPath(0, 5);
+    findPath(3, 5);
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">Path from 0 to 5: 0 -&gt; 2 -&gt; 5
+Path from 3 to 5: 3 -&gt; 1 -&gt; 0 -&gt; 2 -&gt; 5</pre></div>
+    <div class="card pad board"><h4>Another version · from input</h4><p>The graph from the DFS example, path from 4 to 6.</p><details class="code"><summary>the full program<span class="lines">70 lines</span></summary><pre><span class="c">// Find path between two vertices using DFS</span>
+<span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">bool</span> visited[MAXN];
+vector&lt;<span class="k">int</span>&gt; path;
+<span class="k">int</span> n, m;
+
+<span class="k">bool</span> DFS_path(<span class="k">int</span> v, <span class="k">int</span> target) {
+    visited[v] = <span class="k">true</span>;
+    path.push_back(v);
+
+    <span class="k">if</span> (v == target) {
+        <span class="k">return</span> <span class="k">true</span>;
+    }
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+        <span class="k">if</span> (!visited[u]) {
+            <span class="k">if</span> (DFS_path(u, target))
+                <span class="k">return</span> <span class="k">true</span>;
+        }
+    }
+
+    path.pop_back();
+    <span class="k">return</span> <span class="k">false</span>;
+}
+
+<span class="k">void</span> findPath(<span class="k">int</span> start, <span class="k">int</span> end) {
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    path.clear();
+
+    <span class="k">if</span> (DFS_path(start, end)) {
+        cout &lt;&lt; <span class="s">"Path: "</span>;
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; path.size(); i++) {
+            cout &lt;&lt; path[i] + 1;
+            <span class="k">if</span> (i &lt; path.size() - 1)
+                cout &lt;&lt; <span class="s">" -&gt; "</span>;
+        }
+        cout &lt;&lt; endl;
+    } <span class="k">else</span> {
+        cout &lt;&lt; <span class="s">"No path"</span> &lt;&lt; endl;
+    }
+}
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; n &gt;&gt; m;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
+        <span class="k">int</span> x, y;
+        cin &gt;&gt; x &gt;&gt; y;
+        x--; y--;
+        adj[x].push_back(y);
+        adj[y].push_back(x);
+    }
+
+    <span class="k">int</span> start, end;
+    cin &gt;&gt; start &gt;&gt; end;
+    start--; end--;
+
+    findPath(start, end);
+
+    <span class="k">return</span> 0;
+}</pre></details><div class="out-lbl">input</div><pre class="out">7 7
+1 2
+1 3
+2 4
+2 5
+3 6
+4 7
+5 7
+4 6</pre><div class="out-lbl">output</div><pre class="out">Path: 4 -&gt; 2 -&gt; 1 -&gt; 3 -&gt; 6</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b22">
+  <div class="beat-head">
+    <div class="beat-n">22</div>
+    <div>
+      <h2>Application 6: Finding Strongly Connected Components (SCC)</h2>
+      <div class="sub"><span>10 min</span> <span>code</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>A <strong>strongly connected component</strong> of a directed graph is a maximal set of vertices where every vertex is reachable from every other.</li>
+        <li><strong>Kosaraju</strong>: two DFS passes. The first records the finish order; the second runs on the <strong>reversed</strong> graph, taking vertices from the latest finished — each run collects one SCC.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Kosaraju's algorithm</h4><details class="code"><summary>Kosaraju — the full program<span class="lines">90 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">#include</span> &lt;stack&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+vector&lt;<span class="k">int</span>&gt; adj_rev[MAXN];  <span class="c">// Reversed graph</span>
+<span class="k">bool</span> visited[MAXN];
+stack&lt;<span class="k">int</span>&gt; finishOrder;
+<span class="k">int</span> n;
+
+<span class="k">void</span> DFS1(<span class="k">int</span> v) {
+    visited[v] = <span class="k">true</span>;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+        <span class="k">if</span> (!visited[u])
+            DFS1(u);
+    }
+
+    finishOrder.push(v);
+}
+
+<span class="k">void</span> DFS2(<span class="k">int</span> v, vector&lt;<span class="k">int</span>&gt;&amp; component) {
+    visited[v] = <span class="k">true</span>;
+    component.push_back(v);
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj_rev[v].size(); i++) {
+        <span class="k">int</span> u = adj_rev[v][i];
+        <span class="k">if</span> (!visited[u])
+            DFS2(u, component);
+    }
+}
+
+<span class="k">void</span> findSCC() {
+    <span class="c">// Step 1: Do DFS and fill finish order</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">if</span> (!visited[i])
+            DFS1(i);
+    }
+
+    <span class="c">// Step 2: Do DFS on reversed graph in order of finish time</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        visited[i] = <span class="k">false</span>;
+
+    <span class="k">int</span> sccCount = 0;
+    <span class="k">while</span> (!finishOrder.empty()) {
+        <span class="k">int</span> v = finishOrder.top();
+        finishOrder.pop();
+
+        <span class="k">if</span> (!visited[v]) {
+            vector&lt;<span class="k">int</span>&gt; component;
+            DFS2(v, component);
+
+            sccCount++;
+            cout &lt;&lt; <span class="s">"SCC "</span> &lt;&lt; sccCount &lt;&lt; <span class="s">": "</span>;
+            <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; component.size(); i++) {
+                cout &lt;&lt; component[i] &lt;&lt; <span class="s">" "</span>;
+            }
+            cout &lt;&lt; endl;
+        }
+    }
+}
+
+<span class="k">int</span> main() {
+    n = 5;
+
+    <span class="c">// Add directed edges</span>
+    adj[0].push_back(1);
+    adj[1].push_back(2);
+    adj[2].push_back(0);
+    adj[1].push_back(3);
+    adj[3].push_back(4);
+
+    <span class="c">// Create reversed graph</span>
+    <span class="k">for</span> (<span class="k">int</span> v = 0; v &lt; n; v++) {
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+            <span class="k">int</span> u = adj[v][i];
+            adj_rev[u].push_back(v);
+        }
+    }
+
+    findSCC();
+
+    <span class="k">return</span> 0;
+}</pre></details><div class="out-lbl">output</div><pre class="out">SCC 1: 0 2 1
+SCC 2: 3
+SCC 3: 4</pre><p style="margin-top:12px">0 → 1 → 2 → 0 is a cycle, so {0, 1, 2} is one component; 3 and 4 are reachable from it but cannot get back, so each is a component on its own.</p></div>
+  </div>
+</section>
+
+<section class="beat" id="b23">
+  <div class="beat-head">
+    <div class="beat-n">23</div>
+    <div>
+      <h2>Application 7: Bridges and Articulation Points</h2>
+      <div class="sub"><span>10 min</span> <span>code</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>A <strong>bridge</strong> is an edge whose removal increases the number of connected components.</li>
+        <li><code>disc[v]</code> is when DFS discovered v; <code>low[v]</code> is the earliest discovery time reachable from v's subtree using one back edge.</li>
+        <li>The edge v — u is a bridge when <code>low[u] &gt; disc[v]</code>: nothing below u can get back above v without that edge.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Bridge (cut edge)</h4><p>An edge whose removal increases the number of connected components.</p><details class="code"><summary>Bridges — the full program<span class="lines">72 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">bool</span> visited[MAXN];
+<span class="k">int</span> disc[MAXN];  <span class="c">// Discovery time</span>
+<span class="k">int</span> low[MAXN];   <span class="c">// Lowest discovery time reachable</span>
+<span class="k">int</span> timer = 0;
+<span class="k">int</span> n;
+
+<span class="k">void</span> DFS_bridge(<span class="k">int</span> v, <span class="k">int</span> parent) {
+    visited[v] = <span class="k">true</span>;
+    disc[v] = low[v] = timer++;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+
+        <span class="k">if</span> (u == parent)
+            continue;
+
+        <span class="k">if</span> (visited[u]) {
+            low[v] = min(low[v], disc[u]);
+        } <span class="k">else</span> {
+            DFS_bridge(u, v);
+            low[v] = min(low[v], low[u]);
+
+            <span class="c">// If lowest reachable from u is higher than disc[v],</span>
+            <span class="c">// then v-u is a bridge</span>
+            <span class="k">if</span> (low[u] &gt; disc[v]) {
+                cout &lt;&lt; <span class="s">"Bridge: "</span> &lt;&lt; v &lt;&lt; <span class="s">" - "</span> &lt;&lt; u &lt;&lt; endl;
+            }
+        }
+    }
+}
+
+<span class="k">void</span> findBridges() {
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        visited[i] = <span class="k">false</span>;
+        disc[i] = -1;
+        low[i] = -1;
+    }
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">if</span> (!visited[i])
+            DFS_bridge(i, -1);
+    }
+}
+
+<span class="k">int</span> main() {
+    n = 5;
+
+    adj[0].push_back(1);
+    adj[1].push_back(0);
+
+    adj[1].push_back(2);
+    adj[2].push_back(1);
+
+    adj[2].push_back(0);
+    adj[0].push_back(2);
+
+    adj[1].push_back(3);
+    adj[3].push_back(1);
+
+    adj[3].push_back(4);
+    adj[4].push_back(3);
+
+    findBridges();
+
+    <span class="k">return</span> 0;
+}</pre></details><div class="out-lbl">output</div><pre class="out">Bridge: 3 - 4
+Bridge: 1 - 3</pre><p style="margin-top:12px">The triangle 0 — 1 — 2 has no bridges: removing any one of its edges leaves the other two. The edges 1 — 3 and 3 — 4 are both bridges.</p></div>
+  </div>
+</section>
+
+<section class="beat" id="b24">
+  <div class="beat-head">
+    <div class="beat-n">24</div>
+    <div>
+      <h2>DFS Time and Space Complexity</h2>
+      <div class="sub"><span>3 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Time</h4><div class="tw"><table><thead><tr><th>Representation</th><th>Time</th><th>Why</th></tr></thead><tbody><tr><td class="k">Adjacency list</td><td><span style="color:var(--prime)">O(V + E)</span></td><td>each vertex is visited once — O(V); each edge is explored once — O(E)</td></tr><tr><td class="k">Adjacency matrix</td><td><span style="color:var(--mark)">O(V²)</span></td><td>the whole row of every vertex is scanned</td></tr></tbody></table></div></div>
+    <div class="card pad board"><h4>Space</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Recursive</strong>: O(V) for the recursion stack + O(V) for the visited array = O(V)</li><li><strong>Iterative</strong>: O(V) for the explicit stack + O(V) for the visited array = O(V)</li></ul></div>
+  </div>
+</section>
+
+<section class="beat" id="b25">
+  <div class="beat-head">
+    <div class="beat-n">25</div>
+    <div>
+      <h2>Summary of DFS Applications</h2>
+      <div class="sub"><span>3 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Everything above, one line each</h4><div class="tw"><table><thead><tr><th>Application</th><th>Use case</th><th>Time</th></tr></thead><tbody><tr><td class="k">Traversal</td><td>visit all vertices</td><td>O(V + E)</td></tr><tr><td class="k">Connected components</td><td>count / find components</td><td>O(V + E)</td></tr><tr><td class="k">Bipartite check</td><td>2-colouring</td><td>O(V + E)</td></tr><tr><td class="k">Cycle detection</td><td>find cycles</td><td>O(V + E)</td></tr><tr><td class="k">Topological sort</td><td>order tasks with dependencies</td><td>O(V + E)</td></tr><tr><td class="k">Path finding</td><td>check if a path exists</td><td>O(V + E)</td></tr><tr><td class="k">SCC</td><td>strongly connected components</td><td>O(V + E)</td></tr><tr><td class="k">Bridges</td><td>find critical edges</td><td>O(V + E)</td></tr><tr><td class="k">Articulation points</td><td>find critical vertices</td><td>O(V + E)</td></tr></tbody></table></div></div>
+  </div>
+</section>
+
+<section class="beat" id="b26">
+  <div class="beat-head">
+    <div class="beat-n">26</div>
+    <div>
+      <h2>When to Use DFS vs BFS</h2>
+      <div class="sub"><span>3 min</span> <span>board</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="two">
+      <div class="card pad board"><h4>Use DFS when</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>finding cycles</li><li>topological sorting</li><li>finding strongly connected components</li><li>solving puzzles with backtracking</li><li>memory is limited (DFS uses less space for wide graphs)</li><li>exploring all paths</li></ul></div>
+      <div class="card pad board"><h4>Use BFS when</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>finding the shortest path (unweighted)</li><li>level-order traversal</li><li>finding the distance from a source</li><li>finding if two vertices are connected in the minimum number of steps</li><li>the graph is very deep</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b27">
+  <div class="beat-head">
+    <div class="beat-n">27</div>
+    <div>
+      <h2>Key Takeaways</h2>
+      <div class="sub"><span>2 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>DFS — seven things to remember</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li><strong>DFS explores depth-first</strong> using a stack or recursion</li><li><strong>DFS is versatile</strong> — many graph problems are solved with it</li><li><strong>Topological sort is done with DFS</strong> on a DAG</li><li><strong>Cycle detection</strong> is different for directed and undirected graphs</li><li><strong>The bipartite check</strong> can be done with DFS or BFS</li><li><strong>DFS complexity is O(V + E)</strong> with an adjacency list</li><li><strong>DFS is perfect for</strong> path finding, cycle detection and topological sorting</li></ol></div>
+  </div>
+</section>
+
+<section class="beat" id="b28">
+  <div class="beat-head">
+    <div class="beat-n">28</div>
+    <div>
+      <h2>Practice Problems</h2>
+      <div class="sub"><span>2 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>DFS — try these</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li>Implement DFS recursively and iteratively</li><li>Count connected components using DFS</li><li>Check if a graph is bipartite</li><li>Detect a cycle in an undirected graph</li><li>Detect a cycle in a directed graph</li><li>Implement topological sort</li><li>Find all paths between two vertices</li><li>Find bridges in a graph</li><li>Find articulation points</li><li>Check if a directed graph is a DAG</li><li>Find strongly connected components (Kosaraju's algorithm)</li><li>Find the number of islands (2D grid DFS)</li><li>Solve a maze using DFS</li><li>Clone a graph</li><li>Find if there is a path with a given sum in a tree</li></ol></div>
+  </div>
+</section>
+
+<section class="beat" id="b29">
+  <div class="beat-head">
+    <div class="beat-n">29</div>
+    <div>
+      <h2>Lab 10 — the problems</h2>
+      <div class="sub"><span>10 min</span> <span>ADS-Lab-10</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Ten problems over both lectures: <strong>A–D are BFS, F–J are DFS</strong>, E is the outlier.</li>
+        <li>Start with B and H — plain BFS on a matrix, and flood fill on a grid.</li>
+        <li><strong>D and E are not on the defence.</strong></li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Marios War</span><span class="pill key">key</span><div class="map-why">Multi-source BFS on a grid — push every source at distance 0</div></div></div>
+<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Path</span><span class="pill key">key</span><div class="map-why">Plain BFS, the graph given as a matrix, n ≤ 100</div></div></div>
+<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Multiply or Subtract</span><span class="pill key">key</span><div class="map-why">BFS over states — the vertices are numbers, the edges are ×2 and −1</div></div></div>
+<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Try Again</span><div class="map-why">Repeated BFS with an amortisation argument, TL 5 s — not on the defence</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">KH2O - potassium hydroxide???</span><div class="map-why">Three lookups in a matrix; no traversal at all — off topic, not on the defence</div></div></div>
+<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">John's graph</span><span class="pill key">key</span><div class="map-why">Connected components — push both directions of every edge or it fails</div></div></div>
+<div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Fly Me to the Moon</span><span class="pill key">key</span><div class="map-why">DFS on a directed graph</div></div></div>
+<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">Number of Island</span><span class="pill key">key</span><div class="map-why">Flood fill on a grid, count the islands</div></div></div>
+<div class="map-row"><span class="map-idx">I</span><div><span class="map-name">Beta Tester</span><span class="pill key">key</span><div class="map-why">Topological sort — push after the children, then reverse</div></div></div>
+<div class="map-row"><span class="map-idx">J</span><div><span class="map-name">Who has a big Family?</span><span class="pill key">key</span><div class="map-why">DFS over a forest, compare children counts</div></div></div><div class="trap" style="margin-top:16px"><b>On problem C's title:</b> it used to be called "Aho-Corasick", which is an algorithm this course never teaches and which has nothing to do with the task. It has been renamed. If anyone is working from an old list, tell them it is the same problem.</div></div>
   </div>
 </section>
 </main>
@@ -210,9 +3304,9 @@ q.push(s); dist[s] = 0;
 </div>
 
 <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-<script src="assets/notes.js?v=202609281811"></script>
-<script src="assets/present.js?v=202609281811"></script>
-<script src="assets/cpp.js?v=202609281811"></script>
+<script src="assets/notes.js?v=202610011756"></script>
+<script src="assets/present.js?v=202610011756"></script>
+<script src="assets/cpp.js?v=202610011756"></script>
 <script>
 
 (function(){

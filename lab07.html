@@ -2,44 +2,43 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Merge Sort</title>
+<title>Merge Sort and Divide and Conquer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
-<link rel="stylesheet" href="assets/notes.css?v=202609281811">
-<link rel="stylesheet" href="assets/present.css?v=202609281811">
-<link rel="stylesheet" href="assets/cpp.css?v=202609281811">
+<link rel="stylesheet" href="assets/notes.css?v=202610011756">
+<link rel="stylesheet" href="assets/present.css?v=202610011756">
+<link rel="stylesheet" href="assets/cpp.css?v=202610011756">
 </head><body>
 <div class="wrap">
 
 <header class="masthead">
   <div class="eyebrow">ADS 2026 · KBTU · Lecture 7 · Lab 7</div>
-  <h1>Merge <em>Sort</em></h1>
-  <p class="dek">Two O(n log n) sorts already exist, so this one has to justify itself. It does, twice: it is the stable one, and its merge step counts things that sorting alone cannot — which is the first genuinely new idea in three weeks.</p>
-  <div class="facts"><span class="fact">Length <b>~105 min</b></span><span class="fact">Beats <b>6</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 7 · 5 problems</b></span></div>
+  <h1>Merge Sort and <em>Divide and Conquer</em></h1>
+  <p class="dek">Split in half, sort each half, merge — guaranteed O(n log n) and stable, at the price of O(n) memory. Then the same divide-and-conquer idea outside sorting: inversions, the k-th smallest, the maximum subarray and more.</p>
+  <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>8</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 7 · 5 problems</b></span></div>
 </header>
 
 <div class="cols">
 
 <nav class="rail" aria-label="Running order">
   <div class="rail-h">Running order</div>
-  <div class="part">I · Merge</div>
+  <div class="part">I · Merge sort</div>
   <ol>
-    <li><a href="#b1"><span class="n">01</span><span>Merging two sorted runs</span><span class="t">16′</span></a></li>
+    <li><a href="#b1"><span class="n">01</span><span>Merge sort</span><span class="t">35′</span></a></li>
+    <li><a href="#b2"><span class="n">02</span><span>Merge vs quick</span><span class="t">5′</span></a></li>
   </ol>
-  <div class="part">II · The sort</div>
+  <div class="part">II · Beyond sorting</div>
   <ol>
-    <li><a href="#b2"><span class="n">02</span><span>Divide and conquer</span><span class="t">18′</span></a></li>
+    <li><a href="#b3"><span class="n">03</span><span>Divide and conquer problems</span><span class="t">40′</span></a></li>
   </ol>
-  <div class="part">III · Beyond sorting</div>
+  <div class="part">III · Wrap-up</div>
   <ol>
-    <li><a href="#b3"><span class="n">03</span><span>Counting inversions</span><span class="t">22′</span></a></li>
-  </ol>
-  <div class="part">IV · Practice</div>
-  <ol>
-    <li><a href="#b4"><span class="n">04</span><span>Lab 7 walkthrough</span><span class="t">12′</span></a></li>
-    <li><a href="#b5"><span class="n">05</span><span>Midterm note</span><span class="t">4′</span></a></li>
-    <li><a href="#b6"><span class="n">06</span><span>What comes next</span><span class="t">2′</span></a></li>
+    <li><a href="#b4"><span class="n">04</span><span>Which algorithm when</span><span class="t">5′</span></a></li>
+    <li><a href="#b5"><span class="n">05</span><span>Key takeaways</span><span class="t">3′</span></a></li>
+    <li><a href="#b6"><span class="n">06</span><span>Common questions</span><span class="t">6′</span></a></li>
+    <li><a href="#b7"><span class="n">07</span><span>Practice problems</span><span class="t">2′</span></a></li>
+    <li><a href="#b8"><span class="n">08</span><span>Lab 7</span><span class="t">12′</span></a></li>
   </ol>
 </nav>
 
@@ -48,22 +47,283 @@
   <div class="beat-head">
     <div class="beat-n">01</div>
     <div>
-      <h2>The whole algorithm is here</h2>
-      <div class="sub"><span>16 min</span> <span>demo: merge</span></div>
+      <h2>Merge Sort</h2>
+      <div class="sub"><span>35 min</span> <span>board</span> <span>code</span> <span>demo: merge</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Do not start with the sort. Start with the sub-problem: <strong>two already sorted arrays, produce one sorted array</strong>. Everything else today is this, wrapped in recursion.</li>
-        <li>Two indices, compare the fronts, take the smaller, advance that one. <strong>Each element is looked at once, so the merge is O(n + m)</strong> — say this, because students expect a nested loop.</li>
-        <li>Run the demo and point at the counter: merging two arrays of 1000 costs 2000 steps, not a million.</li>
-        <li><strong>Then the tail.</strong> One array runs out first and the rest of the other is appended as a block. Forgetting that block is the single most common bug in this lab — it passes the samples and fails everything else.</li>
-        <li>And the line that makes it stable: when the fronts are <strong>equal</strong>, take from the <em>left</em> array. Change <code>&lt;=</code> to <code>&lt;</code> and stability is gone, silently.</li>
+        <li><strong>Merge sort</strong> is divide and conquer: split the array into halves, sort them recursively, then merge the sorted halves.</li>
+        <li>Start from the merge — two sorted arrays into one. Two indices, take the smaller front, advance it. <strong>Each element is looked at once: O(n)</strong>. Use the demo.</li>
+        <li>Do not forget the tails: when one half runs out, the rest of the other is copied as it is.</li>
+        <li>Then the recursion: log n levels, O(n) work per level — O(n log n) in every case, no bad input.</li>
+        <li>Taking from the left on equal values (<code>&lt;=</code>) is what makes it <strong>stable</strong>. The price is O(n) extra memory.</li>
       </ul>
     </div>
+    <div class="card pad board"><h4>Merge sort algorithm</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li><strong>Divide</strong>: split the array into two halves</li><li><strong>Conquer</strong>: recursively sort both halves</li><li><strong>Combine</strong>: merge the two sorted halves</li></ol></div>
     <div class="card pad demo"><h4>Demo · merging, one step at a time</h4><div class="ctl"><label class="f" style="flex:1 1 170px"><span>left (sorted)</span><input type="text" id="mga" value="1 4 7 9"></label><label class="f" style="flex:1 1 170px"><span>right (sorted)</span><input type="text" id="mgb" value="2 3 8 10 11"></label><button class="pri" id="mgstep">Step</button><button id="mgauto">▶ Play</button><button id="mgreset">Reset</button></div><div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:6px">left</div><div class="track" id="mgta"></div><div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:12px 0 6px">right</div><div class="track" id="mgtb"></div><div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:12px 0 6px">output</div><div class="track" id="mgtc"></div><div class="readout"><div class="stat"><div class="lab">comparisons</div><div class="val" id="mgcmp">0</div></div><div class="stat good"><div class="lab">elements moved</div><div class="val" id="mgmov">0</div></div></div><div class="log" id="mglog">Press Step. Blue is the element about to be taken.</div></div>
+    <div class="card pad board"><h4>Merge sort implementation · merge</h4><pre><span class="c">// Merge two sorted subarrays arr[left...mid] and arr[mid+1...right]</span>
+<span class="k">void</span> merge(vector&lt;<span class="k">int</span>&gt;&amp; arr, <span class="k">int</span> left, <span class="k">int</span> mid, <span class="k">int</span> right) {
+    <span class="k">int</span> n1 = mid - left + 1;  <span class="c">// Size of left subarray</span>
+    <span class="k">int</span> n2 = right - mid;      <span class="c">// Size of right subarray</span>
+
+    <span class="c">// Create temporary arrays</span>
+    vector&lt;<span class="k">int</span>&gt; L(n1), R(n2);
+
+    <span class="c">// Copy data to temporary arrays</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n1; i++)
+        L[i] = arr[left + i];
+    <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; n2; j++)
+        R[j] = arr[mid + 1 + j];
+
+    <span class="c">// Merge the temporary arrays back</span>
+    <span class="k">int</span> i = 0;     <span class="c">// Initial index of left subarray</span>
+    <span class="k">int</span> j = 0;     <span class="c">// Initial index of right subarray</span>
+    <span class="k">int</span> k = left;  <span class="c">// Initial index of merged array</span>
+
+    <span class="k">while</span> (i &lt; n1 &amp;&amp; j &lt; n2) {
+        <span class="k">if</span> (L[i] &lt;= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } <span class="k">else</span> {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    <span class="c">// Copy remaining elements of L[], if any</span>
+    <span class="k">while</span> (i &lt; n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    <span class="c">// Copy remaining elements of R[], if any</span>
+    <span class="k">while</span> (j &lt; n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}</pre><p style="margin-top:12px">Copy both halves out, then always take the smaller front. The two loops at the end copy whatever is left of one half.</p></div>
+    <div class="card pad board"><h4>Merge sort implementation · the recursion</h4><pre><span class="c">// Main merge sort function</span>
+<span class="k">void</span> mergeSort(vector&lt;<span class="k">int</span>&gt;&amp; arr, <span class="k">int</span> left, <span class="k">int</span> right) {
+    <span class="k">if</span> (left &lt; right) {
+        <span class="c">// Find the middle point</span>
+        <span class="k">int</span> mid = left + (right - left) / 2;
+
+        <span class="c">// Sort first and second halves</span>
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+
+        <span class="c">// Merge the sorted halves</span>
+        merge(arr, left, mid, right);
+    }
+}</pre></div>
+    <div class="card pad board"><h4>Merge sort implementation · main</h4><pre><span class="k">void</span> printArray(vector&lt;<span class="k">int</span>&gt;&amp; arr) {
+    <span class="k">for</span> (<span class="k">int</span> num : arr)
+        cout &lt;&lt; num &lt;&lt; <span class="s">" "</span>;
+    cout &lt;&lt; endl;
+}
+
+<span class="k">int</span> main() {
+    vector&lt;<span class="k">int</span>&gt; arr = {38, 27, 43, 3, 9, 82, 10};
+
+    cout &lt;&lt; <span class="s">"Original array: "</span>;
+    printArray(arr);
+
+    mergeSort(arr, 0, arr.size() - 1);
+
+    cout &lt;&lt; <span class="s">"Sorted array:   "</span>;
+    printArray(arr);
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">Original array: 38 27 43 3 9 82 10
+Sorted array:   3 9 10 27 38 43 82</pre></div>
+    <div class="card pad board"><h4>Merge sort visualization</h4><p><strong>Input:</strong> <span class="mono">[38, 27, 43, 3, 9, 82, 10]</span></p><pre class="out">                    [38, 27, 43, 3, 9, 82, 10]
+                    /                        \
+           [38, 27, 43, 3]                [9, 82, 10]
+           /            \                  /         \
+      [38, 27]        [43, 3]          [9, 82]      [10]
+      /     \         /     \          /     \
+    [38]   [27]    [43]    [3]      [9]    [82]
+      \     /         \     /          \     /
+      [27, 38]        [3, 43]          [9, 82]      [10]
+           \            /                  \         /
+           [3, 27, 38, 43]                [9, 10, 82]
+                    \                        /
+                    [3, 9, 10, 27, 38, 43, 82]</pre></div>
+    <div class="card pad board"><h4>Merge sort complexity</h4><div class="tw"><table><thead><tr><th>Case</th><th class="n">Time Complexity</th><th class="n">Space Complexity</th></tr></thead><tbody><tr><td class="k">Best Case</td><td class="n"><span style="color:var(--prime)">O(n log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td></tr><tr><td class="k">Average Case</td><td class="n"><span style="color:var(--prime)">O(n log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td></tr><tr><td class="k">Worst Case</td><td class="n"><span style="color:var(--prime)">O(n log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td></tr></tbody></table></div></div>
+    <div class="card pad board"><h4>Merge sort characteristics</h4><p><strong>Advantages</strong></p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Guaranteed O(n log n)</strong> performance</li><li><strong>Stable</strong>: preserves the order of equal elements</li><li><strong>Predictable</strong>: always the same time complexity</li><li><strong>Good for linked lists</strong>: no random access needed</li></ul><p style="margin-top:12px"><strong>Disadvantages</strong></p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Extra space</strong>: requires O(n) additional memory</li><li><strong>Not in-place</strong>: uses auxiliary arrays</li><li><strong>Slower for small arrays</strong>: overhead of recursion</li></ul></div>
+    <div class="card pad board"><h4>Another version · a global array</h4><p>The same algorithm on a global array <span class="mono">a</span>, with the halves copied into local arrays <span class="mono">L</span> and <span class="mono">R</span>. <span class="mono">main</span> prints the array before and after sorting.</p><div style="margin-top:12px"></div><pre><span class="k">void</span> merge(<span class="k">int</span> l, <span class="k">int</span> m, <span class="k">int</span> r) {
+    <span class="k">int</span> n1 = m - l + 1;
+    <span class="k">int</span> n2 = r - m;
+    <span class="k">int</span> L[n1];
+    <span class="k">int</span> R[n2];
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n1; i++) {
+        L[i] = a[l + i];
+    }
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n2; i++) {
+        R[i] = a[m + 1 + i];
+    }
+
+    <span class="k">int</span> uk1 = 0;
+    <span class="k">int</span> uk2 = 0;
+    <span class="k">int</span> k = l;
+    <span class="k">while</span> (uk1 &lt; n1 &amp;&amp; uk2 &lt; n2) {
+        <span class="k">if</span> (L[uk1] &lt;= R[uk2]) {
+            a[k] = L[uk1];
+            uk1++;
+        } <span class="k">else</span> {
+            a[k] = R[uk2];
+            uk2++;
+        }
+        k++;
+    }
+
+    <span class="k">while</span> (uk1 &lt; n1) {
+        a[k] = L[uk1];
+        uk1++; k++;
+    }
+    <span class="k">while</span> (uk2 &lt; n2) {
+        a[k] = R[uk2];   <span class="c">// fixed: was L[uk2] — the tail of the right half</span>
+        uk2++; k++;
+    }
+
+}</pre><div class="trap" style="margin-top:14px"><b>Check the last loop.</b> It copies the rest of the <em>right</em> half, so it must read <span class="mono">R[uk2]</span>. With <span class="mono">L[uk2]</span> the program still compiles and runs, but prints <span class="mono">1 3 10 10 10 10 10</span> for the input below — the tail of the right half is replaced by elements of the left one.</div><div style="margin-top:14px"><details class="code"><summary>merge sort on a global array — the full program<span class="lines">68 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+<span class="k">int</span> a[1000];
+
+<span class="k">void</span> merge(<span class="k">int</span> l, <span class="k">int</span> m, <span class="k">int</span> r) {
+    <span class="k">int</span> n1 = m - l + 1;
+    <span class="k">int</span> n2 = r - m;
+    <span class="k">int</span> L[n1];
+    <span class="k">int</span> R[n2];
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n1; i++) {
+        L[i] = a[l + i];
+    }
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n2; i++) {
+        R[i] = a[m + 1 + i];
+    }
+
+    <span class="k">int</span> uk1 = 0;
+    <span class="k">int</span> uk2 = 0;
+    <span class="k">int</span> k = l;
+    <span class="k">while</span> (uk1 &lt; n1 &amp;&amp; uk2 &lt; n2) {
+        <span class="k">if</span> (L[uk1] &lt;= R[uk2]) {
+            a[k] = L[uk1];
+            uk1++;
+        } <span class="k">else</span> {
+            a[k] = R[uk2];
+            uk2++;
+        }
+        k++;
+    }
+
+    <span class="k">while</span> (uk1 &lt; n1) {
+        a[k] = L[uk1];
+        uk1++; k++;
+    }
+    <span class="k">while</span> (uk2 &lt; n2) {
+        a[k] = R[uk2];   <span class="c">// fixed: was L[uk2] — the tail of the right half</span>
+        uk2++; k++;
+    }
+
+}
+
+<span class="k">void</span> mergesort(<span class="k">int</span> l, <span class="k">int</span> r) {
+    <span class="k">if</span> (l &lt; r ) {
+        <span class="k">int</span> m = (l + r) / 2;
+        mergesort(l, m);
+        mergesort(m + 1, r);
+        merge(l, m, r);
+    }
+}
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> n;
+    cin &gt;&gt; n;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        cin &gt;&gt; a[i];
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        cout &lt;&lt; a[i] &lt;&lt; <span class="s">" "</span>;
+    cout &lt;&lt; endl;    
+    mergesort(0, n - 1);
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        cout &lt;&lt; a[i] &lt;&lt; <span class="s">" "</span>;
+
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">7
+10 13 43 1 534 3 48</pre><div class="out-lbl">output</div><pre class="out">10 13 43 1 534 3 48
+1 3 10 13 43 48 534</pre></div>
+    <div class="card pad board"><h4>Another version · strict comparison</h4><p>The same program with <span class="mono">if (L[uk1] &lt; R[uk2])</span>. On equal values it now takes from the <strong>right</strong> half first — still sorted, but <strong>no longer stable</strong>. For plain numbers you cannot see the difference; for records sorted by one field you can.</p><div style="margin-top:12px"><details class="code"><summary>merge sort with &lt; — the full program<span class="lines">60 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+<span class="k">int</span> a[1000];
+
+<span class="k">void</span> merge(<span class="k">int</span> l, <span class="k">int</span> m, <span class="k">int</span> r) {
+    <span class="k">int</span> n1 = m - l + 1;
+    <span class="k">int</span> n2 = r - m;
+
+    <span class="k">int</span> L[n1];
+    <span class="k">int</span> R[n2];
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n1; i++)
+        L[i] = a[i + l];
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n2; i++)
+        R[i] = a[i + m + 1];
+
+    <span class="k">int</span> uk1 = 0;
+    <span class="k">int</span> uk2 = 0;
+    <span class="k">int</span> k = l;
+    <span class="k">while</span> (uk1 &lt; n1 &amp;&amp; uk2 &lt; n2) {
+        <span class="k">if</span> (L[uk1] &lt; R[uk2]) {
+            a[k] = L[uk1];
+            uk1++;
+        } <span class="k">else</span> {
+            a[k] = R[uk2];
+            uk2++;
+        }
+        k++;
+    }
+    <span class="k">while</span> (uk1 &lt; n1) {
+        a[k] = L[uk1];
+        uk1++; k++;
+    }
+    <span class="k">while</span> (uk2 &lt; n2) {
+        a[k] = R[uk2];   <span class="c">// fixed: was L[uk2] — the tail of the right half</span>
+        uk2++; k++;
+    }
+}
+
+<span class="k">void</span> merge_sort(<span class="k">int</span> l, <span class="k">int</span> r) {
+    <span class="k">if</span> (l &lt; r) {
+        <span class="k">int</span> m = (l + r) / 2;
+        merge_sort(l, m);
+        merge_sort(m + 1, r);
+        merge(l, m, r);
+    }
+}
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> n;
+    cin &gt;&gt; n;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        cin &gt;&gt; a[i];
+    merge_sort(0, n - 1);
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        cout &lt;&lt; a[i] &lt;&lt; <span class="s">" "</span>;
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">7
+10 13 43 1 534 3 48</pre><div class="out-lbl">output</div><pre class="out">1 3 10 13 43 48 534</pre></div>
   </div>
 </section>
 
@@ -71,38 +331,18 @@
   <div class="beat-head">
     <div class="beat-n">02</div>
     <div>
-      <h2>Wrap the merge in recursion</h2>
-      <div class="sub"><span>18 min</span> <span>board</span></div>
+      <h2>Comparison: Merge Sort vs Quick Sort</h2>
+      <div class="sub"><span>5 min</span> <span>board</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Split in half, sort each half, merge. Three lines. The base case is <strong>a single element, which is already sorted</strong>.</li>
-        <li>Draw the recursion tree for eight elements. <strong>log n levels, O(n) work per level</strong> — that is where n log n comes from, and it is visible on the board rather than asserted.</li>
-        <li>Unlike quicksort, the split is <strong>positional</strong> — always the middle, never data-dependent. That is exactly why there is no bad input and no O(n²) day.</li>
-        <li>The price is memory: the merge needs a <strong>buffer of size n</strong>. Say it plainly — this is the only sort so far that is not in place, and on a 256 MB limit with 10⁶ ints it is still fine.</li>
-        <li>Allocate the buffer <strong>once, outside the recursion</strong>. A <code>vector</code> created inside merge turns O(n log n) into something much worse in practice, and it is the usual reason a correct solution times out.</li>
+        <li>Both are O(n log n) on average. Merge sort wins on the guarantee and stability, quick sort on memory and cache.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre><span class="k">void</span> mergeSort(<span class="k">int</span> l, <span class="k">int</span> r) {   <span class="c">// [l, r)</span>
-    <span class="k">if</span> (r - l &lt; 2) <span class="k">return</span>;
-    <span class="k">int</span> m = l + (r - l) / 2;
-    mergeSort(l, m);
-    mergeSort(m, r);
-    merge(l, m, r);
-}</pre><pre style="margin-top:13px"><span class="k">void</span> merge(<span class="k">int</span> l, <span class="k">int</span> m, <span class="k">int</span> r) {
-    <span class="k">int</span> i = l, j = m, k = l;
-    <span class="k">while</span> (i &lt; m &amp;&amp; j &lt; r)
-        buf[k++] = (a[i] &lt;= a[j]) ? a[i++] : a[j++];
-    <span class="k">while</span> (i &lt; m) buf[k++] = a[i++];   <span class="c">// the tails</span>
-    <span class="k">while</span> (j &lt; r) buf[k++] = a[j++];
-    <span class="k">for</span> (<span class="k">int</span> t = l; t &lt; r; ++t) a[t] = buf[t];
-}</pre><div class="trap" style="margin-top:14px"><b>Copy back, or use the buffer as the source next time.</b> Forgetting the final copy leaves the sorted data in <code>buf</code> and the original untouched — and the samples, being tiny, may still look right.</div></div>
-      <div class="card pad board"><h4>Why stability is not a detail</h4><p>Sort a list of students by <strong>score</strong>, having already sorted it by <strong>name</strong>. With a stable sort, equal scores stay in name order and you have a two-key sort for free. With <code>std::sort</code> the second pass scrambles the first.</p><p style="margin-top:11px">That is the whole reason <code>std::stable_sort</code> exists, and it is merge sort underneath — it even allocates a buffer, and falls back to a slower in-place merge if allocation fails.</p><div class="formula" style="margin-top:13px">unstable: (Ann, 5) (Bob, 5) → (Bob, 5) (Ann, 5)<br>stable&nbsp;&nbsp;: (Ann, 5) (Bob, 5) → (Ann, 5) (Bob, 5)</div><div class="trap" style="margin-top:14px"><b>Problem A is exactly this.</b> Sort strings by length, equal lengths keeping input order. A plain <code>sort</code> with a length comparator gives the right lengths and the wrong order within them — and the statement says so explicitly.</div></div>
-    </div>
+    <div class="card pad board"><h4>Side by side</h4><div class="tw"><table><thead><tr><th>Feature</th><th class="n">Merge Sort</th><th class="n">Quick Sort</th></tr></thead><tbody><tr><td class="k">Time (Average)</td><td class="n">O(n log n)</td><td class="n">O(n log n)</td></tr><tr><td class="k">Time (Worst)</td><td class="n"><span style="color:var(--prime)">O(n log n)</span></td><td class="n"><span style="color:var(--mark)">O(n²)</span></td></tr><tr><td class="k">Space</td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td></tr><tr><td class="k">Stability</td><td class="n"><span style="color:var(--prime)">Yes</span></td><td class="n"><span style="color:var(--mark)">No</span></td></tr><tr><td class="k">In-place</td><td class="n"><span style="color:var(--mark)">No</span></td><td class="n"><span style="color:var(--prime)">Yes</span></td></tr><tr><td class="k">Cache Performance</td><td class="n"><span style="color:var(--mark)">Poor</span></td><td class="n"><span style="color:var(--prime)">Good</span></td></tr><tr><td class="k">Best for</td><td class="n">linked lists, guaranteed performance</td><td class="n">arrays, average case</td></tr></tbody></table></div></div>
   </div>
 </section>
 
@@ -110,34 +350,195 @@
   <div class="beat-head">
     <div class="beat-n">03</div>
     <div>
-      <h2>The merge counts things</h2>
-      <div class="sub"><span>22 min</span> <span>demo: inversions</span></div>
+      <h2>Non-Sorting Problems Using Divide and Conquer</h2>
+      <div class="sub"><span>40 min</span> <span>code</span> <span>demo: inversions</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Now the idea that makes this lecture worth more than a third sorting algorithm. An <strong>inversion</strong> is a pair i &lt; j with a[i] &gt; a[j] — a measure of how unsorted an array is.</li>
-        <li>Counting them by brute force is O(n²). At n = 10⁵ that is 10¹⁰ and hopeless.</li>
-        <li>The observation, and it is the one to draw: during a merge, when you take an element from the <strong>right</strong> half, it jumps ahead of <strong>everything still left in the left half</strong>. Each of those is an inversion. Add <code>(m − i)</code> and continue.</li>
-        <li>Nothing else changes. The sort is unmodified; one counter is added inside the merge. <strong>O(n log n)</strong> total.</li>
-        <li><strong>The answer does not fit in int.</strong> Maximum inversions is n(n−1)/2, about 5·10⁹ at n = 10⁵. Use <code>long long</code>. This is the intended trap in problem D and it is worth stating twice.</li>
-        <li>Point at the family this opens: the same trick counts pairs with a[i] &gt; 2·a[j], or sums of distances, or anything else expressible as "pairs across a split".</li>
+        <li>The same idea — split, solve the halves, combine — solves problems that are not sorting at all.</li>
+        <li><strong>Inversions</strong>: during the merge, when an element is taken from the right half, it is smaller than everything still left in the left half — add all of them at once. Run the demo on a reversed array of 100 000 — the answer does not fit in int.</li>
+        <li><strong>Quick select</strong>: partition, then recurse into one side only — O(n) on average.</li>
+        <li><strong>Maximum subarray</strong>: the best subarray is in the left half, in the right half, or crosses the middle.</li>
+        <li>Binary search is divide and conquer too — one half is thrown away at every step.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre><span class="k">long long</span> inv = 0;      <span class="c">// NOT int</span>
+    <div class="card pad board"><h4>1 · Finding inversions in an array</h4><p><strong>Problem:</strong> count pairs (i, j) where i &lt; j but arr[i] &gt; arr[j].<br><strong>Solution:</strong> a modified merge sort counts inversions during the merge.</p><div style="margin-top:12px"></div><pre><span class="k">long</span> <span class="k">long</span> mergeAndCount(vector&lt;<span class="k">int</span>&gt;&amp; arr, <span class="k">int</span> left, <span class="k">int</span> mid, <span class="k">int</span> right) {
+    vector&lt;<span class="k">int</span>&gt; L(arr.begin() + left, arr.begin() + mid + 1);
+    vector&lt;<span class="k">int</span>&gt; R(arr.begin() + mid + 1, arr.begin() + right + 1);
 
-<span class="k">while</span> (i &lt; m &amp;&amp; j &lt; r) {
-    <span class="k">if</span> (a[i] &lt;= a[j]) buf[k++] = a[i++];
-    <span class="k">else</span> {
-        inv += m - i;        <span class="c">// ← the only new line</span>
-        buf[k++] = a[j++];
+    <span class="k">int</span> i = 0, j = 0, k = left;
+    <span class="k">long</span> <span class="k">long</span> inv_count = 0;
+
+    <span class="k">while</span> (i &lt; L.size() &amp;&amp; j &lt; R.size()) {
+        <span class="k">if</span> (L[i] &lt;= R[j]) {
+            arr[k++] = L[i++];
+        } <span class="k">else</span> {
+            arr[k++] = R[j++];
+            <span class="c">// All remaining elements in L are greater than R[j]</span>
+            inv_count += (L.size() - i);
+        }
     }
-}</pre><div class="formula" style="margin-top:13px">max inversions = n(n−1)/2 ≈ 5 · 10⁹ at n = 10⁵</div><div class="trap" style="margin-top:14px"><b>Why <code>m − i</code> and not 1:</b> the left half is sorted, so if a[i] is already greater than a[j], then so is every element after it. All of them are inversions with a[j], counted in one go.</div></div>
-      <div class="card pad demo"><h4>Demo · inversions, brute force against merge</h4><div class="ctl"><label class="f" style="flex:1 1 240px"><span>array</span><input type="text" id="ina" value="5 4 3 2 1"></label><button class="pri" id="inrun">Count</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-in="5 4 3 2 1">reversed</button><button class="chip" data-in="1 2 3 4 5">sorted</button><button class="chip" data-in="2 4 1 3 5">mixed</button><button class="chip" data-in="big">n = 100 000, reversed</button></div><div class="readout"><div class="stat good"><div class="lab">inversions</div><div class="val" id="inans">—</div></div><div class="stat"><div class="lab">merge sort, operations</div><div class="val" id="infast">—</div></div><div class="stat bad"><div class="lab">brute force, pairs</div><div class="val" id="inslow">—</div></div><div class="stat"><div class="lab">fits in int32?</div><div class="val" id="inint">—</div></div></div><div class="log" id="inlog"></div></div>
-    </div>
+
+    <span class="k">while</span> (i &lt; L.size()) arr[k++] = L[i++];
+    <span class="k">while</span> (j &lt; R.size()) arr[k++] = R[j++];
+
+    <span class="k">return</span> inv_count;
+}
+
+<span class="k">long</span> <span class="k">long</span> countInversions(vector&lt;<span class="k">int</span>&gt;&amp; arr, <span class="k">int</span> left, <span class="k">int</span> right) {
+    <span class="k">long</span> <span class="k">long</span> inv_count = 0;
+    <span class="k">if</span> (left &lt; right) {
+        <span class="k">int</span> mid = left + (right - left) / 2;
+        inv_count += countInversions(arr, left, mid);
+        inv_count += countInversions(arr, mid + 1, right);
+        inv_count += mergeAndCount(arr, left, mid, right);
+    }
+    <span class="k">return</span> inv_count;
+}
+
+<span class="c">// Example: [8, 4, 2, 1]</span>
+<span class="c">// Inversions: (8,4), (8,2), (8,1), (4,2), (4,1), (2,1) = 6</span></pre><p style="margin-top:12px">Check: <span class="mono">[8, 4, 2, 1]</span> gives 6 — every pair is an inversion. <span class="mono">[2, 4, 1, 3, 5]</span> gives 3: (2,1), (4,1), (4,3).</p></div>
+    <div class="card pad demo"><h4>Demo · inversions, brute force against merge</h4><div class="ctl"><label class="f" style="flex:1 1 240px"><span>array</span><input type="text" id="ina" value="5 4 3 2 1"></label><button class="pri" id="inrun">Count</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-in="5 4 3 2 1">reversed</button><button class="chip" data-in="1 2 3 4 5">sorted</button><button class="chip" data-in="2 4 1 3 5">mixed</button><button class="chip" data-in="big">n = 100 000, reversed</button></div><div class="readout"><div class="stat good"><div class="lab">inversions</div><div class="val" id="inans">—</div></div><div class="stat"><div class="lab">merge sort, operations</div><div class="val" id="infast">—</div></div><div class="stat bad"><div class="lab">brute force, pairs</div><div class="val" id="inslow">—</div></div><div class="stat"><div class="lab">fits in int32?</div><div class="val" id="inint">—</div></div></div><div class="log" id="inlog"></div></div>
+    <div class="card pad board"><h4>2 · Finding the k-th smallest element</h4><p><strong>Problem:</strong> find the k-th smallest element without fully sorting.<br><strong>Solution:</strong> quick select — a modified quick sort that recurses into one side only.</p><div style="margin-top:12px"></div><pre><span class="k">int</span> partition(vector&lt;<span class="k">int</span>&gt;&amp; arr, <span class="k">int</span> low, <span class="k">int</span> high) {
+    <span class="k">int</span> pivot = arr[high];
+    <span class="k">int</span> i = low - 1;
+
+    <span class="k">for</span> (<span class="k">int</span> j = low; j &lt; high; j++) {
+        <span class="k">if</span> (arr[j] &lt;= pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[high]);
+    <span class="k">return</span> i + 1;
+}
+
+<span class="k">int</span> quickSelect(vector&lt;<span class="k">int</span>&gt;&amp; arr, <span class="k">int</span> low, <span class="k">int</span> high, <span class="k">int</span> k) {
+    <span class="k">if</span> (low &lt;= high) {
+        <span class="k">int</span> pi = partition(arr, low, high);
+
+        <span class="k">if</span> (pi == k)
+            <span class="k">return</span> arr[pi];
+        <span class="k">else</span> <span class="k">if</span> (pi &gt; k)
+            <span class="k">return</span> quickSelect(arr, low, pi - 1, k);
+        <span class="k">else</span>
+            <span class="k">return</span> quickSelect(arr, pi + 1, high, k);
+    }
+    <span class="k">return</span> -1;
+}
+
+<span class="c">// Example: Find 3rd smallest in [7, 10, 4, 3, 20, 15]</span>
+<span class="c">// quickSelect(arr, 0, 5, 2) returns 7</span>
+<span class="c">// O(n) average time vs O(n log n) for sorting</span></pre><p style="margin-top:12px">k is a 0-based index here: <span class="mono">quickSelect(arr, 0, 5, 2)</span> on <span class="mono">[7, 10, 4, 3, 20, 15]</span> returns 7 — the 3rd smallest. This <span class="mono">partition</span> takes the <strong>last</strong> element as pivot, unlike the quick sort from the previous lecture.</p></div>
+    <div class="card pad board"><h4>3 · Closest pair of points</h4><p><strong>Problem:</strong> find the two closest points in a 2D plane.<br><strong>Solution:</strong> divide and conquer, similar to merge sort.</p><div style="margin-top:12px"></div><pre><span class="k">struct</span> Point {
+    <span class="k">int</span> x, y;
+};
+
+<span class="k">double</span> distance(Point p1, Point p2) {
+    <span class="k">return</span> sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
+}
+
+<span class="k">double</span> closestPair(vector&lt;Point&gt;&amp; points, <span class="k">int</span> left, <span class="k">int</span> right) {
+    <span class="c">// Base case: brute force for small arrays</span>
+    <span class="k">if</span> (right - left &lt;= 3) {
+        <span class="k">double</span> minDist = INT_MAX;
+        <span class="k">for</span> (<span class="k">int</span> i = left; i &lt; right; i++)
+            <span class="k">for</span> (<span class="k">int</span> j = i + 1; j &lt;= right; j++)
+                minDist = min(minDist, distance(points[i], points[j]));
+        <span class="k">return</span> minDist;
+    }
+
+    <span class="c">// Divide</span>
+    <span class="k">int</span> mid = left + (right - left) / 2;
+    <span class="k">double</span> dl = closestPair(points, left, mid);
+    <span class="k">double</span> dr = closestPair(points, mid + 1, right);
+    <span class="k">double</span> d = min(dl, dr);
+
+    <span class="c">// Check points near dividing line</span>
+    <span class="c">// ... (additional logic for strip)</span>
+
+    <span class="k">return</span> d;
+}</pre><div class="trap" style="margin-top:14px"><b>This is only the skeleton.</b> The full algorithm sorts the points by x first, and the step marked <span class="mono">...</span> — checking the points near the dividing line — is what makes it correct. Without it the closest pair can be split between the halves and missed: for points with x = 0, 10, 20, 29, 30, 50, 70, 90 this code returns 9 instead of 1.</div></div>
+    <div class="card pad board"><h4>4 · Maximum subarray sum</h4><p><strong>Problem:</strong> find the contiguous subarray with the largest sum.<br><strong>Solution:</strong> divide and conquer (Kadane's algorithm is simpler, but this shows the idea).</p><div style="margin-top:12px"></div><pre><span class="k">int</span> maxCrossingSum(vector&lt;<span class="k">int</span>&gt;&amp; arr, <span class="k">int</span> left, <span class="k">int</span> mid, <span class="k">int</span> right) {
+    <span class="k">int</span> sum = 0;
+    <span class="k">int</span> leftSum = INT_MIN;
+
+    <span class="c">// Find max sum from mid to left</span>
+    <span class="k">for</span> (<span class="k">int</span> i = mid; i &gt;= left; i--) {
+        sum += arr[i];
+        <span class="k">if</span> (sum &gt; leftSum)
+            leftSum = sum;
+    }
+
+    sum = 0;
+    <span class="k">int</span> rightSum = INT_MIN;
+
+    <span class="c">// Find max sum from mid+1 to right</span>
+    <span class="k">for</span> (<span class="k">int</span> i = mid + 1; i &lt;= right; i++) {
+        sum += arr[i];
+        <span class="k">if</span> (sum &gt; rightSum)
+            rightSum = sum;
+    }
+
+    <span class="k">return</span> leftSum + rightSum;
+}
+
+<span class="k">int</span> maxSubarraySum(vector&lt;<span class="k">int</span>&gt;&amp; arr, <span class="k">int</span> left, <span class="k">int</span> right) {
+    <span class="k">if</span> (left == right)
+        <span class="k">return</span> arr[left];
+
+    <span class="k">int</span> mid = left + (right - left) / 2;
+
+    <span class="k">return</span> max({maxSubarraySum(arr, left, mid),
+                maxSubarraySum(arr, mid + 1, right),
+                maxCrossingSum(arr, left, mid, right)});
+}
+
+<span class="c">// Example: [-2, 1, -3, 4, -1, 2, 1, -5, 4]</span>
+<span class="c">// Result: 6 (subarray [4, -1, 2, 1])</span></pre><p style="margin-top:12px">For <span class="mono">[-2, 1, -3, 4, -1, 2, 1, -5, 4]</span> the result is 6 — the subarray <span class="mono">[4, -1, 2, 1]</span>.</p></div>
+    <div class="card pad board"><h4>5 · Binary search</h4><p><strong>Problem:</strong> search for an element in a sorted array.<br><strong>Solution:</strong> divide and conquer.</p><div style="margin-top:12px"></div><pre><span class="k">int</span> binarySearch(vector&lt;<span class="k">int</span>&gt;&amp; arr, <span class="k">int</span> left, <span class="k">int</span> right, <span class="k">int</span> target) {
+    <span class="k">if</span> (right &gt;= left) {
+        <span class="k">int</span> mid = left + (right - left) / 2;
+
+        <span class="k">if</span> (arr[mid] == target)
+            <span class="k">return</span> mid;
+
+        <span class="k">if</span> (arr[mid] &gt; target)
+            <span class="k">return</span> binarySearch(arr, left, mid - 1, target);
+
+        <span class="k">return</span> binarySearch(arr, mid + 1, right, target);
+    }
+    <span class="k">return</span> -1;
+}</pre><p style="margin-top:12px">On <span class="mono">[2, 3, 4, 10, 40]</span>: searching 10 returns index 3, searching 5 returns −1.</p></div>
+    <div class="card pad board"><h4>6 · Counting smaller elements to the right</h4><p><strong>Problem:</strong> for each element, count how many elements to its right are smaller.<br><strong>Solution:</strong> a modified merge sort over (value, original index) pairs.</p><div style="margin-top:12px"></div><pre><span class="k">void</span> mergeWithCount(vector&lt;pair&lt;<span class="k">int</span>,<span class="k">int</span>&gt;&gt;&amp; arr, <span class="k">int</span> left, <span class="k">int</span> mid, <span class="k">int</span> right,
+                    vector&lt;<span class="k">int</span>&gt;&amp; count) {
+    vector&lt;pair&lt;<span class="k">int</span>,<span class="k">int</span>&gt;&gt; temp(right - left + 1);
+    <span class="k">int</span> i = left, j = mid + 1, k = 0;
+
+    <span class="k">while</span> (i &lt;= mid &amp;&amp; j &lt;= right) {
+        <span class="k">if</span> (arr[i].first &lt;= arr[j].first) {
+            <span class="c">// Elements from j to right are greater</span>
+            count[arr[i].second] += (j - mid - 1);
+            temp[k++] = arr[i++];
+        } <span class="k">else</span> {
+            temp[k++] = arr[j++];
+        }
+    }
+
+    <span class="k">while</span> (i &lt;= mid) {
+        count[arr[i].second] += (right - mid);
+        temp[k++] = arr[i++];
+    }
+
+    <span class="k">while</span> (j &lt;= right)
+        temp[k++] = arr[j++];
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; temp.size(); i++)
+        arr[left + i] = temp[i];
+}</pre><p style="margin-top:12px">When an element from the left half is placed, <span class="mono">j − mid − 1</span> elements of the right half have already gone before it — exactly the smaller ones to its right. Call it from a usual merge-sort recursion; for <span class="mono">[5, 2, 6, 1]</span> the counts are <span class="mono">2 1 1 0</span>.</p></div>
   </div>
 </section>
 
@@ -145,26 +546,14 @@
   <div class="beat-head">
     <div class="beat-n">04</div>
     <div>
-      <h2>Lab 7 — how it maps onto today</h2>
-      <div class="sub"><span>12 min</span> <span>ADS-Lab-07</span></div>
+      <h2>When to Use Which Algorithm</h2>
+      <div class="sub"><span>5 min</span> <span>board</span></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Five problems, and they line up with the beats one to one. B is the bare merge from beat 01; A is the stable sort from beat 02; D is the inversion count from beat 03.</li>
-        <li>B is the warm-up — <strong>two sorted arrays in, one out</strong>. Fifteen lines. Do it in the room if there is time.</li>
-        <li>E looks like a sorting problem and is not: the squares of a sorted array form <strong>two already sorted runs</strong> — the negatives descending and the non-negatives ascending. Merge them in O(n) instead of sorting in O(n log n).</li>
-        <li><strong>A is the fiddly one, and not because of the algorithm.</strong> The number of strings per line is never given — you must read the whole line and split it yourself. Say this out loud; it is where the time goes.</li>
-        <li>D is the one that separates the class: quadratic passes nothing, and <code>int</code> overflows silently.</li>
-      </ul>
-    </div>
-    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Simple Merge</span><span class="pill key">key</span><div class="map-why">Beat 02 · stable sort by length; the count per line is NOT given, split it yourself</div></div></div>
-<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Merge Two Sorted Arrays</span><span class="pill key">key</span><div class="map-why">Beat 01 · the bare merge — two sorted arrays in, n + m out</div></div></div>
-<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Sorter</span><span class="pill key">key</span><div class="map-why">Beat 02 · rows by sum descending, ties lexicographic</div></div></div>
-<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Count the Inversions</span><span class="pill key">key</span><div class="map-why">Beat 03 · count inversions — long long, not int</div></div></div>
-<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Squares of a Sorted Array</span><span class="pill key">key</span><div class="map-why">Beat 01 · squares of a sorted array = two sorted runs merged in O(n)</div></div></div></div>
+    <div class="card pad board"><h4>Use bubble sort when</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>The array is very small (&lt; 10 elements)</li><li>The array is nearly sorted</li><li>Simplicity is more important than efficiency</li><li>Teaching and learning</li></ul></div>
+    <div class="card pad board"><h4>Use merge sort when</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Stability is required</strong></li><li><strong>Guaranteed O(n log n)</strong> is needed</li><li>Sorting <strong>linked lists</strong></li><li><strong>External sorting</strong> (data does not fit in memory)</li><li><strong>Parallel processing</strong> (easily parallelizable)</li></ul></div>
+    <div class="card pad board"><h4>Use quick sort when</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Average-case performance</strong> matters most</li><li><strong>Memory is limited</strong> (in-place sorting)</li><li>Sorting <strong>arrays</strong> (not linked lists)</li><li><strong>Cache performance</strong> is important</li><li>Data is <strong>randomly ordered</strong></li></ul></div>
   </div>
 </section>
 
@@ -172,12 +561,12 @@
   <div class="beat-head">
     <div class="beat-n">05</div>
     <div>
-      <h2>Before the midterm</h2>
-      <div class="sub"><span>4 min</span></div>
+      <h2>Key Takeaways</h2>
+      <div class="sub"><span>3 min</span></div>
     </div>
   </div>
   <div class="stack">
-    <div class="card pad board"><p>This is the last lecture before the <strong>midterm week</strong>. Everything up to here is examinable: complexity, the linear structures, binary search, the BST, the heap, and the three O(n log n) sorts.</p><p style="margin-top:12px">Tell them what actually gets tested: not the recitation of algorithms, but <strong>picking the right one from the constraints</strong>. Given n ≤ 10⁵ and a "minimum maximum" phrasing — binary search on the answer. Given "next smallest, repeatedly" — a heap. That reflex is the semester so far.</p><div class="trap" style="margin-top:14px"><b>Practical note:</b> the lab defences resume the week after the midterm, not immediately. Lab 7 is defended in week 10, and labs 8 and 9 follow in weeks 11 and 12. Say the dates, or half the group will assume the schedule simply shifted by one.</div></div>
+    <div class="card pad board"><h4>Eight things to remember</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li><strong>Bubble sort is O(n²)</strong> — too slow for large datasets</li><li><strong>Merge sort guarantees O(n log n)</strong> but uses O(n) extra space</li><li><strong>Quick sort is the fastest in practice</strong> but has an O(n²) worst case</li><li><strong>Divide and conquer</strong> is powerful for many problems beyond sorting</li><li><strong>Choose the algorithm by the requirements</strong>: stability, space, worst-case guarantees</li><li><strong>Quick select finds the k-th element</strong> in O(n) average time</li><li><strong>Inversion counting</strong> measures how sorted an array is</li><li><strong>Both algorithms use recursion</strong> and the divide-and-conquer paradigm</li></ol></div>
   </div>
 </section>
 
@@ -185,27 +574,70 @@
   <div class="beat-head">
     <div class="beat-n">06</div>
     <div>
-      <h2>What comes next</h2>
+      <h2>Common Questions</h2>
+      <div class="sub"><span>6 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Q1 · Why is quick sort faster than merge sort in practice?</h4><p>Quick sort has better cache locality and fewer data movements. It partitions in place, while merge sort copies data to temporary arrays. The constant factors in O(n log n) are smaller for quick sort.</p></div>
+    <div class="card pad board"><h4>Q2 · When would merge sort be better than quick sort?</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Guaranteed O(n log n) performance — no O(n²) worst case</li><li>Stable sorting — the order of equal elements is preserved</li><li>Sorting linked lists — no random access needed</li><li>External sorting — sorting data on disk</li></ul></div>
+    <div class="card pad board"><h4>Q3 · Can we avoid quick sort's O(n²) worst case?</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Use random pivot selection</li><li>Use median-of-three pivot selection</li><li>Use introsort — switch to heap sort when the recursion gets too deep</li></ul></div>
+    <div class="card pad board"><h4>Q4 · Why is finding inversions useful?</h4><p>Inversions measure how unsorted an array is. Applications:</p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Collaborative filtering (recommendation systems)</li><li>Measuring similarity between rankings</li><li>Detecting anomalies in data</li></ul></div>
+    <div class="card pad board"><h4>Q5 · Is recursion necessary for these algorithms?</h4><p>No — both can be written iteratively with an explicit stack, but the recursive versions are simpler and more intuitive.</p></div>
+  </div>
+</section>
+
+<section class="beat" id="b7">
+  <div class="beat-head">
+    <div class="beat-n">07</div>
+    <div>
+      <h2>Practice Problems</h2>
       <div class="sub"><span>2 min</span></div>
     </div>
   </div>
   <div class="stack">
-    <div class="card pad board"><p>After the midterm, lecture 8 changes subject entirely: <strong>hashing</strong>. Comparison-based structures are behind us; from there on the question is not "where does this belong in the order" but "can I turn this object into a number and look it up directly".</p><p style="margin-top:12px">Homework is Lab 7 — small, five problems. Ask for <strong>B and E</strong>, which are the merge step twice over.</p></div>
+    <div class="card pad board"><h4>Try these</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li>Implement quick sort with random pivot selection</li><li>Count inversions in an array using merge sort</li><li>Find the k-th largest element using quick select</li><li>Sort an array of 0s, 1s and 2s (Dutch National Flag problem)</li><li>Merge k sorted arrays using the merge sort approach</li><li>Find the median of two sorted arrays</li><li>Count of smaller elements after self</li><li>Sort an array by increasing frequency</li></ol></div>
+  </div>
+</section>
+
+<section class="beat" id="b8">
+  <div class="beat-head">
+    <div class="beat-n">08</div>
+    <div>
+      <h2>Lab 7 — the problems</h2>
+      <div class="sub"><span>12 min</span> <span>ADS-Lab-07</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Five problems: B is the bare merge, A is a stable sort, D is the inversion count.</li>
+        <li><strong>A is fiddly, and not because of the algorithm:</strong> the number of strings per line is not given — read the whole line and split it yourself.</li>
+        <li>E looks like sorting and is not: the squares of a sorted array are <strong>two sorted runs</strong> — merge them in O(n).</li>
+        <li>D: quadratic passes nothing, and <code>int</code> overflows silently — use <code>long long</code>.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Simple Merge</span><span class="pill key">key</span><div class="map-why">Stable sort by length; the count per line is NOT given, split it yourself</div></div></div>
+<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Merge Two Sorted Arrays</span><span class="pill key">key</span><div class="map-why">The bare merge — two sorted arrays in, n + m out</div></div></div>
+<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Sorter</span><span class="pill key">key</span><div class="map-why">Rows by sum descending, ties lexicographic</div></div></div>
+<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Count the Inversions</span><span class="pill key">key</span><div class="map-why">Count inversions — long long, not int</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Squares of a Sorted Array</span><span class="pill key">key</span><div class="map-why">Squares of a sorted array = two sorted runs merged in O(n)</div></div></div><div class="trap" style="margin-top:16px"><b>Defence dates:</b> lab defences resume the week after the midterm, not immediately. Lab 7 is defended in week 10, labs 8 and 9 in weeks 11 and 12 — say the dates, or half the group will assume the schedule simply shifted by one.</div></div>
   </div>
 </section>
 </main>
 </div>
 
 <footer>
-  <span>ADS 2026 · KBTU · Lecture 7 — Merge Sort</span>
+  <span>ADS 2026 · KBTU · Lecture 7 — Merge Sort and Divide and Conquer</span>
   <span><a href="index.html">All lectures</a></span>
 </footer>
 </div>
 
 <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-<script src="assets/notes.js?v=202609281811"></script>
-<script src="assets/present.js?v=202609281811"></script>
-<script src="assets/cpp.js?v=202609281811"></script>
+<script src="assets/notes.js?v=202610011756"></script>
+<script src="assets/present.js?v=202610011756"></script>
+<script src="assets/cpp.js?v=202610011756"></script>
 <script>
 
 (function(){

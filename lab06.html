@@ -2,20 +2,20 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Heap Sort and Quick Sort</title>
+<title>Bubble Sort and Quick Sort</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
-<link rel="stylesheet" href="assets/notes.css?v=202609281811">
-<link rel="stylesheet" href="assets/present.css?v=202609281811">
-<link rel="stylesheet" href="assets/cpp.css?v=202609281811">
+<link rel="stylesheet" href="assets/notes.css?v=202610011756">
+<link rel="stylesheet" href="assets/present.css?v=202610011756">
+<link rel="stylesheet" href="assets/cpp.css?v=202610011756">
 </head><body>
 <div class="wrap">
 
 <header class="masthead">
   <div class="eyebrow">ADS 2026 · KBTU · Lecture 6 · Lab 6</div>
-  <h1>Heap Sort and <em>Quick Sort</em></h1>
-  <p class="dek">The first lecture where asymptotics stop being the whole answer. Two algorithms share the same O(n log n) on paper, one of them has a quadratic worst case, and it is the one everybody actually uses. The lecture is about why.</p>
+  <h1>Bubble Sort and <em>Quick Sort</em></h1>
+  <p class="dek">Why there is more than one way to sort, the simplest one and why it does not scale, and quick sort — divide and conquer around a pivot, the fastest sort in practice and the one with a quadratic worst case.</p>
   <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>6</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 6 · 9 problems</b></span></div>
 </header>
 
@@ -23,23 +23,23 @@
 
 <nav class="rail" aria-label="Running order">
   <div class="rail-h">Running order</div>
-  <div class="part">I · Baseline</div>
+  <div class="part">I · Sorting</div>
   <ol>
-    <li><a href="#b1"><span class="n">01</span><span>Why several sorts</span><span class="t">14′</span></a></li>
+    <li><a href="#b1"><span class="n">01</span><span>Introduction</span><span class="t">4′</span></a></li>
+    <li><a href="#b2"><span class="n">02</span><span>Why several algorithms</span><span class="t">8′</span></a></li>
   </ol>
-  <div class="part">II · Two algorithms</div>
+  <div class="part">II · Bubble sort</div>
   <ol>
-    <li><a href="#b2"><span class="n">02</span><span>Heap sort</span><span class="t">16′</span></a></li>
-    <li><a href="#b3"><span class="n">03</span><span>Quick sort</span><span class="t">22′</span></a></li>
+    <li><a href="#b3"><span class="n">03</span><span>Bubble sort</span><span class="t">22′</span></a></li>
+    <li><a href="#b4"><span class="n">04</span><span>Why quick and merge sort</span><span class="t">10′</span></a></li>
   </ol>
-  <div class="part">III · In practice</div>
+  <div class="part">III · Quick sort</div>
   <ol>
-    <li><a href="#b4"><span class="n">04</span><span>std::sort and comparators</span><span class="t">16′</span></a></li>
+    <li><a href="#b5"><span class="n">05</span><span>Quick sort</span><span class="t">40′</span></a></li>
   </ol>
   <div class="part">IV · Practice</div>
   <ol>
-    <li><a href="#b5"><span class="n">05</span><span>Lab 6 walkthrough</span><span class="t">14′</span></a></li>
-    <li><a href="#b6"><span class="n">06</span><span>What comes next</span><span class="t">3′</span></a></li>
+    <li><a href="#b6"><span class="n">06</span><span>Lab 6</span><span class="t">12′</span></a></li>
   </ol>
 </nav>
 
@@ -48,21 +48,19 @@
   <div class="beat-head">
     <div class="beat-n">01</div>
     <div>
-      <h2>The quadratic floor</h2>
-      <div class="sub"><span>14 min</span> <span>demo: race</span></div>
+      <h2>Introduction to Sorting</h2>
+      <div class="sub"><span>4 min</span> <span>board</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Everyone already knows bubble sort. Write it, count the comparisons — <strong>n(n−1)/2</strong> — and put the number for n = 10⁵ on the board: five billion.</li>
-        <li>Then the reframing: with a judge doing ~10⁸ operations a second, <strong>n = 10⁵ is the wall</strong>. Below it quadratic survives, above it nothing quadratic ever passes. That single threshold decides most submissions in this lab.</li>
-        <li>Run the race demo. The point is not that O(n log n) wins — it is <strong>how early</strong> it wins. At n = 1000 the gap is already 100×.</li>
-        <li>Name the properties that will separate the algorithms later: <strong>stability</strong> (equal elements keep their relative order) and <strong>in-place</strong> (O(1) extra memory). Both come back in the lab.</li>
+        <li>Sorting is one of the most fundamental operations: it puts data in a particular order — ascending or descending.</li>
+        <li>Why it matters: <strong>sorted data is easier to search and to work with</strong> — binary search from lecture 3 only works on a sorted array.</li>
       </ul>
     </div>
-    <div class="card pad demo"><h4>Demo · comparisons, quadratic against n log n</h4><div class="ctl" style="align-items:stretch"><label class="f" style="flex:1 1 320px"><span>n = <span id="srn" class="mono" style="color:var(--accent);font-size:.95rem;text-transform:none;letter-spacing:0">1 000</span></span><input type="range" id="srsl" min="1" max="30" value="10"></label></div><div class="tw"><table><thead><tr><th>Algorithm</th><th class="n">Comparisons</th><th class="n">Time at 10⁸/s</th><th>Verdict</th></tr></thead><tbody id="srbody"></tbody></table></div><p style="margin-top:12px;font-size:.83rem;color:var(--ink-3)">Drag until the quadratic row turns red. That n is the number to remember for the whole lab.</p></div>
+    <div class="card pad board"><h4>What sorting is</h4><p>Sorting arranges data in a particular order — <strong>ascending</strong> or <strong>descending</strong> — and makes searching and data manipulation more efficient.</p><pre class="out" style="margin-top:12px">[64, 34, 25, 12, 22, 11, 90]  →  [11, 12, 22, 25, 34, 64, 90]</pre></div>
   </div>
 </section>
 
@@ -70,32 +68,51 @@
   <div class="beat-head">
     <div class="beat-n">02</div>
     <div>
-      <h2>Heap sort — yesterday, reused</h2>
-      <div class="sub"><span>16 min</span> <span>board</span></div>
+      <h2>Why Do We Need Multiple Sorting Algorithms?</h2>
+      <div class="sub"><span>8 min</span> <span>board</span> <span>code</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>You already built this last week. Heapify the array in <strong>O(n)</strong>, then extract the minimum n times. Done.</li>
-        <li>Its selling point is the one guarantee nothing else here offers: <strong>O(n log n) always</strong>, no bad input, no randomisation needed, and <strong>O(1) extra memory</strong>.</li>
-        <li>So ask the obvious question out loud — if it is guaranteed and in place, why is it not the default sort anywhere? Hold the answer until beat 04.</li>
-        <li>One honest caveat: heap sort is <strong>not stable</strong>. Two equal elements can come out in the opposite order, which matters the moment you sort records by one field.</li>
+        <li>Different algorithms have different characteristics, and each one fits a different situation. Go through the six on the board.</li>
+        <li><strong>No single sorting algorithm is best for all situations.</strong></li>
+        <li>An example of a very different trade-off: when the values are small numbers, you can sort <strong>without comparing at all</strong> — just count how many times each value occurs.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre><span class="c">// build in O(n): sift down from the last parent</span>
-<span class="k">for</span> (<span class="k">int</span> i = n/2 - 1; i &gt;= 0; --i)
-    siftDown(i, n);
+    <div class="card pad board"><h4>Six characteristics</h4><div class="tw"><table><thead><tr><th>Characteristic</th><th>What it means</th></tr></thead><tbody><tr><td class="k">Time Complexity</td><td>some are faster for large datasets</td></tr><tr><td class="k">Space Complexity</td><td>some use less memory</td></tr><tr><td class="k">Stability</td><td>some preserve the relative order of equal elements</td></tr><tr><td class="k">Adaptivity</td><td>some perform better on partially sorted data</td></tr><tr><td class="k">Online</td><td>some can sort data as it arrives</td></tr><tr><td class="k">In-place</td><td>some require minimal extra memory</td></tr></tbody></table></div><p style="margin-top:13px"><strong>No single sorting algorithm is best for all situations!</strong></p></div>
+    <div class="card pad board"><h4>Another version · counting sort</h4><p>When every value is a small number — here from 1 to 10 — count how many times each value occurs, then print each value that many times. There are <strong>no comparisons</strong>, and the work is O(n + k) for k possible values.</p><div style="margin-top:12px"><details class="code"><summary>counting sort — the full program<span class="lines">20 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
 
-<span class="c">// then repeatedly move the root to the end</span>
-<span class="k">for</span> (<span class="k">int</span> i = n - 1; i &gt; 0; --i) {
-    swap(a[0], a[i]);
-    siftDown(0, i);
-}</pre><p style="margin-top:12px">With a <strong>max</strong>-heap this sorts ascending in place — the largest goes to the back each round. Point out that the array is simultaneously a shrinking heap and a growing sorted tail.</p></div>
-      <div class="card pad board"><h4>The scoreboard</h4><div class="tw"><table><thead><tr><th>Sort</th><th class="n">Average</th><th class="n">Worst</th><th class="n">Memory</th><th>Stable</th></tr></thead><tbody><tr><td class="k">Bubble / insertion</td><td class="n">O(n²)</td><td class="n">O(n²)</td><td class="n">O(1)</td><td style="color:var(--prime)">yes</td></tr><tr><td class="k">Heap sort</td><td class="n">O(n log n)</td><td class="n" style="color:var(--prime)">O(n log n)</td><td class="n">O(1)</td><td style="color:var(--mark)">no</td></tr><tr><td class="k">Quick sort</td><td class="n">O(n log n)</td><td class="n" style="color:var(--mark)">O(n²)</td><td class="n">O(log n)</td><td style="color:var(--mark)">no</td></tr><tr><td class="k">Merge sort</td><td class="n">O(n log n)</td><td class="n" style="color:var(--prime)">O(n log n)</td><td class="n" style="color:var(--mark)">O(n)</td><td style="color:var(--prime)">yes</td></tr></tbody></table></div><p style="margin-top:12px">Leave this table up for two lectures — merge sort is next week, and this row is where it earns its place.</p></div>
-    </div>
+<span class="k">using</span> <span class="k">namespace</span> std;
+<span class="k">int</span> a[11];
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> n, x;
+    cin &gt;&gt; n;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; ++i) {
+        cin &gt;&gt; x;
+        a[x]++;
+    }
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt;= 10; i++)
+        cout &lt;&lt; i &lt;&lt; <span class="s">" "</span> &lt;&lt; a[i] &lt;&lt; endl;
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt;= 10; i++) {
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; a[i]; j++)
+            cout &lt;&lt; i &lt;&lt; <span class="s">" "</span>;
+    }
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">10
+4 6 4 2 1 2 1 3 4 1</pre><div class="out-lbl">output</div><pre class="out">1 3
+2 2
+3 1
+4 3
+5 0
+6 1
+7 0
+8 0
+9 0
+10 0
+1 1 1 2 2 3 4 4 4 6</pre><p style="margin-top:12px">The first ten lines are the counts, the last line is the sorted array. The array <span class="mono">a[11]</span> only fits values 1…10 — a value outside that range writes past the end.</p></div>
   </div>
 </section>
 
@@ -103,35 +120,140 @@
   <div class="beat-head">
     <div class="beat-n">03</div>
     <div>
-      <h2>Quick sort and its bad day</h2>
-      <div class="sub"><span>22 min</span> <span>demo: partition</span></div>
+      <h2>Bubble Sort: The Simple Algorithm</h2>
+      <div class="sub"><span>22 min</span> <span>board</span> <span>code</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>One idea: pick a <strong>pivot</strong>, move everything smaller to its left and everything larger to its right, then recurse on both sides. After partitioning, <strong>the pivot is already in its final position</strong> — say that, it is the part students miss.</li>
-        <li>Partition is the only real code. Walk the demo once by hand at normal speed, then once more asking the room where the boundary index moves.</li>
-        <li>A good pivot halves the array — depth log n, total O(n log n). A bad pivot peels off one element — <strong>depth n, total O(n²)</strong>.</li>
-        <li><strong>Here is the trap worth the whole beat:</strong> if you always take the first element as pivot, then <em>already sorted input</em> is the worst case. The most natural implementation dies on the most natural data.</li>
-        <li>Two fixes, both one line: pick a <strong>random</strong> pivot, or median-of-three. Randomised quicksort has expected O(n log n) on every input, adversarial ones included.</li>
-        <li>Mention what the library does, because they will use it: <code>std::sort</code> is <strong>introsort</strong> — quicksort that counts its own recursion depth and switches to heap sort when it goes too deep. Quicksort speed with heap sort's guarantee. That is the answer to beat 02's question.</li>
+        <li><strong>Bubble sort</strong> is the simplest sorting algorithm: walk through the list, compare <strong>adjacent</strong> elements, swap them if they are in the wrong order.</li>
+        <li>Repeat until a pass makes no swaps. After each pass the largest remaining element has "bubbled" to the end — that is why the inner loop gets one shorter every time.</li>
+        <li>Write out the first two passes on the board, then show the array after every pass.</li>
+        <li>Cost: O(n²) on average and in the worst case, O(n) when the array is already sorted — thanks to the <span class="mono">swapped</span> flag.</li>
+        <li>Then the number that ends the discussion: for a million elements, about 10¹² operations against about 2·10⁷ for quick sort.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre><span class="k">int</span> partition(<span class="k">int</span> l, <span class="k">int</span> r) {
-    <span class="k">int</span> p = a[l + rand() % (r - l + 1)];   <span class="c">// random!</span>
-    <span class="k">int</span> i = l, j = r;
-    <span class="k">while</span> (i &lt;= j) {
-        <span class="k">while</span> (a[i] &lt; p) i++;
-        <span class="k">while</span> (a[j] &gt; p) j--;
-        <span class="k">if</span> (i &lt;= j) swap(a[i++], a[j--]);
+    <div class="card pad board"><h4>How bubble sort works</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li>Compare adjacent elements</li><li>Swap if they are in the wrong order</li><li>Repeat until no swaps are needed</li></ol></div>
+    <div class="card pad board"><h4>Bubble sort implementation</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">void</span> bubbleSort(vector&lt;<span class="k">int</span>&gt;&amp; arr) {
+    <span class="k">int</span> n = arr.size();
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n - 1; i++) {
+        <span class="k">bool</span> swapped = <span class="k">false</span>;
+
+        <span class="c">// Last i elements are already in place</span>
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; n - i - 1; j++) {
+            <span class="k">if</span> (arr[j] &gt; arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+                swapped = <span class="k">true</span>;
+            }
+        }
+
+        <span class="c">// If no swapping happened, array is sorted</span>
+        <span class="k">if</span> (!swapped)
+            break;
     }
-    <span class="k">return</span> j;
-}</pre><div class="trap" style="margin-top:14px"><b>Strict versus non-strict.</b> Writing <code>a[i] &lt;= p</code> instead of <code>&lt;</code> makes the pointers run past each other on an array of equal elements and the recursion never shrinks. An array of a million identical values is a legal test.</div><div class="trap" style="margin-top:10px"><b>And the pivot by value, not by index.</b> Storing the index and then swapping elements around means the pivot moves under you.</div></div>
-      <div class="card pad demo"><h4>Demo · partition, step by step</h4><div class="ctl"><label class="f" style="flex:1 1 230px"><span>array</span><input type="text" id="qsa" value="7 2 9 4 1 8 3"></label><div class="seg" id="qspv"><button data-p="first" class="on">pivot = first</button><button data-p="mid">middle</button></div><button class="pri" id="qsrun">Partition</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-qs="7 2 9 4 1 8 3">random</button><button class="chip" data-qs="1 2 3 4 5 6 7 8">already sorted</button><button class="chip" data-qs="5 5 5 5 5 5">all equal</button></div><div class="track" id="qstrack"></div><div class="readout"><div class="stat"><div class="lab">pivot</div><div class="val" id="qsp">—</div></div><div class="stat"><div class="lab">left part</div><div class="val" id="qsl">—</div></div><div class="stat"><div class="lab">right part</div><div class="val" id="qsr">—</div></div><div class="stat bad"><div class="lab">recursion depth</div><div class="val" id="qsd">—</div></div></div><div class="log" id="qslog"></div></div>
-    </div>
+}
+
+<span class="k">void</span> printArray(vector&lt;<span class="k">int</span>&gt;&amp; arr) {
+    <span class="k">for</span> (<span class="k">int</span> num : arr)
+        cout &lt;&lt; num &lt;&lt; <span class="s">" "</span>;
+    cout &lt;&lt; endl;
+}
+
+<span class="k">int</span> main() {
+    vector&lt;<span class="k">int</span>&gt; arr = {64, 34, 25, 12, 22, 11, 90};
+
+    cout &lt;&lt; <span class="s">"Original array: "</span>;
+    printArray(arr);
+
+    bubbleSort(arr);
+
+    cout &lt;&lt; <span class="s">"Sorted array:   "</span>;
+    printArray(arr);
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">Original array: 64 34 25 12 22 11 90
+Sorted array:   11 12 22 25 34 64 90</pre></div>
+    <div class="card pad board"><h4>Step by step</h4><p><strong>Input:</strong> <span class="mono">[64, 34, 25, 12, 22, 11, 90]</span></p><pre class="out">Pass 1:
+[64, 34, 25, 12, 22, 11, 90]
+[34, 64, 25, 12, 22, 11, 90]  - swap 64, 34
+[34, 25, 64, 12, 22, 11, 90]  - swap 64, 25
+[34, 25, 12, 64, 22, 11, 90]  - swap 64, 12
+[34, 25, 12, 22, 64, 11, 90]  - swap 64, 22
+[34, 25, 12, 22, 11, 64, 90]  - swap 64, 11
+[34, 25, 12, 22, 11, 64, 90]  - 64 &lt; 90, no swap
+
+Pass 2:
+[25, 34, 12, 22, 11, 64, 90]  - swap 34, 25
+[25, 12, 34, 22, 11, 64, 90]  - swap 34, 12
+[25, 12, 22, 34, 11, 64, 90]  - swap 34, 22
+[25, 12, 22, 11, 34, 64, 90]  - swap 34, 11
+[25, 12, 22, 11, 34, 64, 90]  - 34 &lt; 64, no swap
+
+Pass 3: [12, 22, 11, 25, 34, 64, 90]
+Pass 4: [12, 11, 22, 25, 34, 64, 90]
+Pass 5: [11, 12, 22, 25, 34, 64, 90]
+Pass 6: [11, 12, 22, 25, 34, 64, 90]  - no swaps, stop
+
+Final: [11, 12, 22, 25, 34, 64, 90]</pre><p style="margin-top:12px">Pass 6 makes no swaps. Here it is also the last pass the outer loop allows (n − 1 = 6), so the <span class="mono">swapped</span> flag saves nothing — but on an already sorted array it stops after 1 pass: that is the O(n) best case.</p></div>
+    <div class="card pad board"><h4>Bubble sort complexity</h4><div class="tw"><table><thead><tr><th>Case</th><th class="n">Time Complexity</th><th class="n">Description</th></tr></thead><tbody><tr><td class="k">Best Case</td><td class="n"><span style="color:var(--prime)">O(n)</span></td><td class="n">already sorted array</td></tr><tr><td class="k">Average Case</td><td class="n"><span style="color:var(--mark)">O(n²)</span></td><td class="n">random order</td></tr><tr><td class="k">Worst Case</td><td class="n"><span style="color:var(--mark)">O(n²)</span></td><td class="n">reverse sorted array</td></tr><tr><td class="k">Space</td><td class="n">O(1)</td><td class="n">in-place sorting</td></tr></tbody></table></div></div>
+    <div class="card pad board"><h4>Problems with bubble sort</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li><strong>Inefficient for large datasets</strong> — O(n²) is too slow</li><li><strong>Too many comparisons</strong> — compares adjacent elements again and again</li><li><strong>Too many swaps</strong> — moves elements one position at a time</li><li><strong>Not suitable for real-world applications</strong> with large data</li></ol><p style="margin-top:14px"><strong>Example:</strong> sorting 1,000,000 elements</p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Bubble Sort: ~1,000,000,000,000 operations</li><li>Quick Sort: ~20,000,000 operations</li><li><strong>about 50,000 times slower!</strong></li></ul></div>
+    <div class="card pad board"><h4>Another version · print the array after every pass</h4><p>The same bubble sort, with one extra loop that prints the array after each pass — the passes above, straight from the program.</p><div style="margin-top:12px"><details class="code"><summary>bubble sort with a print per pass — the full program<span class="lines">25 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+<span class="k">int</span> a[1000];
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> n;
+    cin &gt;&gt; n;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        cin &gt;&gt; a[i];
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n - 1; i++) { 
+        <span class="k">bool</span> swapped = <span class="k">false</span>;
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; n - i - 1; j++)
+            <span class="k">if</span> (a[j] &gt; a[j + 1]) {
+                swap(a[j], a[j + 1]);
+                swapped = <span class="k">true</span>;
+            }
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+            cout &lt;&lt; a[i] &lt;&lt; <span class="s">" "</span>;
+        cout &lt;&lt; endl;
+        <span class="k">if</span> (swapped == <span class="k">false</span>)
+            break;
+    }
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">7
+64 34 25 12 22 11 90</pre><div class="out-lbl">output</div><pre class="out">34 25 12 22 11 64 90
+25 12 22 11 34 64 90
+12 22 11 25 34 64 90
+12 11 22 25 34 64 90
+11 12 22 25 34 64 90
+11 12 22 25 34 64 90</pre></div>
+    <div class="card pad board"><h4>Another version · compare every pair</h4><p>Even simpler: compare <span class="mono">a[i]</span> with every <span class="mono">a[j]</span> after it and swap if they are out of order. After step i the smallest remaining value sits at position i. Also O(n²), but no early stop.</p><div style="margin-top:12px"><details class="code"><summary>compare every pair — the full program<span class="lines">18 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+<span class="k">int</span> a[1000];
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> n;
+    cin &gt;&gt; n;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        cin &gt;&gt; a[i];
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) 
+        <span class="k">for</span> (<span class="k">int</span> j = i + 1; j &lt; n; j++)
+            <span class="k">if</span> (a[i] &gt; a[j])
+                swap(a[i], a[j]);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        cout &lt;&lt; a[i] &lt;&lt; <span class="s">" "</span>;
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">10
+56 12 7 87 34 90 1 390 67 95</pre><div class="out-lbl">output</div><pre class="out">1 7 12 34 56 67 87 90 95 390</pre></div>
   </div>
 </section>
 
@@ -139,33 +261,22 @@
   <div class="beat-head">
     <div class="beat-n">04</div>
     <div>
-      <h2>What you will actually write</h2>
-      <div class="sub"><span>16 min</span> <span>board</span></div>
+      <h2>Why We Need Quick Sort and Merge Sort</h2>
+      <div class="sub"><span>10 min</span> <span>board</span> <span>demo: race</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>In a contest you write <code>sort(a.begin(), a.end())</code> and move on. The lecture matters so you know <strong>when that is not enough</strong>.</li>
-        <li>Custom order is a comparator returning <strong>strictly less</strong>. Say the word <em>strictly</em> and mean it: a comparator that returns true for equal elements is undefined behaviour, and in practice it segfaults inside the library.</li>
-        <li>For "descending, ties by name ascending" show the two-line comparator with an explicit tie-break. Half of this lab is exactly that shape.</li>
-        <li>When you need equal elements to keep their input order, <code>std::sort</code> is the wrong tool — use <strong><code>stable_sort</code></strong>. That is next week's algorithm, and problem A here already needs the idea.</li>
-        <li>The floating-point warning, because problem F is waiting: never compare doubles with <code>==</code>, and if the output is fixed to three decimals, <strong>sort by the rounded value</strong>, not the raw one, or two runs disagree on ties.</li>
+        <li>Four reasons: much faster — <strong>O(n log n) against O(n²)</strong>; they scale to millions of elements; they are what real systems use; and they are built on <strong>divide and conquer</strong> — break the problem into smaller subproblems.</li>
+        <li>Read the table row by row: at 100 elements the gap is 15×, at 100 000 it is 6 000×.</li>
+        <li>Then drag the demo until the quadratic row turns red — that n is the one to remember for the lab.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre>sort(v.begin(), v.end(),
-     [](<span class="k">const</span> Student&amp; x, <span class="k">const</span> Student&amp; y) {
-         <span class="k">if</span> (x.gpa != y.gpa) <span class="k">return</span> x.gpa &gt; y.gpa;
-         <span class="k">return</span> x.name &lt; y.name;        <span class="c">// tie-break</span>
-     });</pre><div class="trap" style="margin-top:14px"><b>The comparator must be a strict weak ordering.</b> <code>return x.gpa &gt;= y.gpa;</code> compiles, passes the samples, and then crashes on a big test. If a submission gets a runtime error only on large inputs, look here first.</div></div>
-      <div class="card pad board"><h4>Sorting without comparing</h4><p>Two problems in this lab have a tiny value range, and there the O(n log n) bound does not apply at all — it only holds for <strong>comparison</strong> sorts.</p><pre style="margin-top:12px"><span class="c">// counting sort: 26 letters, |s| up to 10⁶</span>
-<span class="k">int</span> cnt[26] = {};
-<span class="k">for</span> (<span class="k">char</span> c : s) cnt[c - <span class="s">'a'</span>]++;
-<span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; 26; ++i)
-    cout &lt;&lt; string(cnt[i], <span class="s">'a'</span> + i);</pre><p style="margin-top:12px">That is <strong>O(n + k)</strong>, and for problem I it is the difference between comfortable and borderline. Worth five minutes — it is the first time the class sees a sort that beats n log n.</p></div>
-    </div>
+    <div class="card pad board"><h4>Advantages of the advanced algorithms</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li><strong>Much faster</strong>: O(n log n) vs O(n²)</li><li><strong>Scalable</strong>: handle millions of elements efficiently</li><li><strong>Practical</strong>: used in real-world systems</li><li><strong>Divide and conquer</strong>: break the problem into smaller subproblems</li></ol></div>
+    <div class="card pad board"><h4>Performance comparison</h4><div class="tw"><table><thead><tr><th>Array Size</th><th class="n">Bubble Sort</th><th class="n">Quick Sort</th><th class="n">Merge Sort</th></tr></thead><tbody><tr><td class="k">100</td><td class="n">10,000 ops</td><td class="n">664 ops</td><td class="n">664 ops</td></tr><tr><td class="k">1,000</td><td class="n">1,000,000 ops</td><td class="n">9,966 ops</td><td class="n">9,966 ops</td></tr><tr><td class="k">10,000</td><td class="n">100,000,000 ops</td><td class="n">132,877 ops</td><td class="n">132,877 ops</td></tr><tr><td class="k">100,000</td><td class="n">10,000,000,000 ops</td><td class="n">1,660,964 ops</td><td class="n">1,660,964 ops</td></tr></tbody></table></div><p style="margin-top:11px;font-size:.85rem;color:var(--ink-3)">Bubble sort ≈ n², quick and merge sort ≈ n · log₂ n.</p></div>
+    <div class="card pad demo"><h4>Demo · comparisons, quadratic against n log n</h4><div class="ctl" style="align-items:stretch"><label class="f" style="flex:1 1 320px"><span>n = <span id="srn" class="mono" style="color:var(--accent);font-size:.95rem;text-transform:none;letter-spacing:0">1 000</span></span><input type="range" id="srsl" min="1" max="30" value="10"></label></div><div class="tw"><table><thead><tr><th>Algorithm</th><th class="n">Comparisons</th><th class="n">Time at 10⁸/s</th><th>Verdict</th></tr></thead><tbody id="srbody"></tbody></table></div><p style="margin-top:12px;font-size:.83rem;color:var(--ink-3)">Drag until the quadratic row turns red. That n is the number to remember for the whole lab.</p></div>
   </div>
 </section>
 
@@ -173,30 +284,140 @@
   <div class="beat-head">
     <div class="beat-n">05</div>
     <div>
-      <h2>Lab 6 — how it maps onto today</h2>
-      <div class="sub"><span>14 min</span> <span>ADS-Lab-06</span></div>
+      <h2>Quick Sort</h2>
+      <div class="sub"><span>40 min</span> <span>board</span> <span>code</span> <span>demo: partition</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Be straight with them about what this lab tests: <strong>not one problem here requires you to implement a sort</strong>. Every single one is solvable with <code>std::sort</code> plus the right comparator.</li>
-        <li>So the skill being drilled is beat 04 — <strong>reading the ordering rule out of the statement correctly</strong>. That is where the marks are lost, not in the algorithm.</li>
-        <li>Start them on I (counting sort) and D (dates as tuples). Both are short and both teach the comparator habit.</li>
-        <li>C has a genuine edge case worth mentioning: the minimum difference can be large, so <strong>initialise the running minimum properly</strong> — not with a guessed constant. Our own reference solution had this bug.</li>
-        <li><strong>F and G are the heavy pair</strong> and neither is on the defence. F is weighted GPA with a grade table, rounding and tie-breaks at n = 10⁵; G is not really sorting at all.</li>
+        <li><strong>Quick sort</strong> is divide and conquer: pick a <strong>pivot</strong>, partition the array around it, then recursively sort both parts.</li>
+        <li>Partition with two pointers: i walks right while a[i] &lt; pivot, j walks left while a[j] &gt; pivot; when both stop, swap and step on. When they cross, everything left of i is ≤ pivot and everything right of j is ≥ pivot.</li>
+        <li>Trace [10, 7, 8, 9, 1, 5] on the board with the code exactly as written — middle element as pivot.</li>
+        <li>Cost: O(n log n) when the pivot splits well, <strong>O(n²) when it is always the smallest or largest</strong>. Use the demo: pivot = first on an already sorted array.</li>
+        <li>Not stable, uses O(log n) stack on average — and it is the fastest sort in practice. Finish with the pivot strategies.</li>
       </ul>
     </div>
-    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Vowels and consonants</span><span class="pill key">key</span><div class="map-why">Beat 04 · custom alphabet — vowels first, then consonants</div></div></div>
-<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">House of love</span><span class="pill key">key</span><div class="map-why">Beat 04 · intersection of two arrays; mind n = 0 or m = 0, the line is then empty</div></div></div>
-<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Points in Proximity</span><span class="pill key">key</span><div class="map-why">Beat 04 · sort, then minimum adjacent difference — initialise the minimum safely</div></div></div>
-<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Calendar</span><span class="pill key">key</span><div class="map-why">Beat 04 · dates as (year, month, day) tuples</div></div></div>
-<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Incomplete sorting</span><span class="pill key">key</span><div class="map-why">Beat 04 · sort each column of a matrix descending</div></div></div>
-<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">New GPA</span><div class="map-why">Weighted GPA, rounding and tie-breaks, n = 10⁵, TL 3 s — not on the defence</div></div></div>
-<div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Nurbol hacker</span><div class="map-why">Chains of renames through a map — not a sorting problem; not on the defence</div></div></div>
-<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">Balanced letter</span><span class="pill key">key</span><div class="map-why">Beat 04 · smallest letter greater than k — upper_bound on a sorted array</div></div></div>
-<div class="map-row"><span class="map-idx">I</span><div><span class="map-name">Problem C. Azat likes sorting</span><span class="pill key">key</span><div class="map-why">Beat 04 · counting sort, |s| up to 10⁶</div></div></div><div class="trap" style="margin-top:16px"><b>Tell them about the trailing space.</b> Several statements here print space-separated values; a trailing space at the end of a line is accepted by our checkers, a missing newline is not. This lab had a checker that failed correct solutions over exactly this, and it is now fixed — but the habit of printing cleanly is worth keeping.</div></div>
+    <div class="card pad board"><h4>Quick sort algorithm</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li><strong>Choose a pivot</strong> element from the array</li><li><strong>Partition</strong>: rearrange the array so elements &lt; pivot are on the left and elements &gt; pivot on the right</li><li><strong>Recursively</strong> apply the same steps to the left and right partitions</li></ol></div>
+    <div class="card pad board"><h4>Quick sort implementation · the function</h4><pre><span class="k">int</span> a[1000];
+
+<span class="k">void</span> quick_sort(<span class="k">int</span> l, <span class="k">int</span> r) {
+    <span class="c">// Choose middle element as pivot</span>
+    <span class="k">int</span> p = a[(l + r) / 2];
+    <span class="k">int</span> i = l;
+    <span class="k">int</span> j = r;
+
+    <span class="c">// Partition the array</span>
+    <span class="k">while</span> (i &lt; j) {
+        <span class="c">// Find element on left that should be on right</span>
+        <span class="k">while</span> (a[i] &lt; p) i++;
+        <span class="c">// Find element on right that should be on left</span>
+        <span class="k">while</span> (a[j] &gt; p) j--;
+
+        <span class="c">// Swap elements if needed</span>
+        <span class="k">if</span> (i &lt;= j) {
+            swap(a[i], a[j]);
+            i++;
+            j--;
+        }
+    }
+
+    <span class="c">// Recursively sort left partition</span>
+    <span class="k">if</span> (l &lt; j)
+        quick_sort(l, j);
+    <span class="c">// Recursively sort right partition</span>
+    <span class="k">if</span> (i &lt; r)
+        quick_sort(i, r);
+}</pre></div>
+    <div class="card pad board"><h4>Quick sort implementation · main</h4><pre><span class="k">int</span> main() {
+    <span class="k">int</span> n;
+    cout &lt;&lt; <span class="s">"Enter number of elements: "</span>;
+    cin &gt;&gt; n;
+
+    cout &lt;&lt; <span class="s">"Enter elements: "</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        cin &gt;&gt; a[i];
+    }
+
+    cout &lt;&lt; <span class="s">"Original array: "</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        cout &lt;&lt; a[i] &lt;&lt; <span class="s">" "</span>;
+    }
+    cout &lt;&lt; endl;
+
+    quick_sort(0, n - 1);
+
+    cout &lt;&lt; <span class="s">"Sorted array:   "</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        cout &lt;&lt; a[i] &lt;&lt; <span class="s">" "</span>;
+    }
+    cout &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">input</div><pre class="out">6
+10 7 8 9 1 5</pre><div class="out-lbl">output</div><pre class="out">Enter number of elements: Enter elements: Original array: 10 7 8 9 1 5
+Sorted array:   1 5 7 8 9 10</pre><p style="margin-top:12px">The prompts are printed before the input is read, so in the output they run together on one line.</p></div>
+    <div class="card pad board"><h4>Step by step</h4><p><strong>Input:</strong> <span class="mono">[10, 7, 8, 9, 1, 5]</span>. Pivot is the <strong>middle</strong> element, <span class="mono">a[(l + r) / 2]</span>, as in the code.</p><pre class="out">quick_sort(0, 5): [10, 7, 8, 9, 1, 5], pivot = a[2] = 8
+  swap a[0]=10 and a[5]=5 → [5, 7, 8, 9, 1, 10]
+  swap a[2]=8 and a[4]=1 → [5, 7, 1, 9, 8, 10]
+  recurse on left [0..3] and right [3..5]
+  quick_sort(0, 3): [5, 7, 1, 9], pivot = a[1] = 7
+    swap a[1]=7 and a[2]=1 → [5, 1, 7, 9, 8, 10]
+    recurse on left [0..1] and right [2..3]
+    quick_sort(0, 1): [5, 1], pivot = a[0] = 5
+      swap a[0]=5 and a[1]=1 → [1, 5, 7, 9, 8, 10]
+      nothing left to sort here
+    quick_sort(2, 3): [7, 9], pivot = a[2] = 7
+      swap a[2]=7 and a[2]=7 (the same cell) → [1, 5, 7, 9, 8, 10]
+      nothing left to sort here
+  quick_sort(3, 5): [9, 8, 10], pivot = a[4] = 8
+    swap a[3]=9 and a[4]=8 → [1, 5, 7, 8, 9, 10]
+    recurse on right [4..5]
+    quick_sort(4, 5): [9, 10], pivot = a[4] = 9
+      swap a[4]=9 and a[4]=9 (the same cell) → [1, 5, 7, 8, 9, 10]
+      nothing left to sort here
+
+Final: [1, 5, 7, 8, 9, 10]</pre><p style="margin-top:12px">Look at the first call: the pointers stop on the same cell, so the left part is [0..3] and the right part is [3..5] — they <strong>share index 3</strong>. With <span class="mono">while (i &lt; j)</span> that can happen; the result is still sorted, only one cell is looked at twice. The common form <span class="mono">while (i &lt;= j)</span> always separates the two parts.</p></div>
+    <div class="card pad board"><h4>Quick sort complexity</h4><div class="tw"><table><thead><tr><th>Case</th><th class="n">Time Complexity</th><th class="n">Space Complexity</th></tr></thead><tbody><tr><td class="k">Best Case</td><td class="n"><span style="color:var(--prime)">O(n log n)</span></td><td class="n">O(log n)</td></tr><tr><td class="k">Average Case</td><td class="n"><span style="color:var(--prime)">O(n log n)</span></td><td class="n">O(log n)</td></tr><tr><td class="k">Worst Case</td><td class="n"><span style="color:var(--mark)">O(n²)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td></tr></tbody></table></div></div>
+    <div class="card pad board"><h4>Quick sort characteristics</h4><p><strong>Advantages</strong></p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Fastest in practice</strong> for the average case</li><li><strong>In-place sorting</strong>: uses O(log n) stack space</li><li><strong>Cache-friendly</strong>: good locality of reference</li><li><strong>Simple to implement</strong></li></ul><p style="margin-top:12px"><strong>Disadvantages</strong></p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Worst case O(n²)</strong>: when the pivot is always the smallest or largest</li><li><strong>Not stable</strong>: may change the relative order of equal elements</li><li><strong>Recursive</strong>: uses stack space</li></ul></div>
+    <div class="card pad board"><h4>Pivot selection strategies</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li><strong>Last element</strong>: simple, but can be slow on sorted arrays</li><li><strong>First element</strong>: the same problem as the last element</li><li><strong>Random element</strong>: better average case</li><li><strong>Median of three</strong>: the median of the first, middle and last</li><li><strong>Median of medians</strong>: guaranteed O(n log n), but complex</li></ol><p style="margin-top:12px">The code above takes the <strong>middle</strong> element — on an already sorted array that is the median, the best possible split.</p></div>
+    <div class="card pad demo"><h4>Demo · partition, step by step</h4><div class="ctl"><label class="f" style="flex:1 1 230px"><span>array</span><input type="text" id="qsa" value="7 2 9 4 1 8 3"></label><div class="seg" id="qspv"><button data-p="first" class="on">pivot = first</button><button data-p="mid">middle</button></div><button class="pri" id="qsrun">Partition</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-qs="7 2 9 4 1 8 3">random</button><button class="chip" data-qs="1 2 3 4 5 6 7 8">already sorted</button><button class="chip" data-qs="5 5 5 5 5 5">all equal</button></div><div class="track" id="qstrack"></div><div class="readout"><div class="stat"><div class="lab">pivot</div><div class="val" id="qsp">—</div></div><div class="stat"><div class="lab">left part</div><div class="val" id="qsl">—</div></div><div class="stat"><div class="lab">right part</div><div class="val" id="qsr">—</div></div><div class="stat bad"><div class="lab">recursion depth</div><div class="val" id="qsd">—</div></div></div><div class="log" id="qslog"></div></div>
+    <div class="card pad board"><h4>Another version · read, sort, print</h4><p>The same <span class="mono">quick_sort</span>, with a <span class="mono">main</span> that only reads n numbers and prints them sorted.</p><div style="margin-top:12px"><details class="code"><summary>quick sort — the full program<span class="lines">34 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+<span class="k">int</span> a[1000];
+
+<span class="k">void</span> quick_sort(<span class="k">int</span> l, <span class="k">int</span> r) {
+    <span class="k">int</span> p = a[(l + r) / 2];
+    <span class="k">int</span> i = l;
+    <span class="k">int</span> j = r;
+    <span class="k">while</span> (i &lt; j) {
+        <span class="k">while</span> (a[i] &lt; p) i++;
+        <span class="k">while</span> (a[j] &gt; p) j--;
+        <span class="k">if</span> (i &lt;= j) {
+            swap(a[i], a[j]);
+            i++;
+            j--;
+        }
+    }
+    <span class="k">if</span> (l &lt; j) 
+        quick_sort(l, j);
+    <span class="k">if</span> (i &lt; r)
+        quick_sort(i, r);
+}
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> n;
+    cin &gt;&gt; n;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        cin &gt;&gt; a[i];
+    quick_sort(0, n - 1);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        cout &lt;&lt; a[i] &lt;&lt; <span class="s">" "</span>;
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">7
+10 13 43 1 534 3 48</pre><div class="out-lbl">output</div><pre class="out">1 3 10 13 43 48 534</pre></div>
   </div>
 </section>
 
@@ -204,27 +425,44 @@
   <div class="beat-head">
     <div class="beat-n">06</div>
     <div>
-      <h2>What comes next</h2>
-      <div class="sub"><span>3 min</span></div>
+      <h2>Lab 6 — the problems</h2>
+      <div class="sub"><span>12 min</span> <span>ADS-Lab-06</span></div>
     </div>
   </div>
   <div class="stack">
-    <div class="card pad board"><p>Lecture 7 is <strong>merge sort</strong> — the third row of the scoreboard, the one that is both guaranteed O(n log n) and stable, at the cost of O(n) memory. Leave the class with the question that next week answers: <em>we have two O(n log n) sorts already, so what is merge sort for?</em> The answer is stability and, more importantly, that the merge step itself solves problems sorting cannot.</p><p style="margin-top:12px">Homework is Lab 6. Ask for <strong>I and D</strong> before the next class.</p></div>
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Not one problem here requires writing a sort by hand — every one is <code>std::sort</code> with the right ordering rule. The marks are lost in reading the rule out of the statement.</li>
+        <li>I is the counting sort from the start of the lecture; D compares dates as (year, month, day).</li>
+        <li>C: the minimum difference can be large — initialise the running minimum properly, not with a guessed constant.</li>
+        <li><strong>F and G are the heavy pair</strong> and neither is on the defence.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Vowels and consonants</span><span class="pill key">key</span><div class="map-why">Sort with a custom order — vowels first, then consonants</div></div></div>
+<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">House of love</span><span class="pill key">key</span><div class="map-why">Intersection of two arrays; mind n = 0 or m = 0, the line is then empty</div></div></div>
+<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Points in Proximity</span><span class="pill key">key</span><div class="map-why">Sort, then the minimum adjacent difference — initialise the minimum safely</div></div></div>
+<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Calendar</span><span class="pill key">key</span><div class="map-why">Dates compared as (year, month, day) tuples</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Incomplete sorting</span><span class="pill key">key</span><div class="map-why">Sort each column of a matrix in descending order</div></div></div>
+<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">New GPA</span><div class="map-why">Weighted GPA, rounding and tie-breaks, n = 10⁵, TL 3 s — not on the defence</div></div></div>
+<div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Nurbol hacker</span><div class="map-why">Chains of renames through a map — not a sorting problem; not on the defence</div></div></div>
+<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">Balanced letter</span><span class="pill key">key</span><div class="map-why">Smallest letter greater than k — upper_bound on a sorted array</div></div></div>
+<div class="map-row"><span class="map-idx">I</span><div><span class="map-name">Problem C. Azat likes sorting</span><span class="pill key">key</span><div class="map-why">Counting sort, |s| up to 10⁶</div></div></div><div class="trap" style="margin-top:16px"><b>Tell them about the trailing space.</b> Several statements print space-separated values; a trailing space at the end of a line is accepted by our checkers, a missing newline is not. This lab had a checker that failed correct solutions over exactly this, and it is now fixed — but the habit of printing cleanly is worth keeping.</div></div>
   </div>
 </section>
 </main>
 </div>
 
 <footer>
-  <span>ADS 2026 · KBTU · Lecture 6 — Heap Sort and Quick Sort</span>
+  <span>ADS 2026 · KBTU · Lecture 6 — Bubble Sort and Quick Sort</span>
   <span><a href="index.html">All lectures</a></span>
 </footer>
 </div>
 
 <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-<script src="assets/notes.js?v=202609281811"></script>
-<script src="assets/present.js?v=202609281811"></script>
-<script src="assets/cpp.js?v=202609281811"></script>
+<script src="assets/notes.js?v=202610011756"></script>
+<script src="assets/present.js?v=202610011756"></script>
+<script src="assets/cpp.js?v=202610011756"></script>
 <script>
 
 (function(){

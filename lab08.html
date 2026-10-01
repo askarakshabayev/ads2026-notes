@@ -6,39 +6,46 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
-<link rel="stylesheet" href="assets/notes.css?v=202609281811">
-<link rel="stylesheet" href="assets/present.css?v=202609281811">
-<link rel="stylesheet" href="assets/cpp.css?v=202609281811">
+<link rel="stylesheet" href="assets/notes.css?v=202610011756">
+<link rel="stylesheet" href="assets/present.css?v=202610011756">
+<link rel="stylesheet" href="assets/cpp.css?v=202610011756">
 </head><body>
 <div class="wrap">
 
 <header class="masthead">
   <div class="eyebrow">ADS 2026 · KBTU · Lecture 8 · Lab 8</div>
   <h1>Hashing and <em>Rabin–Karp</em></h1>
-  <p class="dek">Everything so far was built on comparison. Today we stop comparing and start computing an address. The payoff is O(1) lookup and substring equality in constant time; the price is that the answer can be wrong, and the lecture is largely about making that probability negligible.</p>
-  <div class="facts"><span class="fact">Length <b>~110 min</b></span><span class="fact">Beats <b>6</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 8 · 6 problems</b></span></div>
+  <p class="dek">Turn a string into a number, compare numbers instead of strings, and get the hash of any substring in O(1) from prefix hashes. That is enough to find a pattern in O(n + m) and to count distinct substrings — as long as you remember that two different strings can share a hash.</p>
+  <div class="facts"><span class="fact">Length <b>~105 min</b></span><span class="fact">Beats <b>12</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 8 · 6 problems</b></span></div>
 </header>
 
 <div class="cols">
 
 <nav class="rail" aria-label="Running order">
   <div class="rail-h">Running order</div>
-  <div class="part">I · Hash tables</div>
+  <div class="part">I · Hashing</div>
   <ol>
-    <li><a href="#b1"><span class="n">01</span><span>From comparison to address</span><span class="t">16′</span></a></li>
+    <li><a href="#b1"><span class="n">01</span><span>Introduction to hashing</span><span class="t">15′</span></a></li>
+    <li><a href="#b2"><span class="n">02</span><span>Finding identical strings</span><span class="t">10′</span></a></li>
   </ol>
-  <div class="part">II · String hashing</div>
+  <div class="part">II · Substrings</div>
   <ol>
-    <li><a href="#b2"><span class="n">02</span><span>Polynomial hash</span><span class="t">20′</span></a></li>
+    <li><a href="#b3"><span class="n">03</span><span>Prefix hash array</span><span class="t">10′</span></a></li>
+    <li><a href="#b4"><span class="n">04</span><span>Rabin–Karp</span><span class="t">20′</span></a></li>
+    <li><a href="#b5"><span class="n">05</span><span>Distinct substrings</span><span class="t">10′</span></a></li>
   </ol>
-  <div class="part">III · Rabin–Karp</div>
+  <div class="part">III · Collisions</div>
   <ol>
-    <li><a href="#b3"><span class="n">03</span><span>Prefix hashes · Rabin–Karp</span><span class="t">22′</span></a></li>
+    <li><a href="#b6"><span class="n">06</span><span>Hash collisions</span><span class="t">10′</span></a></li>
+    <li><a href="#b7"><span class="n">07</span><span>Applications</span><span class="t">4′</span></a></li>
+    <li><a href="#b8"><span class="n">08</span><span>Advantages and disadvantages</span><span class="t">3′</span></a></li>
   </ol>
-  <div class="part">IV · Practice</div>
+  <div class="part">IV · Wrap-up</div>
   <ol>
-    <li><a href="#b4"><span class="n">04</span><span>Lab 8 walkthrough</span><span class="t">12′</span></a></li>
-    <li><a href="#b5"><span class="n">05</span><span>What comes next</span><span class="t">3′</span></a></li>
+    <li><a href="#b9"><span class="n">09</span><span>Common questions</span><span class="t">6′</span></a></li>
+    <li><a href="#b10"><span class="n">10</span><span>Key takeaways</span><span class="t">3′</span></a></li>
+    <li><a href="#b11"><span class="n">11</span><span>Practice problems</span><span class="t">2′</span></a></li>
+    <li><a href="#b12"><span class="n">12</span><span>Lab 8</span><span class="t">12′</span></a></li>
   </ol>
 </nav>
 
@@ -47,27 +54,76 @@
   <div class="beat-head">
     <div class="beat-n">01</div>
     <div>
-      <h2>Compute the place instead of finding it</h2>
-      <div class="sub"><span>16 min</span> <span>board</span></div>
+      <h2>Introduction to Hashing</h2>
+      <div class="sub"><span>15 min</span> <span>board</span> <span>demo: hash</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>A BST finds a key in O(log n) by comparing. A hash table <strong>computes where the key must be</strong> and goes there — O(1), with no ordering at all.</li>
-        <li>That is the trade, and it is worth naming both halves: you gain constant lookup, you lose <strong>every ordered query</strong>. No "smallest", no range, no in-order output. That is why <code>std::map</code> still exists alongside <code>unordered_map</code>.</li>
-        <li>Collisions are not an edge case — with a table of size m and more than m possible keys they are <strong>guaranteed</strong>. Pigeonhole. The question is only how you handle them.</li>
-        <li>Two standard answers: <strong>chaining</strong> (each bucket is a list) and <strong>open addressing</strong> (probe the next free slot). Chaining is what the STL does; say it and move on.</li>
-        <li>The honest warning about <code>unordered_map</code>: worst case is O(n) per operation when everything lands in one bucket, and on Codeforces this is <strong>weaponised</strong> with anti-hash tests. <code>map</code> at O(log n) guaranteed is often the safer choice under time pressure.</li>
+        <li><strong>Hashing</strong> converts data — strings, numbers, objects — into a fixed-size number, the <strong>hash value</strong>. It acts as a fingerprint of the data.</li>
+        <li>A good hash function is deterministic, fast — O(n) for a string of length n — spreads values evenly, and rarely gives two inputs the same value.</li>
+        <li>Why bother: comparing two strings is O(n), comparing two numbers is O(1). Compute each hash once and every later comparison is cheap.</li>
+        <li>The <strong>polynomial rolling hash</strong>: multiply each character by the next power of p and add. Work the example for "abc" on the board, then let the demo compute a few more.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><div class="formula">index = h(key) mod m</div><pre style="margin-top:13px">unordered_map&lt;string, <span class="k">int</span>&gt; cnt;
-cnt[<span class="s">"abc"</span>]++;              <span class="c">// O(1) average</span>
-<span class="k">if</span> (cnt.count(<span class="s">"abc"</span>)) ...   <span class="c">// O(1) average</span></pre><div class="tw" style="margin-top:14px"><table><thead><tr><th>Operation</th><th class="n">map</th><th class="n">unordered_map</th></tr></thead><tbody><tr><td class="k">insert / find / erase</td><td class="n">O(log n)</td><td class="n" style="color:var(--prime)">O(1) avg</td></tr><tr><td class="k">worst case</td><td class="n" style="color:var(--prime)">O(log n)</td><td class="n" style="color:var(--mark)">O(n)</td></tr><tr><td class="k">iterate in order</td><td style="color:var(--prime)" class="n">yes</td><td class="n" style="color:var(--mark)">no</td></tr><tr><td class="k">lower_bound</td><td class="n" style="color:var(--prime)">yes</td><td class="n" style="color:var(--mark)">no</td></tr></tbody></table></div></div>
-      <div class="card pad board"><h4>What makes a hash function good</h4><p><strong>Deterministic</strong> — same input, same output, always. Otherwise nothing works.</p><p style="margin-top:10px"><strong>Uniform</strong> — spreads keys across buckets. A function that maps every string to 0 is a valid hash function and a useless one.</p><p style="margin-top:10px"><strong>Fast</strong> — computing it must be cheaper than the search it replaces.</p><p style="margin-top:10px"><strong>Avalanche</strong> — changing one character changes the hash a lot. Otherwise similar keys collide in clusters.</p><div class="trap" style="margin-top:14px"><b>Counter-example worth showing:</b> "sum of the letter codes" satisfies the first three and fails the fourth badly — every anagram collides. <code>abc</code>, <code>bca</code> and <code>cab</code> all hash the same. Position must enter the formula, which is exactly what the next beat does.</div></div>
-    </div>
+    <div class="card pad board"><h4>What is a hash function?</h4><p>A hash function takes an input and produces a number. With the function written below (p = 29):</p><pre class="out">hash("hello")  → 81236064
+hash("world")  → 73461324
+hash("abc")    → 86198</pre></div>
+    <div class="card pad board"><h4>Properties of good hash functions</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li><strong>Deterministic</strong>: the same input always produces the same output</li><li><strong>Fast to compute</strong>: O(n) for a string of length n</li><li><strong>Uniform distribution</strong>: hash values spread evenly</li><li><strong>Minimizes collisions</strong>: different inputs should produce different hashes (ideally)</li></ol></div>
+    <div class="card pad board"><h4>Why do we need hashing?</h4><div class="tw"><table><thead><tr><th></th><th>Compare two strings</th><th>Find duplicates among n strings</th></tr></thead><tbody><tr><td class="k">Without hashing</td><td><span style="color:var(--mark)">O(n)</span> — check each character</td><td><span style="color:var(--mark)">O(n² × m)</span></td></tr><tr><td class="k">With hashing</td><td><span style="color:var(--prime)">O(1)</span> — compare two integers</td><td><span style="color:var(--prime)">O(n × m)</span> — one hash per string</td></tr></tbody></table></div><p style="margin-top:12px">m is the length of a string.</p></div>
+    <div class="card pad board"><h4>Polynomial rolling hash</h4><div class="formula">hash(s) = s[0] × p^0 + s[1] × p^1 + s[2] × p^2 + …</div><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><span class="mono">p</span> is a prime, commonly 29 or 31 for lowercase letters</li><li><span class="mono">s[i]</span> is the ASCII code of the character at position i</li></ul><p style="margin-top:12px"><strong>Example:</strong> hash("abc") with p = 29</p><pre class="out">hash = 'a' × 29^0 + 'b' × 29^1 + 'c' × 29^2
+     = 97 × 1 + 98 × 29 + 99 × 841
+     = 97 + 2842 + 83259
+     = 86198</pre></div>
+    <div class="card pad board"><h4>Simple hash implementation</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">int</span> get_hash(string s) {
+    <span class="k">int</span> p = 29;
+    <span class="k">int</span> p_pow = 1;  <span class="c">// p^0</span>
+    <span class="k">int</span> h = 0;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++) {
+        h += s[i] * p_pow;
+        p_pow *= p;
+    }
+
+    <span class="k">return</span> h;
+}
+
+<span class="k">int</span> main() {
+    cout &lt;&lt; <span class="s">"hash('abc') = "</span> &lt;&lt; get_hash(<span class="s">"abc"</span>) &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"hash('hello') = "</span> &lt;&lt; get_hash(<span class="s">"hello"</span>) &lt;&lt; endl;
+    cout &lt;&lt; <span class="s">"hash('world') = "</span> &lt;&lt; get_hash(<span class="s">"world"</span>) &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">output</div><pre class="out">hash('abc') = 86198
+hash('hello') = 81236064
+hash('world') = 73461324</pre></div>
+    <div class="card pad board"><h4>Another version · p = 31, compare two strings</h4><p>The same function with p = 31: read two strings, print both hashes and whether they are equal.</p><div style="margin-top:12px"><details class="code"><summary>the full program — p = 31<span class="lines">21 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">int</span> get_hash(string s) {
+    <span class="k">int</span> h = 0;
+    <span class="k">int</span> p = 31;
+    <span class="k">int</span> p_pow = 1;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++) {
+        h += s[i] * p_pow;
+        p_pow *= p;
+    }
+    <span class="k">return</span> h;
+}
+
+<span class="k">int</span> main() {
+    string s1, s2;
+    cin &gt;&gt; s1 &gt;&gt; s2;
+    cout &lt;&lt; get_hash(s1) &lt;&lt; <span class="s">" "</span> &lt;&lt; get_hash(s2) &lt;&lt; <span class="s">" "</span> &lt;&lt; (get_hash(s1) == get_hash(s2));
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">abc bca</pre><div class="out-lbl">output</div><pre class="out">98274 96384 0</pre><p style="margin-top:12px">Same letters, different order — different hash, because every position has its own power of p.</p></div>
+    <div class="card pad demo"><h4>Demo · hash, and how easily it collides</h4><div class="ctl"><label class="f" style="flex:1 1 150px"><span>string</span><input type="text" id="hsx" value="abc"></label><label class="f" style="flex:1 1 110px"><span>p</span><input type="number" id="hsp" value="31"></label><label class="f" style="flex:1 1 130px"><span>modulus</span><input type="number" id="hsm" value="1000000007"></label><button class="pri" id="hsrun">Hash</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-hs="abc|31|1000000007">abc</button><button class="chip" data-hs="bca|31|1000000007">bca (anagram)</button><button class="chip" data-hs="abc|31|101">tiny modulus</button><button class="chip" data-hs="hello|1|1000000007">p = 1, broken</button></div><div class="readout"><div class="stat good"><div class="lab">hash</div><div class="val" id="hsh">—</div></div><div class="stat"><div class="lab">collisions among 5 000 random words</div><div class="val" id="hsc">—</div></div></div><div class="steps" style="margin-top:14px"><table><thead><tr><th class="n">i</th><th>char</th><th class="n">code</th><th class="n">p^i mod m</th><th class="n">running h</th></tr></thead><tbody id="hssteps"></tbody></table></div><div class="log" id="hslog"></div></div>
   </div>
 </section>
 
@@ -75,32 +131,84 @@ cnt[<span class="s">"abc"</span>]++;              <span class="c">// O(1) averag
   <div class="beat-head">
     <div class="beat-n">02</div>
     <div>
-      <h2>Turning a string into a number</h2>
-      <div class="sub"><span>20 min</span> <span>demo: hash</span></div>
+      <h2>Problem 1: Finding Identical Strings</h2>
+      <div class="sub"><span>10 min</span> <span>code</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>The fix for anagrams is to weight each position differently: treat the string as a <strong>number in base p</strong>. That is the polynomial hash, and it is the only string hash this course uses.</li>
-        <li>Write the formula and the two constants: <strong>p a prime above the alphabet size</strong> (31 for lowercase letters), <strong>m a large prime modulus</strong> (10⁹+7 or 10⁹+9).</li>
-        <li>Compute it in the demo for a few strings, then deliberately find a collision with a tiny modulus. Seeing two different strings share a hash is what makes the probability talk land.</li>
-        <li>The birthday bound, stated plainly: with n strings and modulus m the chance of some collision is about <strong>n²/2m</strong>. At n = 10⁶ and m = 10⁹ that is roughly 1/2 — <strong>not</strong> negligible.</li>
-        <li>Hence <strong>double hashing</strong>: two different moduli, compare both. The effective modulus becomes ~10¹⁸ and the probability drops to nothing. Say that this is standard practice, not paranoia.</li>
-        <li>And the practical rule for this lab: if a hash solution gets a strange wrong answer on one big test and nowhere else, <strong>suspect a collision before suspecting the logic</strong>.</li>
+        <li>Given n strings, find all pairs of identical ones. Comparing every pair is O(n² × m).</li>
+        <li>With hashing: compute each hash once, group the indices by hash in a map, and compare strings only inside a group — the check against collisions.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><div class="formula">h(s) = (s₀·p⁰ + s₁·p¹ + … + s<sub>n−1</sub>·p<sup>n−1</sup>) mod m</div><pre style="margin-top:13px"><span class="k">const long long</span> p = 31, m = 1e9 + 7;
+    <div class="card pad board"><h4>Naive solution — O(n² × m)</h4><pre><span class="c">// Compare each pair of strings</span>
+<span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+    <span class="k">for</span> (<span class="k">int</span> j = i + 1; j &lt; n; j++) {
+        <span class="k">if</span> (strings[i] == strings[j]) {  <span class="c">// O(m) comparison</span>
+            cout &lt;&lt; i &lt;&lt; <span class="s">" "</span> &lt;&lt; j &lt;&lt; endl;
+        }
+    }
+}
 
-<span class="k">long long</span> h = 0, pw = 1;
-<span class="k">for</span> (<span class="k">char</span> c : s) {
-    h = (h + (c - <span class="s">'a'</span> + 1) * pw) % m;
-    pw = pw * p % m;
-}</pre><div class="trap" style="margin-top:14px"><b>Why <code>c - 'a' + 1</code> and not <code>c - 'a'</code>:</b> without the +1 the letter <code>a</code> maps to 0, and then <code>"a"</code>, <code>"aa"</code> and <code>"aaa"</code> all hash to 0. A whole family of strings collapses.</div><div class="trap" style="margin-top:10px"><b>Overflow:</b> <code>h * p</code> with both near 10⁹ reaches 10¹⁸, which fits <code>long long</code> — barely. Push the modulus higher and it does not. Take the modulus at every step, never at the end.</div></div>
-      <div class="card pad demo"><h4>Demo · hash, and how easily it collides</h4><div class="ctl"><label class="f" style="flex:1 1 150px"><span>string</span><input type="text" id="hsx" value="abc"></label><label class="f" style="flex:1 1 110px"><span>p</span><input type="number" id="hsp" value="31"></label><label class="f" style="flex:1 1 130px"><span>modulus</span><input type="number" id="hsm" value="1000000007"></label><button class="pri" id="hsrun">Hash</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-hs="abc|31|1000000007">abc</button><button class="chip" data-hs="bca|31|1000000007">bca (anagram)</button><button class="chip" data-hs="abc|31|101">tiny modulus</button><button class="chip" data-hs="hello|1|1000000007">p = 1, broken</button></div><div class="readout"><div class="stat good"><div class="lab">hash</div><div class="val" id="hsh">—</div></div><div class="stat"><div class="lab">collisions among 5 000 random words</div><div class="val" id="hsc">—</div></div></div><div class="steps" style="margin-top:14px"><table><thead><tr><th class="n">i</th><th>char</th><th class="n">code</th><th class="n">p^i mod m</th><th class="n">running h</th></tr></thead><tbody id="hssteps"></tbody></table></div><div class="log" id="hslog"></div></div>
-    </div>
+<span class="c">// Time Complexity: O(n² × m)</span>
+<span class="c">// where n = number of strings, m = average string length</span></pre></div>
+    <div class="card pad board"><h4>Improved solution with hashing — O(n × m)</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li>Compute the hash of each string — O(m) per string</li><li>Store the hashes in a map</li><li>Compare hash values instead of strings — O(1)</li></ol><div style="margin-top:12px"></div><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">#include</span> &lt;map&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">int</span> get_hash(string s) {
+    <span class="k">int</span> p = 29;
+    <span class="k">int</span> p_pow = 1;
+    <span class="k">int</span> h = 0;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++) {
+        h += s[i] * p_pow;
+        p_pow *= p;
+    }
+    <span class="k">return</span> h;
+}
+
+<span class="k">int</span> main() {
+    <span class="k">int</span> n;
+    cin &gt;&gt; n;
+
+    vector&lt;string&gt; strings(n);
+    map&lt;<span class="k">int</span>, vector&lt;<span class="k">int</span>&gt;&gt; hash_map;  <span class="c">// hash -&gt; indices</span>
+
+    <span class="c">// Compute hash for each string and group by hash</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        cin &gt;&gt; strings[i];
+        <span class="k">int</span> h = get_hash(strings[i]);
+        hash_map[h].push_back(i);
+    }
+
+    <span class="c">// Find pairs with same hash</span>
+    cout &lt;&lt; <span class="s">"Identical string pairs:"</span> &lt;&lt; endl;
+    <span class="k">for</span> (<span class="k">auto</span>&amp; pair : hash_map) {
+        vector&lt;<span class="k">int</span>&gt;&amp; indices = pair.second;
+        <span class="c">// All strings with same hash are potentially identical</span>
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; indices.size(); i++) {
+            <span class="k">for</span> (<span class="k">int</span> j = i + 1; j &lt; indices.size(); j++) {
+                <span class="c">// Double-check actual strings to avoid hash collisions</span>
+                <span class="k">if</span> (strings[indices[i]] == strings[indices[j]]) {
+                    cout &lt;&lt; indices[i] &lt;&lt; <span class="s">" "</span> &lt;&lt; indices[j] &lt;&lt; endl;
+                }
+            }
+        }
+    }
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">input</div><pre class="out">5
+hello
+world
+hello
+test
+world</pre><div class="out-lbl">output</div><pre class="out">Identical string pairs:
+1 4
+0 2</pre><p style="margin-top:12px">Pairs come out grouped by hash, in the order of the map keys: hash("world") is smaller than hash("hello"), so 1 4 is printed first.</p></div>
+    <div class="card pad board"><h4>Time complexity: O(n × m)</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Computing hashes: O(n × m)</li><li>Grouping by hash: O(n)</li><li>Finding pairs: O(n) if there are no collisions</li></ul><p style="margin-top:12px">Instead of O(n² × m) we get O(n × m).</p></div>
   </div>
 </section>
 
@@ -108,36 +216,51 @@ cnt[<span class="s">"abc"</span>]++;              <span class="c">// O(1) averag
   <div class="beat-head">
     <div class="beat-n">03</div>
     <div>
-      <h2>Any substring in O(1)</h2>
-      <div class="sub"><span>22 min</span> <span>demo: search</span></div>
+      <h2>Prefix Hash Array — Fast Substring Hash</h2>
+      <div class="sub"><span>10 min</span> <span>board</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Precompute the hash of <strong>every prefix</strong>, and the hash of any substring becomes a subtraction. One O(n) pass buys O(1) queries forever after.</li>
-        <li>Write the substring formula carefully — the power factor is what trips everyone: <code>h[r] − h[l−1]·p^(r−l+1)</code>, all modulo m, and <strong>add m before the final mod</strong> because the subtraction can go negative.</li>
-        <li>That negative-result bug is worth a full minute. In C++ <code>(-5) % 7</code> is <code>-5</code>, not <code>2</code>. A single missing <code>+ m</code> gives wrong answers on perfectly ordinary tests.</li>
-        <li>Now Rabin–Karp is two lines: hash the pattern once, then compare it against the hash of <strong>every window</strong> of the text. O(n + m) instead of O(n·m).</li>
-        <li>Say the honest caveat: a hash match is <strong>probably</strong> a match. The textbook version verifies with a direct comparison; with double hashing, competitive programmers skip the verification. Both are defensible — name which one you expect at the defence.</li>
-        <li>Close the loop with the previous lecture: this is the second time we have replaced an O(n·m) scan with something linear, and next week does it a third way, deterministically, with no probability at all.</li>
+        <li>A string of length n has O(n²) substrings; hashing each from scratch is O(n) — O(n³) in total.</li>
+        <li>Precompute <strong>prefix hashes</strong> once: h[i] is the hash of s[0…i]. Then the hash of any substring is one subtraction.</li>
+        <li>The subtraction gives the hash <strong>multiplied by p^l</strong>. We cannot divide, so we multiply the other side instead.</li>
       </ul>
     </div>
-    <div class="two">
-      <div class="card pad board"><h4>For the board</h4><pre><span class="c">// prefix hashes, 1-indexed</span>
-h[0] = 0; pw[0] = 1;
-<span class="k">for</span> (<span class="k">int</span> i = 1; i &lt;= n; ++i) {
-    h[i]  = (h[i-1] * p + (s[i-1] - <span class="s">'a'</span> + 1)) % m;
-    pw[i] = pw[i-1] * p % m;
-}
+    <div class="card pad board"><h4>The problem</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>A string of length n has O(n²) substrings</li><li>Computing each hash takes O(m)</li><li>Total: O(n³) — too slow</li></ul></div>
+    <div class="card pad board"><h4>Prefix hash array</h4><p><span class="mono">h[i]</span> = hash of the prefix s[0…i]:</p><div class="formula">h[i] = s[0] × p^0 + s[1] × p^1 + … + s[i] × p^i</div><div style="margin-top:12px"></div><pre>vector&lt;<span class="k">int</span>&gt; get_h(string s) {
+    <span class="k">int</span> n = s.size();
+    vector&lt;<span class="k">int</span>&gt; h(n);
 
-<span class="c">// hash of s[l..r], 1-indexed inclusive</span>
-<span class="k">long long</span> get(<span class="k">int</span> l, <span class="k">int</span> r) {
-    <span class="k">return</span> ((h[r] - h[l-1] * pw[r-l+1]) % m + m) % m;
-}                              <span class="c">// ↑ this + m matters</span></pre><div class="trap" style="margin-top:14px"><b>Two hashes, not one, whenever the string is long.</b> Keep a second modulus (10⁹+9) and compare the pair. It doubles the code and removes the entire class of "correct but occasionally wrong" submissions.</div></div>
-      <div class="card pad demo"><h4>Demo · find the pattern with rolling hashes</h4><div class="ctl"><label class="f" style="flex:1 1 230px"><span>text</span><input type="text" id="rkt" value="abracadabra"></label><label class="f" style="flex:1 1 130px"><span>pattern</span><input type="text" id="rkp" value="abra"></label><button class="pri" id="rkrun">Search</button></div><div class="track" id="rktrack" style="flex-wrap:wrap"></div><div class="readout"><div class="stat good"><div class="lab">occurrences</div><div class="val" id="rkocc">—</div></div><div class="stat"><div class="lab">Rabin–Karp, operations</div><div class="val" id="rkfast">—</div></div><div class="stat bad"><div class="lab">naive, comparisons</div><div class="val" id="rkslow">—</div></div></div><div class="log" id="rklog"></div></div>
-    </div>
+    h[0] = s[0];          <span class="c">// First character</span>
+    <span class="k">int</span> p = 29;
+    <span class="k">int</span> p_pow = 29;       <span class="c">// p^1</span>
+
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++) {
+        h[i] = h[i - 1] + s[i] * p_pow;
+        p_pow *= p;
+    }
+
+    <span class="k">return</span> h;
+}</pre><p style="margin-top:12px"><strong>Example:</strong> s = "abcd", p = 29</p><pre class="out">h[0] = 'a' × p^0 = 97
+h[1] = 'a' × p^0 + 'b' × p^1 = 2939
+h[2] = 'a' × p^0 + 'b' × p^1 + 'c' × p^2 = 86198
+h[3] = 'a' × p^0 + 'b' × p^1 + 'c' × p^2 + 'd' × p^3 = 2525098</pre></div>
+    <div class="card pad board"><h4>Getting the hash of any substring</h4><pre>hash(s[l...r]) = (h[r] - h[l-1]) / p^l</pre><p style="margin-top:12px">But we cannot divide, so we multiply the other side:</p><div style="margin-top:12px"></div><pre>hash(s[l...r]) × p^l = h[r] - h[l-1]</pre><div style="margin-top:12px"></div><pre><span class="c">// Precompute powers of p</span>
+vector&lt;<span class="k">int</span>&gt; p(n);
+p[0] = 1;
+<span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++)
+    p[i] = p[i - 1] * 29;
+
+<span class="c">// Get hash of substring [l, r]</span>
+<span class="k">int</span> substring_hash(<span class="k">int</span> l, <span class="k">int</span> r) {
+    <span class="k">int</span> hash = h[r];
+    <span class="k">if</span> (l &gt; 0)
+        hash = hash - h[l - 1];
+    <span class="k">return</span> hash;  <span class="c">// This equals original_hash × p^l</span>
+}</pre><p style="margin-top:12px">So to compare two substrings, bring both to the same power of p before comparing.</p></div>
   </div>
 </section>
 
@@ -145,27 +268,203 @@ h[0] = 0; pw[0] = 1;
   <div class="beat-head">
     <div class="beat-n">04</div>
     <div>
-      <h2>Lab 8 — how it maps onto today</h2>
-      <div class="sub"><span>12 min</span> <span>ADS-Lab-08</span></div>
+      <h2>Rabin-Karp Algorithm: Pattern Matching</h2>
+      <div class="sub"><span>20 min</span> <span>code</span> <span>demo: search</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="say">
       <h4>What to say</h4>
       <ul>
-        <li>Six problems, and they split cleanly: <strong>A and D are the formula itself</strong> — compute a hash, or invert one. Do those first, they need nothing beyond beat 02.</li>
-        <li>B is Rabin–Karp on two strings, straight out of beat 03. E and F are the prefix-hash machinery from the same beat, applied twice.</li>
-        <li>E asks for the number of <strong>distinct</strong> substrings at |s| ≤ 2000. Hashing all O(n²) substrings into a set is the intended solve, and the TL is 4 s precisely because of it.</li>
-        <li>C is the awkward one: the input is <strong>multi-test</strong> — an unknown number of blocks until the terminator. Read the format with them; more submissions die on that than on the algorithm.</li>
-        <li>Warn them the reference solutions for B and C use KMP, which is <strong>next week's</strong> technique. Either approach is accepted; solving them with hashes is the intended exercise.</li>
+        <li>Find every occurrence of a pattern s2 (length m) in a text s1 (length n). Comparing at every position is O(n × m).</li>
+        <li>Rabin–Karp: hash the pattern once, compute prefix hashes of the text, and at each position compare one number with one number.</li>
+        <li>The window hash is h[j] − h[i−1], which equals the real hash × p^i — so compare it with h_s2 × p[i].</li>
+        <li>Walk through the trace for "ababcab" and "ab" on the board, then search a longer text in the demo.</li>
       </ul>
     </div>
-    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Hash of digits</span><span class="pill key">key</span><div class="map-why">Beat 02 · compute the hash by a given formula and match strings to hashes</div></div></div>
-<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Plagiarism</span><span class="pill key">key</span><div class="map-why">Beat 03 · Rabin–Karp across two strings; TL 1 s, |s| up to 4·10⁵</div></div></div>
-<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Dominating Patterns</span><div class="map-why">Beat 03 · many patterns over one text — and the input is multi-test</div></div></div>
-<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Restore the string</span><span class="pill key">key</span><div class="map-why">Beat 02 · invert the formula, recover the string from prefix hashes</div></div></div>
-<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Distinct substrings</span><span class="pill key">key</span><div class="map-why">Beat 03 · count distinct substrings via a set of hashes, TL 4 s</div></div></div>
-<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Substrings</span><span class="pill key">key</span><div class="map-why">Beat 03 · prefix hashes answer q queries about substring occurrences</div></div></div><div class="trap" style="margin-top:16px"><b>Two problems left this lab recently:</b> a tape-covering problem and longest-common-substring of k strings were removed as disproportionately hard. If a student has an older copy of the list, that is why it is shorter now.</div></div>
+    <div class="card pad board"><h4>Naive approach — O(n × m)</h4><pre><span class="k">for</span> (<span class="k">int</span> i = 0; i &lt;= n - m; i++) {
+    <span class="k">bool</span> match = <span class="k">true</span>;
+    <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; m; j++) {
+        <span class="k">if</span> (s1[i + j] != s2[j]) {
+            match = <span class="k">false</span>;
+            break;
+        }
+    }
+    <span class="k">if</span> (match)
+        cout &lt;&lt; <span class="s">"Found at position "</span> &lt;&lt; i &lt;&lt; endl;
+}</pre></div>
+    <div class="card pad board"><h4>Rabin–Karp — O(n + m)</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li>Compute the hash of the pattern s2</li><li>Compute the prefix hashes of the text s1</li><li>At each position i, compare the hash of the window with the pattern hash</li><li>Compare the actual strings only if the hashes match — to handle collisions</li></ol></div>
+    <div class="card pad board"><h4>Complete implementation</h4><pre><span class="c">// unsigned long long: with int the hash overflows already at 7 characters</span>
+<span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="c">// Compute hash of entire string</span>
+unsigned <span class="k">long</span> <span class="k">long</span> get_hash(string s) {
+    unsigned <span class="k">long</span> <span class="k">long</span> p = 29;
+    unsigned <span class="k">long</span> <span class="k">long</span> p_pow = 1;  <span class="c">// p^0</span>
+    unsigned <span class="k">long</span> <span class="k">long</span> h = 0;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++) {
+        h += s[i] * p_pow;
+        p_pow *= p;
+    }
+
+    <span class="k">return</span> h;
+}
+
+<span class="c">// Compute prefix hash array</span>
+vector&lt;unsigned <span class="k">long</span> <span class="k">long</span>&gt; get_h(string s) {
+    <span class="k">int</span> n = s.size();
+    vector&lt;unsigned <span class="k">long</span> <span class="k">long</span>&gt; h(n);
+
+    h[0] = s[0];
+    unsigned <span class="k">long</span> <span class="k">long</span> p = 29;
+    unsigned <span class="k">long</span> <span class="k">long</span> p_pow = 29;  <span class="c">// p^1</span>
+
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++) {
+        h[i] = h[i - 1] + s[i] * p_pow;
+        p_pow *= p;
+    }
+
+    <span class="k">return</span> h;
+}
+
+<span class="k">int</span> main() {
+    string s1, s2;
+    cin &gt;&gt; s1 &gt;&gt; s2;
+
+    <span class="c">// Precompute powers of p</span>
+    vector&lt;unsigned <span class="k">long</span> <span class="k">long</span>&gt; p(s1.size());
+    p[0] = 1;
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; s1.size(); i++)
+        p[i] = p[i - 1] * 29;
+
+    <span class="c">// Hash of pattern</span>
+    unsigned <span class="k">long</span> <span class="k">long</span> h_s2 = get_hash(s2);
+
+    <span class="c">// Prefix hashes of text</span>
+    vector&lt;unsigned <span class="k">long</span> <span class="k">long</span>&gt; h = get_h(s1);
+
+    <span class="k">int</span> n = s1.size();
+    <span class="k">int</span> m = s2.size();
+
+    <span class="c">// Find all occurrences</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n - m + 1; i++) {
+        <span class="k">int</span> j = i + m - 1;  <span class="c">// End of current window</span>
+
+        <span class="c">// Get hash of substring s1[i...j]</span>
+        unsigned <span class="k">long</span> <span class="k">long</span> hash = h[j];
+        <span class="k">if</span> (i &gt; 0)
+            hash = hash - h[i - 1];
+
+        <span class="c">// Compare with pattern hash</span>
+        <span class="c">// hash = actual_hash × p^i, so compare with h_s2 × p^i</span>
+        <span class="k">if</span> (hash == h_s2 * p[i])
+            cout &lt;&lt; i &lt;&lt; <span class="s">" "</span>;
+    }
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">input</div><pre class="out">ababcab ab</pre><div class="out-lbl">output</div><pre class="out">0 2 5</pre></div>
+    <div class="card pad board"><h4>Trace: s1 = "ababcab", s2 = "ab"</h4><pre class="out">Step 1: hash of the pattern "ab"
+  h_s2 = 'a' × 29^0 + 'b' × 29^1 = 97 + 2842 = 2939
+
+Step 2: prefix hashes of "ababcab"
+  h[0] = 97           (hash of "a")
+  h[1] = 2939         (hash of "ab")
+  h[2] = 84516        (hash of "aba")
+  h[3] = 2474638      (hash of "abab")
+  h[4] = 72495457     (hash of "ababc")
+  h[5] = 2062076910   (hash of "ababca")
+  h[6] = 60354762368  (hash of "ababcab")
+
+Step 3: check each position
+Position 0: substring "ab"
+  hash = h[1] = 2939
+  h_s2 × p[0] = 2939 × 1 = 2939
+  Match! Output: 0
+
+Position 1: substring "ba"
+  hash = h[2] - h[0] = 84516 - 97 = 84419
+  h_s2 × p[1] = 2939 × 29 = 85231
+  No match
+
+Position 2: substring "ab"
+  hash = h[3] - h[1] = 2474638 - 2939 = 2471699
+  h_s2 × p[2] = 2939 × 841 = 2471699
+  Match! Output: 2
+
+Position 3: substring "bc"
+  hash = h[4] - h[2] = 72495457 - 84516 = 72410941
+  h_s2 × p[3] = 2939 × 24389 = 71679271
+  No match
+
+Position 4: substring "ca"
+  hash = h[5] - h[3] = 2062076910 - 2474638 = 2059602272
+  h_s2 × p[4] = 2939 × 707281 = 2078698859
+  No match
+
+Position 5: substring "ab"
+  hash = h[6] - h[4] = 60354762368 - 72495457 = 60282266911
+  h_s2 × p[5] = 2939 × 20511149 = 60282266911
+  Match! Output: 5</pre><p style="margin-top:12px"><strong>Output:</strong> <span class="mono">0 2 5</span> — the positions where "ab" occurs.</p></div>
+    <div class="card pad board"><h4>Time complexity</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Time</th></tr></thead><tbody><tr><td class="k">Compute h_s2</td><td class="n">O(m)</td></tr><tr><td class="k">Compute prefix hashes</td><td class="n">O(n)</td></tr><tr><td class="k">Precompute powers</td><td class="n">O(n)</td></tr><tr><td class="k">Check all positions</td><td class="n">O(n)</td></tr><tr><td class="k"><strong>Total</strong></td><td class="n"><span style="color:var(--prime)"><strong>O(n + m)</strong></span></td></tr></tbody></table></div><p style="margin-top:12px">Much better than the naive O(n × m).</p></div>
+    <div class="card pad board"><h4>Another version · p = 31</h4><p>The same search with p = 31 and the pattern called t.</p><div style="margin-top:12px"><details class="code"><summary>the full program — p = 31<span class="lines">54 lines</span></summary><pre><span class="c">// unsigned long long: with int the hash overflows already at 7 characters</span>
+<span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+unsigned <span class="k">long</span> <span class="k">long</span> get_hash(string s) {
+    unsigned <span class="k">long</span> <span class="k">long</span> h = 0;
+    unsigned <span class="k">long</span> <span class="k">long</span> p = 31;
+    unsigned <span class="k">long</span> <span class="k">long</span> p_pow = 1;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++) {
+        h += s[i] * p_pow;
+        p_pow *= p;
+    }
+    <span class="k">return</span> h;
+} 
+
+vector&lt;unsigned <span class="k">long</span> <span class="k">long</span>&gt; get_h(string s) {
+    <span class="k">int</span> n = s.size();
+    vector&lt;unsigned <span class="k">long</span> <span class="k">long</span>&gt; h(n);
+    h[0] = s[0];
+    unsigned <span class="k">long</span> <span class="k">long</span> p = 31;
+    unsigned <span class="k">long</span> <span class="k">long</span> p_pow = 31;
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++) {
+        h[i] = h[i - 1] + s[i] * p_pow;
+        p_pow *= p;
+    }
+    <span class="k">return</span> h;
+}
+
+<span class="k">int</span> main() {
+    string s, t;
+    cin &gt;&gt; s &gt;&gt; t;
+    <span class="k">int</span> n = s.size();
+    <span class="k">int</span> m = t.size();
+    unsigned <span class="k">long</span> <span class="k">long</span> h_t = get_hash(t);
+    vector&lt;unsigned <span class="k">long</span> <span class="k">long</span>&gt; h = get_h(s);
+    vector&lt;unsigned <span class="k">long</span> <span class="k">long</span>&gt; p(n);
+    p[0] = 1;
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++)
+        p[i] = p[i - 1] * 31;
+    <span class="c">// cout &lt;&lt; h_t &lt;&lt; endl;</span>
+    <span class="c">// for (int i = 0; i &lt; n; i++)</span>
+    <span class="c">//     cout &lt;&lt; h[i] &lt;&lt; " ";</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n - m + 1; i++) {
+        <span class="k">int</span> j = i + m - 1;
+        unsigned <span class="k">long</span> <span class="k">long</span> h_i_j = h[j];
+        <span class="k">if</span> (i &gt; 0) 
+            h_i_j -= h[i - 1];
+        <span class="k">if</span> (h_i_j == h_t * p[i])
+            cout &lt;&lt; i &lt;&lt; <span class="s">" "</span>;
+    }
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">input</div><pre class="out">abacaba aba</pre><div class="out-lbl">output</div><pre class="out">0 4</pre></div>
+    <div class="card pad demo"><h4>Demo · find the pattern with rolling hashes</h4><div class="ctl"><label class="f" style="flex:1 1 230px"><span>text</span><input type="text" id="rkt" value="abracadabra"></label><label class="f" style="flex:1 1 130px"><span>pattern</span><input type="text" id="rkp" value="abra"></label><button class="pri" id="rkrun">Search</button></div><div class="track" id="rktrack" style="flex-wrap:wrap"></div><div class="readout"><div class="stat good"><div class="lab">occurrences</div><div class="val" id="rkocc">—</div></div><div class="stat"><div class="lab">Rabin–Karp, operations</div><div class="val" id="rkfast">—</div></div><div class="stat bad"><div class="lab">naive, comparisons</div><div class="val" id="rkslow">—</div></div></div><div class="log" id="rklog"></div></div>
   </div>
 </section>
 
@@ -173,12 +472,265 @@ h[0] = 0; pw[0] = 1;
   <div class="beat-head">
     <div class="beat-n">05</div>
     <div>
-      <h2>What comes next</h2>
+      <h2>Problem 2: Count Distinct Substrings</h2>
+      <div class="sub"><span>10 min</span> <span>code</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Count the distinct substrings of a string. Putting every substring into a set of strings is O(n³).</li>
+        <li>Put their hashes into a set instead — O(n² log n). Each hash must be brought to the same power of p first, or one substring at two positions counts twice.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Naive solution — O(n³)</h4><pre>set&lt;string&gt; distinct;
+<span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+    <span class="k">for</span> (<span class="k">int</span> j = i; j &lt; n; j++) {
+        string sub = s.substr(i, j - i + 1);  <span class="c">// O(n)</span>
+        distinct.insert(sub);  <span class="c">// O(n log n) for set insertion</span>
+    }
+}
+cout &lt;&lt; distinct.size() &lt;&lt; endl;
+
+<span class="c">// Time: O(n² × n) = O(n³)</span></pre></div>
+    <div class="card pad board"><h4>Improved solution with hashing — O(n² log n)</h4><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">#include</span> &lt;set&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+vector&lt;unsigned <span class="k">long</span> <span class="k">long</span>&gt; get_h(string s) {
+    <span class="k">int</span> n = s.size();
+    vector&lt;unsigned <span class="k">long</span> <span class="k">long</span>&gt; h(n);
+
+    h[0] = s[0];
+    unsigned <span class="k">long</span> <span class="k">long</span> p = 29;
+    unsigned <span class="k">long</span> <span class="k">long</span> p_pow = 29;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++) {
+        h[i] = h[i - 1] + s[i] * p_pow;
+        p_pow *= p;
+    }
+
+    <span class="k">return</span> h;
+}
+
+<span class="k">int</span> main() {
+    string s;
+    cin &gt;&gt; s;
+
+    <span class="k">int</span> n = s.size();
+
+    <span class="c">// Precompute powers</span>
+    vector&lt;unsigned <span class="k">long</span> <span class="k">long</span>&gt; p(n);
+    p[0] = 1;
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++)
+        p[i] = p[i - 1] * 29;
+
+    <span class="c">// Compute prefix hashes</span>
+    vector&lt;unsigned <span class="k">long</span> <span class="k">long</span>&gt; h = get_h(s);
+
+    <span class="c">// Use set to store unique hashes</span>
+    set&lt;unsigned <span class="k">long</span> <span class="k">long</span>&gt; distinct_hashes;
+
+    <span class="c">// Generate all substrings</span>
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">for</span> (<span class="k">int</span> j = i; j &lt; n; j++) {
+            <span class="c">// Hash of substring [i, j]</span>
+            unsigned <span class="k">long</span> <span class="k">long</span> hash = h[j];
+            <span class="k">if</span> (i &gt; 0)
+                hash = hash - h[i - 1];
+
+            <span class="c">// added: h[j] - h[i-1] is hash × p^i — bring every substring to p^(n-1),</span>
+            <span class="c">// otherwise the same substring at two positions gives two numbers</span>
+            distinct_hashes.insert(hash * p[n - 1 - i]);  <span class="c">// O(log n)</span>
+        }
+    }
+
+    cout &lt;&lt; <span class="s">"Number of distinct substrings: "</span>;
+    cout &lt;&lt; distinct_hashes.size() &lt;&lt; endl;
+
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">input</div><pre class="out">abab</pre><div class="out-lbl">output</div><pre class="out">Number of distinct substrings: 7</pre><p style="margin-top:12px"><span class="mono">h[j] − h[i−1]</span> is the hash × p^i. Multiplying by p^(n−1−i) gives every substring the same factor p^(n−1), so equal substrings give equal numbers.</p></div>
+    <div class="card pad board"><h4>Time complexity</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Time</th></tr></thead><tbody><tr><td class="k">Compute prefix hashes</td><td class="n">O(n)</td></tr><tr><td class="k">Generate all substrings</td><td class="n">O(n²)</td></tr><tr><td class="k">Insert into set</td><td class="n">O(log n) per insertion</td></tr><tr><td class="k"><strong>Total</strong></td><td class="n"><strong>O(n² log n)</strong></td></tr></tbody></table></div><p style="margin-top:12px">From O(n³) down to O(n² log n).</p></div>
+    <div class="card pad board"><h4>Example: s = "abab"</h4><pre class="out">Length 1: a, b, a, b           → 2 distinct (a, b)
+Length 2: ab, ba, ab           → 2 distinct (ab, ba)
+Length 3: aba, bab             → 2 distinct (aba, bab)
+Length 4: abab                 → 1 distinct (abab)
+
+Total distinct: 7</pre><p style="margin-top:12px">With hashing:</p><pre class="out">Substrings and their hashes:
+"a"    → hash1
+"b"    → hash2
+"a"    → hash1  (duplicate)
+"b"    → hash2  (duplicate)
+"ab"   → hash3
+"ba"   → hash4
+"ab"   → hash3  (duplicate)
+"aba"  → hash5
+"bab"  → hash6
+"abab" → hash7
+
+Set contains: {hash1, hash2, hash3, hash4, hash5, hash6, hash7}
+Count = 7</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b6">
+  <div class="beat-head">
+    <div class="beat-n">06</div>
+    <div>
+      <h2>Hash Collisions</h2>
+      <div class="sub"><span>10 min</span> <span>code</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>A <strong>collision</strong> is two different strings with the same hash.</li>
+        <li>There are infinitely many strings and finitely many hash values — by the pigeonhole principle, collisions are unavoidable.</li>
+        <li>Four defences: bigger hash values, a large prime modulus, two hash functions at once, and comparing the strings when the hashes match.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>What is a collision?</h4><pre>hash(<span class="s">"abc"</span>) == hash(<span class="s">"xyz"</span>)  <span class="c">// Collision!</span></pre></div>
+    <div class="card pad board"><h4>Why do collisions happen?</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Hash values are integers — a finite range</li><li>Strings are infinite in variety</li><li>By the <strong>pigeonhole principle</strong>, collisions are inevitable</li></ul></div>
+    <div class="card pad board"><h4>1 · Use larger hash values (long long, unsigned long long)</h4><pre>unsigned <span class="k">long</span> <span class="k">long</span> get_hash(string s) {
+    unsigned <span class="k">long</span> <span class="k">long</span> p = 29;
+    unsigned <span class="k">long</span> <span class="k">long</span> p_pow = 1;
+    unsigned <span class="k">long</span> <span class="k">long</span> h = 0;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++) {
+        h += s[i] * p_pow;
+        p_pow *= p;
+    }
+    <span class="k">return</span> h;
+}</pre></div>
+    <div class="card pad board"><h4>2 · Use modulo with a large prime</h4><pre><span class="k">const</span> <span class="k">long</span> <span class="k">long</span> MOD = 1e9 + 7;  <span class="c">// Large prime</span>
+
+<span class="k">int</span> get_hash(string s) {
+    <span class="k">long</span> <span class="k">long</span> h = 0;
+    <span class="k">long</span> <span class="k">long</span> p_pow = 1;
+    <span class="k">long</span> <span class="k">long</span> p = 29;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++) {
+        h = (h + s[i] * p_pow) % MOD;
+        p_pow = (p_pow * p) % MOD;
+    }
+
+    <span class="k">return</span> h;
+}</pre></div>
+    <div class="card pad board"><h4>3 · Double hashing — two different hash functions</h4><pre>pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; double_hash(string s) {
+    <span class="k">int</span> h1 = get_hash(s, 29, MOD1);
+    <span class="k">int</span> h2 = get_hash(s, 31, MOD2);
+    <span class="k">return</span> {h1, h2};
+}</pre></div>
+    <div class="card pad board"><h4>4 · Verify with an actual string comparison when hashes match</h4><pre><span class="k">if</span> (hash1 == hash2) {
+    <span class="c">// Don't assume strings are equal!</span>
+    <span class="k">if</span> (s1 == s2) {
+        <span class="c">// Actually equal</span>
+    }
+}</pre></div>
+  </div>
+</section>
+
+<section class="beat" id="b7">
+  <div class="beat-head">
+    <div class="beat-n">07</div>
+    <div>
+      <h2>Applications of Hashing</h2>
+      <div class="sub"><span>4 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Where hashing is used</h4><div class="tw"><table><thead><tr><th>Application</th><th>Examples</th></tr></thead><tbody><tr><td class="k">1 · Pattern matching (Rabin–Karp)</td><td>find a substring in a text — O(n + m); find several patterns at once</td></tr><tr><td class="k">2 · Duplicate detection</td><td>duplicate files, duplicate code, plagiarism detection</td></tr><tr><td class="k">3 · String comparison</td><td>fast equality checks — O(1) instead of O(n); dynamic programming on strings</td></tr><tr><td class="k">4 · Substring problems</td><td>longest common substring, longest repeated substring, distinct substrings</td></tr><tr><td class="k">5 · Rolling hash in a sliding window</td><td>longest substring with a property, comparing substrings</td></tr><tr><td class="k">6 · Hash tables / hash maps</td><td>insert, delete, lookup in O(1) on average — dictionaries, caches, databases</td></tr></tbody></table></div></div>
+  </div>
+</section>
+
+<section class="beat" id="b8">
+  <div class="beat-head">
+    <div class="beat-n">08</div>
+    <div>
+      <h2>Advantages and Disadvantages</h2>
       <div class="sub"><span>3 min</span></div>
     </div>
   </div>
   <div class="stack">
-    <div class="card pad board"><p>Lecture 9 solves the same substring-search problem <strong>without probability</strong>: the prefix function and KMP. Set up the contrast now — today's answer is fast and almost always right; next week's is fast and always right, and it needs one array you have never seen before.</p><p style="margin-top:12px">Homework is Lab 8. Ask for <strong>A and B</strong> before the next class — one pure formula, one full Rabin–Karp.</p></div>
+    <div class="two">
+      <div class="card pad board"><h4>Advantages</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Fast comparison</strong>: O(1) instead of O(n)</li><li><strong>Space efficient</strong>: store an integer instead of a string</li><li><strong>Versatile</strong>: works for strings, arrays, objects</li><li><strong>Simple to implement</strong>: the basic version is straightforward</li></ul></div>
+      <div class="card pad board"><h4>Disadvantages</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Collisions possible</strong>: different inputs may have the same hash</li><li><strong>No guaranteed uniqueness</strong>: critical applications need verification</li><li><strong>Overflow issues</strong>: large values need careful handling</li><li><strong>Choice of parameters</strong>: p and MOD affect the collision rate</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="beat" id="b9">
+  <div class="beat-head">
+    <div class="beat-n">09</div>
+    <div>
+      <h2>Common Questions</h2>
+      <div class="sub"><span>6 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Q1 · Why use prime numbers (29, 31) for p?</h4><p>Prime numbers reduce the probability of collisions — they spread the hash values better across the range.</p></div>
+    <div class="card pad board"><h4>Q2 · What if hash values overflow?</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Use <code>long long</code> or <code>unsigned long long</code></li><li>Use modulo with a large prime: <code>hash = (hash + value) % MOD</code></li><li>Both work — choose based on the requirements</li></ul><p style="margin-top:12px">With plain <code>int</code> the hash of a 7-character string already overflows; signed overflow is undefined behaviour in C++, unsigned overflow simply wraps around.</p></div>
+    <div class="card pad board"><h4>Q3 · Can we always trust hash equality?</h4><p>No. When correctness is critical, verify with an actual comparison:</p><div style="margin-top:12px"></div><pre><span class="k">if</span> (hash1 == hash2 &amp;&amp; str1 == str2) {
+    <span class="c">// Strings are definitely equal</span>
+}</pre></div>
+    <div class="card pad board"><h4>Q4 · Rabin–Karp or KMP for pattern matching?</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Rabin–Karp</strong>: simpler, works for multiple patterns, small chance of a collision</li><li><strong>KMP</strong>: more involved, but no false positives — better for a single pattern</li></ul></div>
+    <div class="card pad board"><h4>Q5 · Why O(n² log n) for counting distinct substrings?</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>O(n²) to generate all substrings</li><li>O(log n) to insert each hash into a set (a balanced tree)</li><li>Total: O(n² log n)</li></ul></div>
+  </div>
+</section>
+
+<section class="beat" id="b10">
+  <div class="beat-head">
+    <div class="beat-n">10</div>
+    <div>
+      <h2>Key Takeaways</h2>
+      <div class="sub"><span>3 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Eight things to remember</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li><strong>Hashing converts strings to integers</strong> for fast comparison</li><li><strong>Polynomial rolling hash</strong> is the most common for strings: <code>hash = Σ s[i] × p^i</code></li><li><strong>A prefix hash array</strong> answers substring hash queries in O(1)</li><li><strong>Rabin–Karp</strong> finds a pattern in O(n + m)</li><li><strong>Hash collisions are possible</strong> — verify when necessary</li><li><strong>Hashing improves complexity</strong> — from O(n³) to O(n² log n) or better</li><li><strong>Choose good parameters</strong>: p = 29 or 31, MOD = a large prime</li><li><strong>Trade-off</strong>: speed against a small collision probability</li></ol></div>
+  </div>
+</section>
+
+<section class="beat" id="b11">
+  <div class="beat-head">
+    <div class="beat-n">11</div>
+    <div>
+      <h2>Practice Problems</h2>
+      <div class="sub"><span>2 min</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Try these</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li>Find all occurrences of a pattern in a text using Rabin–Karp</li><li>Find the longest duplicate substring</li><li>Count palindromic substrings using hashing</li><li>Find the longest common substring of two strings</li><li>Group anagrams using hash values</li><li>Detect if two strings are rotations of each other</li><li>Find the smallest window containing all characters</li><li>Implement an efficient spell checker using hashing</li></ol></div>
+  </div>
+</section>
+
+<section class="beat" id="b12">
+  <div class="beat-head">
+    <div class="beat-n">12</div>
+    <div>
+      <h2>Lab 8 — the problems</h2>
+      <div class="sub"><span>12 min</span> <span>ADS-Lab-08</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="say">
+      <h4>What to say</h4>
+      <ul>
+        <li>Six problems, and they split cleanly: <strong>A and D are the formula itself</strong> — compute a hash, or invert one. Do those first.</li>
+        <li>B is Rabin–Karp on two strings. E and F are the prefix-hash machinery applied twice.</li>
+        <li>E asks for the number of <strong>distinct</strong> substrings at |s| ≤ 2000. Hashing all O(n²) substrings into a set is the intended solve, and the TL is 4 s precisely because of it.</li>
+        <li>C is the awkward one: the input is <strong>multi-test</strong> — an unknown number of blocks until the terminator. Read the format with them; more submissions die on that than on the algorithm.</li>
+        <li>The reference solutions for B and C use KMP, which is <strong>next week's</strong> technique. Either approach is accepted; solving them with hashes is the intended exercise.</li>
+      </ul>
+    </div>
+    <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Hash of digits</span><span class="pill key">key</span><div class="map-why">Compute the hash by a given formula and match strings to hashes</div></div></div>
+<div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Plagiarism</span><span class="pill key">key</span><div class="map-why">Rabin–Karp across two strings; TL 1 s, |s| up to 4·10⁵</div></div></div>
+<div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Dominating Patterns</span><div class="map-why">Many patterns over one text — and the input is multi-test</div></div></div>
+<div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Restore the string</span><span class="pill key">key</span><div class="map-why">Invert the formula: recover the string from prefix hashes</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Distinct substrings</span><span class="pill key">key</span><div class="map-why">Count distinct substrings via a set of hashes, TL 4 s</div></div></div>
+<div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Substrings</span><span class="pill key">key</span><div class="map-why">Prefix hashes answer q queries about substring occurrences</div></div></div><div class="trap" style="margin-top:16px"><b>Two problems left this lab recently:</b> a tape-covering problem and longest-common-substring of k strings were removed as disproportionately hard. If a student has an older copy of the list, that is why it is shorter now.</div></div>
   </div>
 </section>
 </main>
@@ -191,9 +743,9 @@ h[0] = 0; pw[0] = 1;
 </div>
 
 <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-<script src="assets/notes.js?v=202609281811"></script>
-<script src="assets/present.js?v=202609281811"></script>
-<script src="assets/cpp.js?v=202609281811"></script>
+<script src="assets/notes.js?v=202610011756"></script>
+<script src="assets/present.js?v=202610011756"></script>
+<script src="assets/cpp.js?v=202610011756"></script>
 <script>
 
 (function(){
