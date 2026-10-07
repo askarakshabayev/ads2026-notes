@@ -6,9 +6,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
-<link rel="stylesheet" href="assets/notes.css?v=202610011756">
-<link rel="stylesheet" href="assets/present.css?v=202610011756">
-<link rel="stylesheet" href="assets/cpp.css?v=202610011756">
+<link rel="stylesheet" href="assets/notes.css?v=202610071402">
+<link rel="stylesheet" href="assets/present.css?v=202610071402">
+<link rel="stylesheet" href="assets/cpp.css?v=202610071402">
 </head><body>
 <div class="wrap">
 
@@ -697,7 +697,7 @@ With #:    "ab#cab" → no match (correct!)</pre><p style="margin-top:12px">In "
         <li>F is the plain KMP search and should be done first — it is the template, and everything else reuses it.</li>
         <li>G is the period formula, literally <code>n − π[n−1]</code>. With the array the problem is one line; without it, it is impossible.</li>
         <li>C is the rotation trick, B is occurrence counting, D is the longest overlap between a suffix and a prefix.</li>
-        <li><strong>E and H are the heavy pair and neither is on the defence.</strong> E mixes the prefix function with arithmetic that overflows int at 5·10¹¹; H runs on a string of 5·10⁶ characters.</li>
+        <li><strong>E and H are the heavy pair.</strong> E mixes the prefix function with arithmetic that overflows int at 5·10¹¹; H runs on a string of 5·10⁶ characters.</li>
         <li>A is the awkward one to read: repeat A until B fits inside it. The answer is bounded by ⌈|B|/|A|⌉ + 1 — derive that bound with them, or they will loop forever.</li>
       </ul>
     </div>
@@ -705,10 +705,10 @@ With #:    "ab#cab" → no match (correct!)</pre><p style="margin-top:12px">In "
 <div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Password</span><span class="pill key">key</span><div class="map-why">Count occurrences, at least K times</div></div></div>
 <div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Cyclic Shift</span><span class="pill key">key</span><div class="map-why">Cyclic shift — search t inside s + s</div></div></div>
 <div class="map-row"><span class="map-idx">D</span><div><span class="map-name">Modified Towns game</span><span class="pill key">key</span><div class="map-why">Longest overlap between a suffix and a prefix</div></div></div>
-<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Chainsaw Man: 13th generation</span><div class="map-why">Prefix function plus arithmetic that overflows int at 5·10¹¹ — not on the defence</div></div></div>
+<div class="map-row"><span class="map-idx">E</span><div><span class="map-name">Chainsaw Man: 13th generation</span><div class="map-why">Prefix function plus arithmetic that overflows int at 5·10¹¹</div></div></div>
 <div class="map-row"><span class="map-idx">F</span><div><span class="map-name">Simple KMP</span><span class="pill key">key</span><div class="map-why">The plain KMP search, print all occurrence indices</div></div></div>
 <div class="map-row"><span class="map-idx">G</span><div><span class="map-name">Another one prefix function problem</span><span class="pill key">key</span><div class="map-why">Shortest period, literally n − π[n−1]</div></div></div>
-<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">Splitting</span><div class="map-why">|s| up to 5·10⁶ — heaviest in the lab, not on the defence</div></div></div></div>
+<div class="map-row"><span class="map-idx">H</span><div><span class="map-name">Splitting</span><div class="map-why">|s| up to 5·10⁶ — heaviest in the lab</div></div></div></div>
   </div>
 </section>
 </main>
@@ -721,9 +721,9 @@ With #:    "ab#cab" → no match (correct!)</pre><p style="margin-top:12px">In "
 </div>
 
 <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-<script src="assets/notes.js?v=202610011756"></script>
-<script src="assets/present.js?v=202610011756"></script>
-<script src="assets/cpp.js?v=202610011756"></script>
+<script src="assets/notes.js?v=202610071402"></script>
+<script src="assets/present.js?v=202610071402"></script>
+<script src="assets/cpp.js?v=202610071402"></script>
 <script>
 
 (function(){
