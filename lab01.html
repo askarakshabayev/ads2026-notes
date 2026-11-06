@@ -62,16 +62,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>There are <strong>12 lab contests</strong>, one a week from week 3. Each is worth its own number of points, listed in the syllabus.</li>
-        <li>A contest is submitted on ejudge, but it counts only after the <strong>defence</strong>: two weeks after the lab opens, a separate contest with <strong>2 problems from the same list</strong>, solved on the spot.</li>
-        <li>Say plainly why the defence <strong>multiplies</strong> instead of adding: an accepted submission you cannot reproduce is worth nothing. <strong>Solving 5 problems honestly beats copying 10</strong>.</li>
-        <li>The two defence problems come from the whole list, not from what someone happened to solve — so leaving half the lab untouched is a gamble on both counts.</li>
-        <li>Let them play with the calculator for a minute — it answers "what do I get if…" faster than you can.</li>
-      </ul>
-    </div>
     <div class="card pad board">
         <h4>Lab contests</h4>
         <p>There are <strong>12 lab contests</strong> across the semester, one per week starting from week 3, plus a <strong>TSIS</strong> assignment each week. Every contest carries its own point value — the syllabus lists them next to the week.</p>
@@ -176,12 +166,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Walk the <strong>13 lectures</strong>: the course builds from simple structures up to graphs, and what we do today comes back at the end.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Thirteen lectures</h4><div class="tw"><table><thead><tr><th>Lecture</th><th>Title</th><th>Topics</th></tr></thead><tbody><tr><td class="k">1</td><td>Complexity and Memory</td><td>GCD, Binary Exponentiation, Sieve of Eratosthenes, Prime factorization, Stack, Queue, Deque</td></tr><tr><td class="k">2</td><td>Data Structures</td><td>Stack, Queue, Deque, Linked lists, Doubly-Linked lists</td></tr><tr><td class="k">3</td><td>Search Algorithms</td><td>Binary search</td></tr><tr><td class="k">4</td><td>Tree Structures</td><td>Binary search tree</td></tr><tr><td class="k">5</td><td>Priority Structures</td><td>Priority queues, Heap</td></tr><tr><td class="k">6</td><td>Sorting Algorithms I</td><td>Heap sort, Quick Sort</td></tr><tr><td class="k">7</td><td>Sorting Algorithms II</td><td>Merge sort, <strong>Midterm</strong></td></tr><tr><td class="k">8</td><td>Hash Tables</td><td>Hash tables, Rabin-Karp algorithm based on hash calculation</td></tr><tr><td class="k">9</td><td>String Algorithms</td><td>Knuth-Morris-Pratt algorithm</td></tr><tr><td class="k">10</td><td>Graph Representation and BFS</td><td>Adjacency list and matrix, Edge list, BFS</td></tr><tr><td class="k">11</td><td>Graph Traversal and Sorting</td><td>DFS, Topological Sort</td></tr><tr><td class="k">12</td><td>Spanning Tree Algorithms</td><td>Kruskal algorithm, Prim algorithm</td></tr><tr><td class="k">13</td><td>Shortest Path Algorithms</td><td>Dijkstra, Floyd-Warshall, Bellman-Ford</td></tr></tbody></table></div></div>
   </div>
 </section>
@@ -195,15 +179,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Start with the <strong>simple solution</strong> and show why we need something better: check every number from min(a, b) down to 1.</li>
-        <li>For gcd(12, 18) it is fine — it stops at 6 after 7 checks. For gcd(1000000007, 1000000009) it needs about a <strong>billion</strong> checks. Run the demo and read the number off the screen.</li>
-        <li>Then the Euclidean algorithm: <strong>gcd(a, b) = gcd(b, a mod b)</strong>, and <strong>gcd(a, 0) = a</strong>. Do a few steps by hand on the board.</li>
-        <li>Three implementations: the naive loop, the recursive Euclid, and an iterative one that keeps taking the remainder of the larger by the smaller.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>The problem and the naive approach</h4><p><strong>Problem:</strong> find the largest positive integer that divides both numbers a and b.</p><p style="margin-top:12px"><strong>Naive approach</strong></p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Check all numbers from min(a, b) down to 1</li><li>Time complexity: O(min(a, b))</li><li>Inefficient for large numbers</li></ul><p style="margin-top:12px"><strong>Example</strong></p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>For small numbers like GCD(12, 18) it works fine: at most 12 checks — it actually stops at 6 after 7</li><li>For large primes like GCD(1000000007, 1000000009) it needs about 1 billion checks</li><li>With large numbers this approach takes an extremely long time</li></ul></div>
     <div class="card pad board"><h4>The Euclidean algorithm</h4><div class="formula">GCD(a, b) = GCD(b, a mod b)   if b ≠ 0<br>GCD(a, 0) = a</div><p style="margin-top:13px">On the board:</p><pre class="out">gcd(12, 18) = gcd(18, 12) = gcd(12, 6) = gcd(6, 0) = 6
 gcd(48, 180) = gcd(180, 48) = gcd(48, 36) = gcd(36, 12) = gcd(12, 0) = 12</pre></div>
@@ -343,15 +318,6 @@ ll gcd3(ll a, ll b) {
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Naively a<sup>n</sup> costs n multiplications. For n = 10¹⁸ that is more than thirty years.</li>
-        <li>If n is even, a<sup>n</sup> = (a<sup>n/2</sup>)²; if n is odd, a<sup>n</sup> = a · a<sup>n−1</sup>. Every two steps <strong>halve the exponent</strong> — O(log n).</li>
-        <li>Do 2<sup>10</sup> by hand: 4 real multiplications instead of 10.</li>
-        <li>Then the version with a modulus — that is problem B — and its two traps.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>The problem and the idea</h4><p><strong>Problem:</strong> calculate a<sup>n</sup> efficiently.</p><p style="margin-top:12px"><strong>Naive approach</strong></p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Multiply a by itself n times</li><li>Time complexity: O(n)</li><li>Inefficient for large exponents</li></ul><p style="margin-top:12px"><strong>Binary exponentiation</strong></p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Based on the property a<sup>n</sup> = (a<sup>n/2</sup>)<sup>2</sup> if n is even</li><li>If n is odd: a<sup>n</sup> = a × a<sup>n−1</sup></li><li>Time complexity: O(log n)</li></ul><p style="margin-top:12px"><strong>Algorithm</strong></p><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li>If n = 0, return 1</li><li>If n is even: result = (a<sup>n/2</sup>)<sup>2</sup></li><li>If n is odd: result = a × a<sup>n−1</sup></li><li>Use recursion or iteration</li></ol></div>
     <div class="card pad board"><h4>Example · 2<sup>10</sup></h4><p>2<sup>10</sup> = (2<sup>5</sup>)<sup>2</sup> = (2 × 2<sup>4</sup>)<sup>2</sup> = (2 × (2<sup>2</sup>)<sup>2</sup>)<sup>2</sup> = (2 × 4<sup>2</sup>)<sup>2</sup> = (2 × 16)<sup>2</sup> = 32<sup>2</sup> = 1024</p><p style="margin-top:12px">What the recursive code below actually multiplies, in order:</p><pre class="out">2^1 = 2 × 1 = 2
 2^2 = 2 × 2 = 4
@@ -467,14 +433,6 @@ ll pow_a_b(ll a, ll b) {
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>The task is to find <strong>all</strong> primes up to n. Testing each number separately is O(n√n); the sieve does it in <strong>O(n log log n)</strong>.</li>
-        <li>Start the animation and narrate it: the first number that is not crossed out is prime — cross out all its multiples.</li>
-        <li>Stop on <strong>why crossing starts at i²</strong>: every smaller multiple was already crossed by a smaller prime.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>The problem and the naive approach</h4><p><strong>Problem:</strong> find all prime numbers up to n efficiently.</p><p style="margin-top:12px"><strong>Naive approach</strong></p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Check each number for primality individually</li><li>Time complexity: O(n√n)</li></ul></div>
     <div class="card pad board"><h4>Example · primes up to 30</h4><pre class="out">Start with [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]
 Cross out multiples of 2: [2,3,5,7,9,11,13,15,17,19,21,23,25,27,29]
@@ -611,14 +569,6 @@ vector&lt;<span class="k">int</span>&gt; prime_numbers(<span class="k">int</span
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>Prime factorization</strong> breaks a number into a product of primes.</li>
-        <li>Dividing up to <strong>√n</strong> is enough. After the loop the leftover may be greater than 1 — and that leftover is a prime factor too. Show it in the demo on <code>999999999989</code>.</li>
-        <li>The faster version divides only by primes, precomputed with the sieve.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Examples</h4><p style="margin-top:0"><strong>60 = 2 × 2 × 3 × 5</strong><br><span class="mono" style="color:var(--ink-2)">60 ÷ 2 = 30 → ÷ 2 = 15 → ÷ 3 = 5 → 5 is prime</span></p><p style="margin-top:10px"><strong>210 = 2 × 3 × 5 × 7</strong><br><span class="mono" style="color:var(--ink-2)">210 ÷ 2 = 105 → ÷ 3 = 35 → ÷ 5 = 7 → 7 is prime</span></p></div>
     <div class="card pad board"><h4>Basic implementation</h4><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">using</span> <span class="k">namespace</span> std;
@@ -762,15 +712,6 @@ vector&lt;<span class="k">int</span>&gt; sieve(<span class="k">int</span> limit)
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Sorting 10 numbers finishes instantly with any algorithm. Sorting <strong>10 million</strong> takes hours with a slow one and seconds with a fast one.</li>
-        <li>So we do not measure seconds — we measure <strong>how fast the cost grows</strong> as n grows. Drag the slider and let the room watch n² fall out of the time limit.</li>
-        <li>Two things we drop: <strong>constant factors</strong> and <strong>less significant terms</strong>.</li>
-        <li>A judge does roughly <strong>10⁸–10⁹ simple operations per second</strong> — from the n in the statement you can pick the complexity you are allowed.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Why complexity matters</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Sorting 10 numbers → both good and bad algorithms finish instantly.</li><li>Sorting 10 million numbers → slow algorithms take hours, fast ones finish in seconds.</li><li>We use complexity analysis to predict how runtime and memory grow as n increases.</li></ul><p style="margin-top:13px"><strong>Big-O</strong> describes the upper bound on the growth rate — how fast runtime or memory usage can grow in the worst case.</p><p style="margin-top:12px"><strong>Key principles</strong></p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Ignore constant factors — 2n or 5n, it is still O(n)</li><li>Ignore less significant terms — n² + n → O(n²), because n² dominates for large n</li></ul></div>
     <div class="card pad demo">
       <h4>Demo · how long an algorithm runs for a given n</h4>
@@ -834,15 +775,6 @@ vector&lt;<span class="k">int</span>&gt; sieve(<span class="k">int</span> limit)
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Think of a stack of plates: you can only add to or remove from the <strong>top</strong>. Every operation is O(1).</li>
-        <li>Use the playground to show the stack, then switch it to queue and deque — the same idea with other ends open.</li>
-        <li><code>pop()</code> and <code>top()</code> on an empty stack are <strong>undefined behaviour</strong>, not an exception. Check <code>empty()</code> first.</li>
-        <li>Then the same stack written by hand on linked nodes — the preview of lecture 2.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Core operations</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><code>push(item)</code> — add an item to the top — O(1)</li><li><code>pop()</code> — remove the top item — O(1)</li><li><code>top()</code> / <code>peek()</code> — view the top item without removing it — O(1)</li><li><code>empty()</code> — check if the stack is empty — O(1)</li><li><code>size()</code> — get the number of elements — O(1)</li></ul></div>
     <div class="card pad board"><h4>C++ implementation using the STL</h4><pre><span class="c">// C++ built-in stack</span>
 <span class="k">#include</span> &lt;iostream&gt;
@@ -1043,14 +975,6 @@ vector&lt;<span class="k">int</span>&gt; sieve(<span class="k">int</span> limit)
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>The problems follow the order of the lecture: A–B are GCD and binpow, C–E are primes, F–H the stack, I–J the queue and the deque.</li>
-        <li>H is the hard one — a monotonic stack. Say plainly that it is an <strong>application</strong> of the stack.</li>
-        <li>Limits: <strong>1 second and 256 MB</strong> almost everywhere.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Greatest Common Divisor</span><span class="pill key">key</span><div class="map-why">GCD — Euclid on long long, a, b ≤ 10¹⁸</div></div></div>
 <div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Binary Exponentiation</span><span class="pill key">key</span><div class="map-why">Binary exponentiation aⁿ mod m, n ≤ 10¹⁸ — mind 1 % m and a % m</div></div></div>
 <div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Prime or Not</span><div class="map-why">Primality by trial division up to √a</div></div></div>

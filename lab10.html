@@ -85,13 +85,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>A <strong>graph</strong> is a set of <strong>vertices</strong> and a set of <strong>edges</strong> between pairs of them: G = (V, E).</li>
-        <li>Graphs model relationships — friendships, roads, network links, hyperlinks, dependencies between tasks.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>G = (V, E)</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>a set of <strong>vertices</strong> (or <strong>nodes</strong>)</li><li>a set of <strong>edges</strong> connecting pairs of vertices</li></ul><p style="margin-top:12px"><strong>Notation:</strong> G = (V, E), where V is the set of vertices and E the set of edges.</p><p style="margin-top:12px"><strong>Example:</strong></p><pre class="out">Vertices: {A, B, C, D}
 Edges: {(A,B), (B,C), (C,D), (A,D)}
 
@@ -112,15 +105,6 @@ Visual representation:
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Eleven words, in pairs where possible: directed or undirected, weighted or unweighted, cyclic or acyclic, connected or disconnected — then complete, tree and bipartite.</li>
-        <li>A <strong>DAG</strong> — directed and acyclic — is the graph of the topological sort in the next lecture.</li>
-        <li>A <strong>tree</strong> is a connected acyclic graph: n vertices, exactly n − 1 edges, exactly one path between any two vertices.</li>
-        <li><strong>Bipartite</strong>: the vertices split into two sets and every edge goes between the sets. A triangle is the smallest graph that is not bipartite.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>1 · Directed graph (digraph)</h4><p>Edges have a <strong>direction</strong> — from one vertex to another.</p><pre class="out">    A --&gt; B
     ↑     ↓
     D &lt;-- C
@@ -234,16 +218,6 @@ This is NOT bipartite because:
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Three ways to store the same graph. Use the 4-cycle 0 — 1 — 2 — 3 — 0 for all three and keep it on the board.</li>
-        <li><strong>Adjacency matrix</strong>: <code>matrix[i][j]</code> says whether there is an edge. O(1) to check an edge, but <strong>O(V²) memory</strong>.</li>
-        <li><strong>Adjacency list</strong>: <code>adj[i]</code> holds the neighbours of i. O(V + E) memory — <strong>the default</strong> for traversals.</li>
-        <li><strong>Edge list</strong>: just the pairs. Simple, and exactly what Kruskal needs later; bad for traversal.</li>
-        <li>Undirected means <strong>both directions</strong>: every edge is written into the matrix or the list twice.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>1 · Adjacency matrix</h4><p>A <strong>2D array</strong> where <code>matrix[i][j]</code> tells whether there is an edge from vertex i to vertex j.</p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Unweighted:</strong> <code>matrix[i][j] = 1</code> if the edge exists, <code>0</code> if not</li><li><strong>Weighted:</strong> <code>matrix[i][j] = weight</code> if the edge exists, <code>∞</code> or <code>0</code> if not</li></ul><p style="margin-top:12px"><strong>Example.</strong> Graph:</p><pre class="out">    0 --- 1
     |     |
     3 --- 2</pre><p style="margin-top:12px">Adjacency matrix (undirected):</p><pre class="out">     0  1  2  3
@@ -658,15 +632,6 @@ Total edges: 4</pre><div class="tw"><table><thead><tr><th>Operation</th><th clas
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>BFS</strong> explores the graph <strong>level by level</strong> from a source: first all neighbours, then all neighbours of neighbours, and so on.</li>
-        <li>The order is kept by a <strong>queue</strong> — first in, first out.</li>
-        <li>Mark a vertex visited <strong>when it is put into the queue</strong>, not when it is taken out — otherwise it can enter the queue several times.</li>
-        <li>Run the demo in BFS mode: the visited area grows in rings, and the numbers are the distances.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>BFS algorithm</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li>Start from the source vertex</li><li>Visit all its neighbours (level 1)</li><li>Visit all neighbours of neighbours (level 2)</li><li>Continue until all reachable vertices are visited</li></ol><p style="margin-top:12px"><strong>Uses a queue</strong> (FIFO — First In, First Out).</p></div>
     <div class="card pad board"><h4>BFS visualization</h4><p>Graph:</p><pre class="out">        0
        / \
@@ -700,14 +665,6 @@ Visit order: 0 → 1 → 2 → 3 → 4 → 5</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Three functions over the same globals: plain BFS that prints the order, BFS that records the <strong>distance</strong> of each vertex, and BFS that records the <strong>parent</strong> of each vertex to restore a path.</li>
-        <li>Distance: <code>distance[u] = distance[v] + 1</code> at the moment u is discovered.</li>
-        <li>Path: follow <code>parent[]</code> back from the target to the source, then reverse.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>1 · The graph</h4><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">#include</span> &lt;vector&gt;
 <span class="k">#include</span> &lt;queue&gt;
@@ -1083,13 +1040,6 @@ vector&lt;<span class="k">int</span>&gt; adj[MAXN];
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Write the visited array and the queue after every step. A vertex is marked the moment it enters the queue.</li>
-        <li>Vertex 4 is discovered from 1, so when 2 is dequeued there is nothing new left.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>BFS from vertex 0</h4><p>Graph:</p><pre class="out">    0 --- 1 --- 3
     |     |
     2 --- 4</pre><div style="margin-top:12px"></div><pre class="out">Initial:
@@ -1135,15 +1085,6 @@ Final output: 0 1 2 3 4</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Five uses of the same loop: shortest path in an unweighted graph, "is the graph connected", counting components, the bipartite check and printing by levels.</li>
-        <li>Components: start a new BFS from every vertex that is still unvisited and count the starts.</li>
-        <li>The bipartite check colours each newly found vertex with the opposite colour; meeting a neighbour of the same colour means "not bipartite". It has to be started from <strong>every</strong> uncoloured vertex, or a second component is never checked.</li>
-        <li>Then the same BFS on a grid: the cells are vertices, the four (or eight knight) moves are the edges.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>1 · Shortest path in an unweighted graph</h4><p>BFS finds the shortest path — the minimum number of edges — from the source to every other vertex.</p><pre><span class="k">int</span> shortestPath(Graph&amp; g, <span class="k">int</span> source, <span class="k">int</span> target) {
     vector&lt;<span class="k">bool</span>&gt; visited(n, <span class="k">false</span>);
     vector&lt;<span class="k">int</span>&gt; distance(n, -1);
@@ -1659,14 +1600,6 @@ queue&lt;<span class="k">int</span>&gt; q;
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>DFS</strong> goes as deep as possible along one branch, and only then backtracks and tries the next one.</li>
-        <li>BFS goes level by level; DFS goes <strong>deep</strong> first. Switch the grid demo to DFS: it runs down one corridor to the end before coming back.</li>
-        <li>DFS does <strong>not</strong> give shortest paths. What it gives is structure — components, cycles, topological order.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>DFS vs BFS</h4><div class="tw"><table><thead><tr><th>Feature</th><th>DFS</th><th>BFS</th></tr></thead><tbody><tr><td class="k">Data structure</td><td>stack (or recursion)</td><td>queue</td></tr><tr><td class="k">Traversal</td><td>depth first</td><td>level by level</td></tr><tr><td class="k">Implementation</td><td>recursion or an explicit stack</td><td>queue</td></tr><tr><td class="k">Space</td><td>O(H), H is the height</td><td>O(W), W is the width</td></tr><tr><td class="k">Shortest path</td><td><span style="color:var(--mark)">no</span></td><td><span style="color:var(--prime)">yes (unweighted)</span></td></tr><tr><td class="k">Use cases</td><td>cycle detection, topological sort, path finding</td><td>shortest path, level order</td></tr></tbody></table></div></div>
     <div class="card pad board"><h4>DFS visualization</h4><p>Graph:</p><pre class="out">        0
        / \
@@ -1695,14 +1628,6 @@ Path taken:
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Recursive DFS is four lines: mark the vertex, then call DFS on every unvisited neighbour.</li>
-        <li>The recursion <strong>is</strong> the stack. The iterative version keeps the stack explicitly: pop a vertex, skip it if already visited, otherwise visit it and push its neighbours.</li>
-        <li>Push the neighbours in <strong>reverse</strong> order and the iterative version visits them in the same order as the recursive one.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Recursive implementation</h4><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">#include</span> &lt;vector&gt;
 <span class="k">using</span> <span class="k">namespace</span> std;
@@ -1876,13 +1801,6 @@ DFS iterative: 1 2 4 7 5 3 6</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>The same graph as the BFS example, so the two orders can be compared: BFS gives 0 1 2 3 4, DFS gives 0 1 3 4 2.</li>
-        <li>Vertex 2 is reached through 4, not directly from 0 — by the time DFS comes back to 0, 2 is already visited.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>DFS from vertex 0</h4><p>Graph:</p><pre class="out">    0 --- 1 --- 3
     |     |
     2 --- 4</pre><div style="margin-top:12px"></div><pre class="out">Initial:
@@ -1937,14 +1855,6 @@ Final output: 0 1 3 4 2</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>A <strong>connected component</strong> is a maximal set of vertices where every pair is connected by a path.</li>
-        <li>Loop over all vertices; every time one is still unvisited, start DFS from it and add one to the count.</li>
-        <li>Islands on a grid are the same thing: cells with 1 are vertices, side neighbours are edges, and an island is a component.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Counting components</h4><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">#include</span> &lt;vector&gt;
 <span class="k">using</span> <span class="k">namespace</span> std;
@@ -2167,14 +2077,6 @@ vector&lt;<span class="k">int</span>&gt; adj[MAXN];
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>A <strong>bipartite</strong> graph can be coloured with 2 colours so that no two adjacent vertices have the same colour.</li>
-        <li>DFS colours every new vertex with the opposite colour, <code>3 − c</code>. A neighbour that already has colour c means "not bipartite".</li>
-        <li>The outer loop starts from every uncoloured vertex, so every component is checked.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Two colours by DFS</h4><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">#include</span> &lt;vector&gt;
 <span class="k">using</span> <span class="k">namespace</span> std;
@@ -2342,13 +2244,6 @@ vector&lt;<span class="k">int</span>&gt; adj[MAXN];
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>Undirected</strong>: during DFS, an edge to a visited vertex that is <strong>not the parent</strong> closes a cycle. The parent does not count — that is the edge we came by.</li>
-        <li><strong>Directed</strong>: an edge to a visited vertex is a cycle only if that vertex is still <strong>on the current path</strong> — <code>recStack</code>. A vertex that is already finished is not a cycle.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Cycle detection in an undirected graph</h4><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">#include</span> &lt;vector&gt;
 <span class="k">using</span> <span class="k">namespace</span> std;
@@ -2631,14 +2526,6 @@ vector&lt;<span class="k">int</span>&gt; adj[MAXN];
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>A <strong>topological order</strong> of a DAG lists the vertices so that every edge (u, v) has u before v.</li>
-        <li>DFS gives it for free: push a vertex <strong>after</strong> all its descendants are processed. The stack, read from the top, is the order.</li>
-        <li>Only DAGs have one — a cycle makes it impossible. And there can be several valid orders.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Applications of topological sort</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Task scheduling</strong> with dependencies</li><li><strong>Course prerequisites</strong></li><li><strong>Build systems</strong> (compile order)</li><li><strong>Package dependency resolution</strong></li></ul></div>
     <div class="card pad board"><h4>Example</h4><pre class="out">Task dependencies:
 A → B (A must be done before B)
@@ -2806,14 +2693,6 @@ stack&lt;<span class="k">int</span>&gt; result;
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>To check whether a path exists: DFS from the start and stop as soon as the target is reached.</li>
-        <li>To print it: push each vertex onto <code>path</code> on the way in, and pop it on the way out if the target was not found below it.</li>
-        <li>DFS finds <strong>a</strong> path, not the shortest — from 3 to 5 it goes 3 → 1 → 0 → 2 → 5.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Find if a path exists</h4><pre><span class="k">bool</span> DFS_path(<span class="k">int</span> v, <span class="k">int</span> target);   <span class="c">// added: declared before hasPath uses it</span>
 
 <span class="k">bool</span> hasPath(<span class="k">int</span> start, <span class="k">int</span> end) {
@@ -3001,13 +2880,6 @@ vector&lt;<span class="k">int</span>&gt; path;
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>A <strong>strongly connected component</strong> of a directed graph is a maximal set of vertices where every vertex is reachable from every other.</li>
-        <li><strong>Kosaraju</strong>: two DFS passes. The first records the finish order; the second runs on the <strong>reversed</strong> graph, taking vertices from the latest finished — each run collects one SCC.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Kosaraju's algorithm</h4><details class="code"><summary>Kosaraju — the full program<span class="lines">90 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">#include</span> &lt;vector&gt;
 <span class="k">#include</span> &lt;stack&gt;
@@ -3112,14 +2984,6 @@ SCC 3: 4</pre><p style="margin-top:12px">0 → 1 → 2 → 0 is a cycle, so {0, 
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>A <strong>bridge</strong> is an edge whose removal increases the number of connected components.</li>
-        <li><code>disc[v]</code> is when DFS discovered v; <code>low[v]</code> is the earliest discovery time reachable from v's subtree using one back edge.</li>
-        <li>The edge v — u is a bridge when <code>low[u] &gt; disc[v]</code>: nothing below u can get back above v without that edge.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Bridge (cut edge)</h4><p>An edge whose removal increases the number of connected components.</p><details class="code"><summary>Bridges — the full program<span class="lines">72 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">#include</span> &lt;vector&gt;
 <span class="k">using</span> <span class="k">namespace</span> std;
@@ -3274,13 +3138,6 @@ Bridge: 1 - 3</pre><p style="margin-top:12px">The triangle 0 — 1 — 2 has no 
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Ten problems over both lectures: <strong>A–D are BFS, F–J are DFS</strong>, E is the outlier.</li>
-        <li>Start with B and H — plain BFS on a matrix, and flood fill on a grid.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Marios War</span><span class="pill key">key</span><div class="map-why">Multi-source BFS on a grid — push every source at distance 0</div></div></div>
 <div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Path</span><span class="pill key">key</span><div class="map-why">Plain BFS, the graph given as a matrix, n ≤ 100</div></div></div>
 <div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Multiply or Subtract</span><span class="pill key">key</span><div class="map-why">BFS over states — the vertices are numbers, the edges are ×2 and −1</div></div></div>

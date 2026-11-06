@@ -53,16 +53,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>Problem:</strong> a sorted array a[0..n−1] in non-decreasing order; find an index i with a[i] == x.</li>
-        <li>Keep two pointers <span class="mono">l</span> and <span class="mono">r</span> — the range still in play. Look at the middle: equal — done; smaller than x — the answer is to the right; larger — to the left.</li>
-        <li>Every step <strong>halves the range</strong>, so the loop runs at most log₂n times — <strong>O(log n)</strong>. Run the demo on n = 10⁹: thirty steps.</li>
-        <li>Walk through x = 13 on the board with the trace table, then write the code.</li>
-        <li>Then the practice problem: n numbers and k queries, answer YES/NO for each — the same function called k times.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>The problem and the algorithm</h4><p><strong>Problem:</strong> we have a sorted array <span class="mono">a[0..n-1]</span> in non-decreasing order. We want to find an index <span class="mono">i</span> such that <span class="mono">a[i] == x</span>.</p><p style="margin-top:12px"><strong>Example:</strong> find x = 13 in <span class="mono">[3, 5, 8, 13, 18, 19, 21, 27, 32]</span></p><p style="margin-top:14px"><strong>Algorithm</strong></p><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li>Keep two pointers <span class="mono">l</span> and <span class="mono">r</span> representing the current search range</li><li>While <span class="mono">l &lt;= r</span>:<ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Compute <span class="mono">mid = (l + r) / 2</span></li><li>If <span class="mono">a[mid] == x</span>, return <span class="mono">mid</span></li><li>If <span class="mono">a[mid] &lt; x</span>, search the right half (<span class="mono">l = mid + 1</span>)</li><li>If <span class="mono">a[mid] &gt; x</span>, search the left half (<span class="mono">r = mid - 1</span>)</li></ul></li></ol><p style="margin-top:14px"><strong>Time complexity:</strong> at each step we halve the search space → <strong>O(log n)</strong>.</p></div>
     <div class="card pad board"><h4>Trace · x = 13</h4><pre class="out">index:   0  1  2  3  4  5  6  7  8
 a:       3  5  8 13 18 19 21 27 32</pre><div style="margin-top:12px"></div><pre class="out">step    l    r  mid  a[mid]   
@@ -254,15 +244,6 @@ YES</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Now x may be absent, and we want its neighbours: the <strong>largest element ≤ x</strong> and the <strong>smallest element ≥ x</strong>.</li>
-        <li>Pretend there is −∞ before the array and +∞ after it: start with <span class="mono">l = −1</span>, <span class="mono">r = n</span>. The invariant is <strong>a[l] ≤ x &lt; a[r]</strong>; the loop runs while the two are not neighbours.</li>
-        <li>When it stops, <span class="mono">l</span> is the largest element ≤ x, and <span class="mono">r</span> the smallest element <strong>&gt; x</strong>. For "≥ x" run the mirrored search — keep a[l] &lt; x and a[r] ≥ x.</li>
-        <li>In the demo, an array full of repeats: the two boundaries are std::lower_bound and std::upper_bound, and their difference is how many times x occurs.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Goal and algorithm</h4><p><strong>Goal:</strong> find</p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>the <strong>largest element ≤ x</strong> — the closest from the left</li><li>the <strong>smallest element ≥ x</strong> — the closest from the right</li></ul><p style="margin-top:14px"><strong>Algorithm for the largest ≤ x</strong></p><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li>Add −∞ at the start and +∞ at the end — conceptually: <span class="mono">l = -1</span>, <span class="mono">r = n</span></li><li>Maintain the invariant: <span class="mono">a[l] ≤ x</span> and <span class="mono">a[r] &gt; x</span></li><li>While <span class="mono">l + 1 &lt; r</span>:<ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><span class="mono">mid = (l + r) / 2</span></li><li>if <span class="mono">a[mid] ≤ x</span> → move <span class="mono">l = mid</span></li><li>else <span class="mono">r = mid</span></li></ul></li></ol></div>
     <div class="card pad board"><h4>Trace · x = 20</h4><pre class="out">index:   0  1  2  3  4  5  6  7  8
 a:       3  5 10 11 13 18 25 27 31</pre><div style="margin-top:12px"></div><pre class="out">step    l    r  mid  a[mid]   
@@ -419,16 +400,6 @@ x = 18 -&gt; left: 18, right: 18</pre><p style="margin-top:12px">After the first
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>We look for the smallest (or largest) x for which a <strong>monotonic condition</strong> holds. There is no array — we search the <strong>range of possible answers</strong>.</li>
-        <li><strong>Example 1.</strong> n rectangles a × b into the smallest square. f(x) = ⌊x/a⌋·⌊x/b⌋ ≥ n. If side x fits them, any larger side fits too — monotonic, so find the first x where it becomes true.</li>
-        <li>Upper bound for the answer: <span class="mono">max(a, b) · n</span> — n rectangles in one row always fit. Use <strong>long long</strong>: the bound and the product both overflow int.</li>
-        <li><strong>Example 2.</strong> n ropes, k equal pieces, maximise the length. If length x works, every shorter one works too — so keep the largest x that is still true.</li>
-        <li>The answer is real, so do not wait for <span class="mono">l == r</span>: run a <strong>fixed 100 iterations</strong> — or loop while <span class="mono">r − l &gt; eps</span>.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>The idea</h4><p>We are looking for the smallest (or largest) x such that some <strong>monotonic condition</strong> holds. Instead of searching an array, we search in the <strong>range of possible answers</strong>.</p></div>
     <div class="card pad board"><h4>Example 1 · minimum square to fit rectangles</h4><p><strong>Problem:</strong> we have n rectangles of size a × b. Find the smallest side of a square that can fit all of them (no rotation).</p><p style="margin-top:12px"><strong>Monotonic function:</strong> f(x) = (⌊x / a⌋ × ⌊x / b⌋ ≥ n). If a square of side x can fit them, a larger square can too → <strong>monotonic</strong>.</p><div style="margin-top:12px"></div><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">using</span> <span class="k">namespace</span> std;

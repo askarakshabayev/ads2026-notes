@@ -52,16 +52,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>Merge sort</strong> is divide and conquer: split the array into halves, sort them recursively, then merge the sorted halves.</li>
-        <li>Start from the merge — two sorted arrays into one. Two indices, take the smaller front, advance it. <strong>Each element is looked at once: O(n)</strong>. Use the demo.</li>
-        <li>Do not forget the tails: when one half runs out, the rest of the other is copied as it is.</li>
-        <li>Then the recursion: log n levels, O(n) work per level — O(n log n) in every case, no bad input.</li>
-        <li>Taking from the left on equal values (<code>&lt;=</code>) is what makes it <strong>stable</strong>. The price is O(n) extra memory.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Merge sort algorithm</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li><strong>Divide</strong>: split the array into two halves</li><li><strong>Conquer</strong>: recursively sort both halves</li><li><strong>Combine</strong>: merge the two sorted halves</li></ol></div>
     <div class="card pad demo"><h4>Demo · merging, one step at a time</h4><div class="ctl"><label class="f" style="flex:1 1 170px"><span>left (sorted)</span><input type="text" id="mga" value="1 4 7 9"></label><label class="f" style="flex:1 1 170px"><span>right (sorted)</span><input type="text" id="mgb" value="2 3 8 10 11"></label><button class="pri" id="mgstep">Step</button><button id="mgauto">▶ Play</button><button id="mgreset">Reset</button></div><div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin-bottom:6px">left</div><div class="track" id="mgta"></div><div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:12px 0 6px">right</div><div class="track" id="mgtb"></div><div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:12px 0 6px">output</div><div class="track" id="mgtc"></div><div class="readout"><div class="stat"><div class="lab">comparisons</div><div class="val" id="mgcmp">0</div></div><div class="stat good"><div class="lab">elements moved</div><div class="val" id="mgmov">0</div></div></div><div class="log" id="mglog">Press Step. Blue is the element about to be taken.</div></div>
     <div class="card pad board"><h4>Merge sort implementation · merge</h4><pre><span class="c">// Merge two sorted subarrays arr[left...mid] and arr[mid+1...right]</span>
@@ -336,12 +326,6 @@ Sorted array:   3 9 10 27 38 43 82</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Both are O(n log n) on average. Merge sort wins on the guarantee and stability, quick sort on memory and cache.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Side by side</h4><div class="tw"><table><thead><tr><th>Feature</th><th class="n">Merge Sort</th><th class="n">Quick Sort</th></tr></thead><tbody><tr><td class="k">Time (Average)</td><td class="n">O(n log n)</td><td class="n">O(n log n)</td></tr><tr><td class="k">Time (Worst)</td><td class="n"><span style="color:var(--prime)">O(n log n)</span></td><td class="n"><span style="color:var(--mark)">O(n²)</span></td></tr><tr><td class="k">Space</td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td></tr><tr><td class="k">Stability</td><td class="n"><span style="color:var(--prime)">Yes</span></td><td class="n"><span style="color:var(--mark)">No</span></td></tr><tr><td class="k">In-place</td><td class="n"><span style="color:var(--mark)">No</span></td><td class="n"><span style="color:var(--prime)">Yes</span></td></tr><tr><td class="k">Cache Performance</td><td class="n"><span style="color:var(--mark)">Poor</span></td><td class="n"><span style="color:var(--prime)">Good</span></td></tr><tr><td class="k">Best for</td><td class="n">linked lists, guaranteed performance</td><td class="n">arrays, average case</td></tr></tbody></table></div></div>
   </div>
 </section>
@@ -355,16 +339,6 @@ Sorted array:   3 9 10 27 38 43 82</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>The same idea — split, solve the halves, combine — solves problems that are not sorting at all.</li>
-        <li><strong>Inversions</strong>: during the merge, when an element is taken from the right half, it is smaller than everything still left in the left half — add all of them at once. Run the demo on a reversed array of 100 000 — the answer does not fit in int.</li>
-        <li><strong>Quick select</strong>: partition, then recurse into one side only — O(n) on average.</li>
-        <li><strong>Maximum subarray</strong>: the best subarray is in the left half, in the right half, or crosses the middle.</li>
-        <li>Binary search is divide and conquer too — one half is thrown away at every step.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>1 · Finding inversions in an array</h4><p><strong>Problem:</strong> count pairs (i, j) where i &lt; j but arr[i] &gt; arr[j].<br><strong>Solution:</strong> a modified merge sort counts inversions during the merge.</p><div style="margin-top:12px"></div><pre><span class="k">long</span> <span class="k">long</span> mergeAndCount(vector&lt;<span class="k">int</span>&gt;&amp; arr, <span class="k">int</span> left, <span class="k">int</span> mid, <span class="k">int</span> right) {
     vector&lt;<span class="k">int</span>&gt; L(arr.begin() + left, arr.begin() + mid + 1);
     vector&lt;<span class="k">int</span>&gt; R(arr.begin() + mid + 1, arr.begin() + right + 1);
@@ -609,15 +583,6 @@ Sorted array:   3 9 10 27 38 43 82</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Five problems: B is the bare merge, A is a stable sort, D is the inversion count.</li>
-        <li><strong>A is fiddly, and not because of the algorithm:</strong> the number of strings per line is not given — read the whole line and split it yourself.</li>
-        <li>E looks like sorting and is not: the squares of a sorted array are <strong>two sorted runs</strong> — merge them in O(n).</li>
-        <li>D: quadratic passes nothing, and <code>int</code> overflows silently — use <code>long long</code>.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Simple Merge</span><span class="pill key">key</span><div class="map-why">Stable sort by length; the count per line is NOT given, split it yourself</div></div></div>
 <div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Merge Two Sorted Arrays</span><span class="pill key">key</span><div class="map-why">The bare merge — two sorted arrays in, n + m out</div></div></div>
 <div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Sorter</span><span class="pill key">key</span><div class="map-why">Rows by sum descending, ties lexicographic</div></div></div>

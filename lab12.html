@@ -56,13 +56,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Two questions: from <strong>one source</strong> to every vertex, or between <strong>every pair</strong>.</li>
-        <li>Negative edges are allowed by some algorithms; a <strong>negative cycle</strong> makes the shortest path undefined — you could go round it forever.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Two problems</h4><p>Given a weighted graph G = (V, E) with edge weights w(u, v):</p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Single-source shortest path (SSSP):</strong> the minimum-cost path from one source vertex s to all other vertices.</li><li><strong>All-pairs shortest path (APSP):</strong> the minimum-cost path between every pair of vertices.</li><li>Negative-weight edges are allowed in some algorithms, but <strong>negative cycles</strong> make shortest paths undefined.</li></ul></div>
   </div>
 </section>
@@ -76,17 +69,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>Goal:</strong> single-source shortest paths when all weights are non-negative.</li>
-        <li><strong>Idea:</strong> repeatedly pick the unvisited vertex with the smallest current distance, then relax all its outgoing edges.</li>
-        <li>Relaxation is one line: if <code>dist[v] + w &lt; dist[to]</code>, a better route was found — update it and remember <code>p[to] = v</code>.</li>
-        <li>With a linear scan for the next vertex: O(V² + E). Fine for dense graphs and easy to read.</li>
-        <li>Walk through the small graph on the board, then step the demo on a random graph — the green vertices are final.</li>
-        <li>Then the other version: an undirected graph, and the path itself printed by walking <span class="mono">p</span> back from the target.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Idea and steps</h4><p>Repeatedly pick the unvisited vertex with the smallest current distance, then relax all its outgoing edges — the straightforward O(V²) version.</p><ol style="margin:12px 0 0;padding-left:1.3em;line-height:1.75"><li>Initialise <code>dist[v] = INF</code> for all vertices, mark all unvisited; set <code>dist[s] = 0</code>.</li><li>Repeat n times: choose the unvisited vertex v with the smallest <code>dist[v]</code> — if it is unreachable (INF), stop; mark v visited; for every edge (v, to, w), if <code>dist[v] + w &lt; dist[to]</code>, update <code>dist[to]</code> and record <code>p[to] = v</code>.</li><li>After processing, <code>dist</code> holds the shortest distances from s.</li></ol></div>
     <div class="card pad board"><h4>Complexity and use cases</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>With a simple linear scan for the next vertex: <strong>O(V² + E)</strong> — often shown for clarity or for dense graphs.</li><li>Routing with non-negative costs: road networks, network latency.</li><li>A subroutine in A* search (with heuristics).</li></ul></div>
     <div class="card pad board"><h4>The program</h4><p>Selects the next vertex with a linear scan instead of a priority queue. Vertices are 0 … n − 1, the graph is directed; input is <span class="mono">n m s</span>, then <span class="mono">u v w</span> per edge.</p><div style="margin-top:12px"></div><pre><span class="k">#include</span> &lt;bits/stdc++.h&gt;
@@ -253,15 +235,6 @@ vector&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>Goal:</strong> single-source shortest paths when weights can be negative, plus detection of a negative cycle reachable from the source.</li>
-        <li><strong>Idea:</strong> relax every edge V − 1 times. A shortest path has at most V − 1 edges, and each pass extends the correct prefix by at least one edge.</li>
-        <li>One more pass: if anything still improves, there is a negative cycle.</li>
-        <li>O(V·E) — slower than Dijkstra; use it only when the weights force you to.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Idea and steps</h4><p>Relax every edge V − 1 times; if an edge can still be relaxed once more, a negative cycle exists.</p><ol style="margin:12px 0 0;padding-left:1.3em;line-height:1.75"><li>Initialise <code>dist[s] = 0</code>, all others to INF.</li><li>Repeat V − 1 times: for each edge (u, v, w), if <code>dist[u] + w &lt; dist[v]</code>, update <code>dist[v]</code>.</li><li>To detect negative cycles reachable from s, run one more pass; any improvement means a negative cycle.</li></ol></div>
     <div class="card pad board"><h4>Complexity and use cases</h4><div class="tw"><table><thead><tr><th></th><th class="n">Cost</th></tr></thead><tbody><tr><td class="k">Time</td><td class="n">O(V · E)</td></tr><tr><td class="k">Space</td><td class="n">O(V)</td></tr></tbody></table></div><div style="margin-top:12px"></div><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Graphs with negative edges: currency arbitrage detection, balancing flows.</li><li>A preprocessing step before reweighting edges in Johnson's algorithm.</li></ul></div>
     <div class="card pad board"><h4>The program — edge list</h4><pre><span class="k">#include</span> &lt;bits/stdc++.h&gt;
@@ -327,15 +300,6 @@ vector&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>Goal:</strong> shortest paths between all pairs; negative edges are fine, negative cycles are not.</li>
-        <li><strong>Idea:</strong> after processing vertices 0 … k, <code>dist[i][j]</code> is the shortest path from i to j that uses only those vertices in between.</li>
-        <li>Three nested loops, and <strong>k must be the outermost</strong>.</li>
-        <li>O(V³) time, O(V²) memory. A negative <code>dist[i][i]</code> at the end means a negative cycle.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Idea and steps</h4><p>Dynamic programming over intermediate vertices: after processing vertices 0 … k, <code>dist[i][j]</code> stores the shortest path from i to j using only those as intermediates.</p><ol style="margin:12px 0 0;padding-left:1.3em;line-height:1.75"><li>Initialise <code>dist[i][j]</code> with the edge weights (INF if there is no edge) and <code>dist[i][i] = 0</code>.</li><li>For each intermediate vertex k from 0 to V − 1, for each pair (i, j): <code>dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])</code>.</li><li>After the loops <code>dist</code> holds all-pairs distances. A negative cycle shows up as some <code>dist[i][i] &lt; 0</code>.</li></ol></div>
     <div class="card pad board"><h4>Complexity and use cases</h4><div class="tw"><table><thead><tr><th></th><th class="n">Cost</th></tr></thead><tbody><tr><td class="k">Time</td><td class="n">O(V³)</td></tr><tr><td class="k">Space</td><td class="n">O(V²)</td></tr></tbody></table></div><div style="margin-top:12px"></div><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Dense graphs where V³ is acceptable.</li><li>Transitive closure — replace the sums with boolean OR / AND.</li><li>Routing tables, or minimum distances inside DP over subsets (e.g. TSP).</li></ul></div>
     <div class="card pad board"><h4>The program — adjacency matrix</h4><pre><span class="k">#include</span> &lt;bits/stdc++.h&gt;
@@ -405,14 +369,6 @@ INF INF 0</pre><p style="margin-top:12px">The check <code>dist[i][k] &lt; INF &a
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Read the constraints with them: n ≤ 500 allows O(n³) and points to Floyd–Warshall; negative weights rule out Dijkstra.</li>
-        <li><strong>Labs 11 and 12 are defended together</strong>, in the final teaching week, one problem from each lab in every variant.</li>
-        <li>This is the last lecture of the course.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Nugman and Graph</span><span class="pill key">key</span><div class="map-why">Floyd–Warshall read backwards — vertices added one at a time, n ≤ 500</div></div></div>
 <div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Red Riding Hood and Long Journey</span><span class="pill key">key</span><div class="map-why">Plain Dijkstra, N ≤ 10⁵ — needs the heap version, the O(V²) scan is too slow</div></div></div>
 <div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Nugman and Graph 3</span><span class="pill key">key</span><div class="map-why">BFS on the complement graph, n ≤ 400 — the usable edges are the unlisted ones</div></div></div>

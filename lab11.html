@@ -54,15 +54,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Given a connected, undirected, weighted graph G = (V, E), a <strong>spanning tree</strong> includes all vertices, has no cycles and has exactly |V| − 1 edges.</li>
-        <li>A <strong>minimum spanning tree</strong> is the spanning tree with the smallest total edge weight.</li>
-        <li>Where it is used: network design (roads, cables), clustering, image segmentation, approximations for hard optimisation problems.</li>
-        <li>Put the example graph on the board — it is used by both algorithms for the rest of the lecture.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Spanning tree and MST</h4><p>A <strong>spanning tree</strong> of G = (V, E) is a subgraph that:</p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>includes all vertices in V</li><li>is a tree (no cycles)</li><li>has exactly |V| − 1 edges</li></ul><p style="margin-top:12px">A <strong>minimum spanning tree (MST)</strong> is the spanning tree with the smallest possible total edge weight. MSTs are used in network design (roads, cables), clustering, image segmentation, and approximations for hard optimisation problems.</p></div>
     <div class="card pad board"><h4>Example graph · n = 6, m = 9</h4><p>Input format: <span class="mono">n m</span>, then lines <span class="mono">x y w</span> (vertices from 1).</p><pre class="out">6 9
 1 2 1
@@ -86,14 +77,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Exactly |V| − 1 edges and no cycles — so an algorithm can stop after |V| − 1 accepted edges.</li>
-        <li>The <strong>cut property</strong> is what both algorithms rely on: the lightest edge crossing any cut belongs to some MST.</li>
-        <li>The <strong>cycle property</strong> is the mirror image: the heaviest edge of a cycle is never needed.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Four properties</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>An MST has exactly |V| − 1 edges and no cycles.</li><li>Adding any edge to the MST creates a cycle; removing any MST edge disconnects the graph.</li><li><strong>Cut property:</strong> for any cut (partition of the vertices), the lightest edge crossing the cut belongs to at least one MST.</li><li><strong>Cycle property:</strong> in any cycle, the heaviest edge cannot be in an MST.</li></ul></div>
   </div>
 </section>
@@ -107,17 +90,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>Idea:</strong> sort the edges by weight and add them one by one, skipping every edge that would create a cycle.</li>
-        <li>To detect a cycle quickly we need one question answered fast: <strong>are u and v already connected?</strong> That is the Disjoint Set Union — find and unite.</li>
-        <li>Show the DSU demo: union a few pairs with the naive version, watch the chain grow, then switch to the optimised one — path compression and union by rank.</li>
-        <li>Then the code: the DSU, the edge with <code>operator&lt;</code>, and <span class="mono">main</span> — sort, unite, stop at n − 1 edges.</li>
-        <li>Walk through the example on the board, then let the Kruskal demo do a random graph.</li>
-        <li>Total O(E log E) — the sort dominates; each DSU operation is almost O(1).</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Idea and steps</h4><p>Sort edges by weight and add them one by one, skipping edges that would create a cycle. A <strong>Disjoint Set Union (DSU)</strong>, also called Union-Find, quickly detects cycles.</p><ol style="margin:12px 0 0;padding-left:1.3em;line-height:1.75"><li>Sort all edges in non-decreasing order of weight.</li><li>Initialise the DSU so each vertex is its own set.</li><li>For each edge (u, v, w) in order: if <code>find(u) != find(v)</code>, add the edge to the MST and union the sets.</li><li>Stop when |V| − 1 edges are chosen.</li></ol></div>
     <div class="card pad board"><h4>Complexity</h4><div class="tw"><table><thead><tr><th>Part</th><th class="n">Cost</th></tr></thead><tbody><tr><td class="k">Sorting edges</td><td class="n">O(E log E)</td></tr><tr><td class="k">DSU operations</td><td class="n">almost O(1) each (inverse Ackermann)</td></tr><tr><td class="k">Total</td><td class="n">O(E log E)</td></tr></tbody></table></div></div>
     <div class="card pad demo"><h4>Demo · union-find, with and without compression</h4><div class="ctl"><label class="f" style="flex:1 1 80px"><span>a</span><input type="number" id="dsa" value="1" min="1" max="10"></label><label class="f" style="flex:1 1 80px"><span>b</span><input type="number" id="dsb" value="2" min="1" max="10"></label><button class="pri" id="dsu">union</button><div class="seg" id="dsopt"><button data-o="on" class="on">optimised</button><button data-o="off">naive</button></div><button id="dsr">Reset</button></div><div id="dstree" style="margin-top:6px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.6;color:var(--ink-2)"></div><div class="readout"><div class="stat"><div class="lab">components</div><div class="val" id="dsc">10</div></div><div class="stat"><div class="lab">deepest chain</div><div class="val" id="dsd">1</div></div><div class="stat good"><div class="lab">steps in last find</div><div class="val" id="dss">—</div></div></div><div class="log" id="dslog">Ten singleton sets. Union a few pairs, then switch to naive and compare the depth.</div></div>
@@ -294,16 +266,6 @@ vector&lt;pair&lt;<span class="k">int</span>, pair&lt;<span class="k">int</span>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>Idea:</strong> grow the MST from a start vertex, each time taking the lightest edge that connects the tree to a new vertex.</li>
-        <li>The dense version: <span class="mono">key[v]</span> is the lightest edge from the tree to v. Pick the unused vertex with the smallest key, mark it, update the keys of its neighbours.</li>
-        <li>This is O(V²); with a min-heap it becomes O(E log V).</li>
-        <li>Walk through the example from vertex 1 and show that the cost is the same 13 as Kruskal.</li>
-        <li>Then the two other versions: one that remembers the parent and prints the edges, and one that uses −1 for "not reached yet" — and the trap that comes with it.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Idea and steps</h4><p>Grow the MST from an arbitrary start vertex by repeatedly picking the minimum-weight edge that connects the current tree to a new vertex. Below is the dense O(V²) version — scan all vertices to find the next minimum key. A min-heap version improves it to O(E log V).</p><ol style="margin:12px 0 0;padding-left:1.3em;line-height:1.75"><li>Set <code>key[start] = 0</code>, all others to infinity.</li><li>Repeat n times: pick the unused vertex v with the smallest <code>key[v]</code>; mark v used; for each neighbour (to, w), if <code>w &lt; key[to]</code>, update <code>key[to]</code> and record the parent.</li><li>The keys of the chosen edges and the parents describe the MST.</li></ol></div>
     <div class="card pad board"><h4>Complexity</h4><div class="tw"><table><thead><tr><th>Version</th><th class="n">Cost</th></tr></thead><tbody><tr><td class="k">Dense scan (below)</td><td class="n">O(V²)</td></tr><tr><td class="k">With a binary heap</td><td class="n">O(E log V)</td></tr></tbody></table></div></div>
     <div class="card pad board"><h4>The program</h4><pre><span class="k">#include</span> &lt;bits/stdc++.h&gt;
@@ -523,14 +485,6 @@ vector&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Four of the five problems are Kruskal with a different story around it.</li>
-        <li>The total can exceed int: with m up to 2·10⁵ and weights up to 10⁹ it reaches 2·10¹⁴ — use <code>long long</code>.</li>
-        <li><strong>Labs 11 and 12 are defended together</strong>, in the final teaching week, with one problem from each lab.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Hana Kagerou</span><span class="pill key">key</span><div class="map-why">Kruskal at scale, n, m ≤ 2·10⁵ — long long and the optimised DSU</div></div></div>
 <div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Duck Islands</span><span class="pill key">key</span><div class="map-why">Kruskal where the weight is computed from the island data</div></div></div>
 <div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Travelling</span><span class="pill key">key</span><div class="map-why">Kruskal with two road types — read the weight rule carefully</div></div></div>

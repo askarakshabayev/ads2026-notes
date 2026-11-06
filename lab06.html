@@ -53,13 +53,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Sorting is one of the most fundamental operations: it puts data in a particular order — ascending or descending.</li>
-        <li>Why it matters: <strong>sorted data is easier to search and to work with</strong> — binary search from lecture 3 only works on a sorted array.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>What sorting is</h4><p>Sorting arranges data in a particular order — <strong>ascending</strong> or <strong>descending</strong> — and makes searching and data manipulation more efficient.</p><pre class="out" style="margin-top:12px">[64, 34, 25, 12, 22, 11, 90]  →  [11, 12, 22, 25, 34, 64, 90]</pre></div>
   </div>
 </section>
@@ -73,14 +66,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Different algorithms have different characteristics, and each one fits a different situation. Go through the six on the board.</li>
-        <li><strong>No single sorting algorithm is best for all situations.</strong></li>
-        <li>An example of a very different trade-off: when the values are small numbers, you can sort <strong>without comparing at all</strong> — just count how many times each value occurs.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Six characteristics</h4><div class="tw"><table><thead><tr><th>Characteristic</th><th>What it means</th></tr></thead><tbody><tr><td class="k">Time Complexity</td><td>some are faster for large datasets</td></tr><tr><td class="k">Space Complexity</td><td>some use less memory</td></tr><tr><td class="k">Stability</td><td>some preserve the relative order of equal elements</td></tr><tr><td class="k">Adaptivity</td><td>some perform better on partially sorted data</td></tr><tr><td class="k">Online</td><td>some can sort data as it arrives</td></tr><tr><td class="k">In-place</td><td>some require minimal extra memory</td></tr></tbody></table></div><p style="margin-top:13px"><strong>No single sorting algorithm is best for all situations!</strong></p></div>
     <div class="card pad board"><h4>Another version · counting sort</h4><p>When every value is a small number — here from 1 to 10 — count how many times each value occurs, then print each value that many times. There are <strong>no comparisons</strong>, and the work is O(n + k) for k possible values.</p><div style="margin-top:12px"><details class="code"><summary>counting sort — the full program<span class="lines">20 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
 
@@ -125,16 +110,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>Bubble sort</strong> is the simplest sorting algorithm: walk through the list, compare <strong>adjacent</strong> elements, swap them if they are in the wrong order.</li>
-        <li>Repeat until a pass makes no swaps. After each pass the largest remaining element has "bubbled" to the end — that is why the inner loop gets one shorter every time.</li>
-        <li>Write out the first two passes on the board, then show the array after every pass.</li>
-        <li>Cost: O(n²) on average and in the worst case, O(n) when the array is already sorted — thanks to the <span class="mono">swapped</span> flag.</li>
-        <li>Then the number that ends the discussion: for a million elements, about 10¹² operations against about 2·10⁷ for quick sort.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>How bubble sort works</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li>Compare adjacent elements</li><li>Swap if they are in the wrong order</li><li>Repeat until no swaps are needed</li></ol></div>
     <div class="card pad board"><h4>Bubble sort implementation</h4><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">#include</span> &lt;vector&gt;
@@ -266,14 +241,6 @@ Final: [11, 12, 22, 25, 34, 64, 90]</pre><p style="margin-top:12px">Pass 6 makes
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Four reasons: much faster — <strong>O(n log n) against O(n²)</strong>; they scale to millions of elements; they are what real systems use; and they are built on <strong>divide and conquer</strong> — break the problem into smaller subproblems.</li>
-        <li>Read the table row by row: at 100 elements the gap is 15×, at 100 000 it is 6 000×.</li>
-        <li>Then drag the demo until the quadratic row turns red — that n is the one to remember for the lab.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Advantages of the advanced algorithms</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li><strong>Much faster</strong>: O(n log n) vs O(n²)</li><li><strong>Scalable</strong>: handle millions of elements efficiently</li><li><strong>Practical</strong>: used in real-world systems</li><li><strong>Divide and conquer</strong>: break the problem into smaller subproblems</li></ol></div>
     <div class="card pad board"><h4>Performance comparison</h4><div class="tw"><table><thead><tr><th>Array Size</th><th class="n">Bubble Sort</th><th class="n">Quick Sort</th><th class="n">Merge Sort</th></tr></thead><tbody><tr><td class="k">100</td><td class="n">10,000 ops</td><td class="n">664 ops</td><td class="n">664 ops</td></tr><tr><td class="k">1,000</td><td class="n">1,000,000 ops</td><td class="n">9,966 ops</td><td class="n">9,966 ops</td></tr><tr><td class="k">10,000</td><td class="n">100,000,000 ops</td><td class="n">132,877 ops</td><td class="n">132,877 ops</td></tr><tr><td class="k">100,000</td><td class="n">10,000,000,000 ops</td><td class="n">1,660,964 ops</td><td class="n">1,660,964 ops</td></tr></tbody></table></div><p style="margin-top:11px;font-size:.85rem;color:var(--ink-3)">Bubble sort ≈ n², quick and merge sort ≈ n · log₂ n.</p></div>
     <div class="card pad demo"><h4>Demo · comparisons, quadratic against n log n</h4><div class="ctl" style="align-items:stretch"><label class="f" style="flex:1 1 320px"><span>n = <span id="srn" class="mono" style="color:var(--accent);font-size:.95rem;text-transform:none;letter-spacing:0">1 000</span></span><input type="range" id="srsl" min="1" max="30" value="10"></label></div><div class="tw"><table><thead><tr><th>Algorithm</th><th class="n">Comparisons</th><th class="n">Time at 10⁸/s</th><th>Verdict</th></tr></thead><tbody id="srbody"></tbody></table></div><p style="margin-top:12px;font-size:.83rem;color:var(--ink-3)">Drag until the quadratic row turns red. That n is the number to remember for the whole lab.</p></div>
@@ -289,16 +256,6 @@ Final: [11, 12, 22, 25, 34, 64, 90]</pre><p style="margin-top:12px">Pass 6 makes
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>Quick sort</strong> is divide and conquer: pick a <strong>pivot</strong>, partition the array around it, then recursively sort both parts.</li>
-        <li>Partition with two pointers: i walks right while a[i] &lt; pivot, j walks left while a[j] &gt; pivot; when both stop, swap and step on. When they cross, everything left of i is ≤ pivot and everything right of j is ≥ pivot.</li>
-        <li>Trace [10, 7, 8, 9, 1, 5] on the board with the code exactly as written — middle element as pivot.</li>
-        <li>Cost: O(n log n) when the pivot splits well, <strong>O(n²) when it is always the smallest or largest</strong>. Use the demo: pivot = first on an already sorted array.</li>
-        <li>Not stable, uses O(log n) stack on average — and it is the fastest sort in practice. Finish with the pivot strategies.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Quick sort algorithm</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li><strong>Choose a pivot</strong> element from the array</li><li><strong>Partition</strong>: rearrange the array so elements &lt; pivot are on the left and elements &gt; pivot on the right</li><li><strong>Recursively</strong> apply the same steps to the left and right partitions</li></ol></div>
     <div class="card pad board"><h4>Quick sort implementation · the function</h4><pre><span class="k">int</span> a[1000];
 
@@ -430,15 +387,6 @@ Final: [1, 5, 7, 8, 9, 10]</pre><p style="margin-top:12px">Look at the first cal
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Not one problem here requires writing a sort by hand — every one is <code>std::sort</code> with the right ordering rule. The marks are lost in reading the rule out of the statement.</li>
-        <li>I is the counting sort from the start of the lecture; D compares dates as (year, month, day).</li>
-        <li>C: the minimum difference can be large — initialise the running minimum properly, not with a guessed constant.</li>
-        <li><strong>F and G are the heavy pair.</strong></li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Vowels and consonants</span><span class="pill key">key</span><div class="map-why">Sort with a custom order — vowels first, then consonants</div></div></div>
 <div class="map-row"><span class="map-idx">B</span><div><span class="map-name">House of love</span><span class="pill key">key</span><div class="map-why">Intersection of two arrays; mind n = 0 or m = 0, the line is then empty</div></div></div>
 <div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Points in Proximity</span><span class="pill key">key</span><div class="map-why">Sort, then the minimum adjacent difference — initialise the minimum safely</div></div></div>

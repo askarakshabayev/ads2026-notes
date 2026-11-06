@@ -72,14 +72,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>A <strong>heap</strong> is a tree-based structure that satisfies the <strong>heap property</strong>: it is a complete binary tree, and every node follows one ordering rule with its children.</li>
-        <li>Two kinds. <strong>Max-heap</strong>: every parent ≥ its children, the root is the maximum. <strong>Min-heap</strong>: every parent ≤ its children, the root is the minimum.</li>
-        <li>Today we write the <strong>min-heap</strong>; the max-heap is the same code with the comparisons turned around.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Types of heaps</h4><div class="tw"><table><thead><tr><th>Type</th><th>Rule</th><th>Root holds</th></tr></thead><tbody><tr><td class="k">Max-Heap</td><td>every parent is <strong>greater than or equal to</strong> its children</td><td>the <strong>maximum</strong></td></tr><tr><td class="k">Min-Heap</td><td>every parent is <strong>less than or equal to</strong> its children</td><td>the <strong>minimum</strong></td></tr></tbody></table></div><p style="margin-top:13px">The rule is only between a parent and its children. Nothing is said about two siblings or about left against right — that is the difference from a BST.</p></div>
   </div>
 </section>
@@ -93,14 +85,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>Complete binary tree</strong>: all levels are full except possibly the last, which is filled from left to right.</li>
-        <li>Because it is complete, the <strong>height is O(log n)</strong> — always, whatever order the keys arrive in.</li>
-        <li>And because it is complete, it is stored in an <strong>array</strong>, with no pointers.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Four properties</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>Complete Binary Tree</strong>: all levels are completely filled except possibly the last level, which is filled from left to right</li><li><strong>Heap Property</strong>: the parent–child relationship follows the max-heap or min-heap rule</li><li><strong>Array Representation</strong>: heaps are typically implemented using arrays (vectors) for efficiency</li><li><strong>Height</strong>: O(log n) for n elements</li></ul></div>
   </div>
 </section>
@@ -114,14 +98,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Number the nodes level by level, left to right, starting from 0 — that number is the index in the array.</li>
-        <li>Then the children and the parent are <strong>one formula each</strong>. Write the three formulas and leave them on the board for the rest of the lecture.</li>
-        <li>Check them on the example: the children of 15 (index 1) are at 3 and 4 — 30 and 40; the parent of 50 (index 5) is at 2 — 20.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>For a node at index i</h4><div class="formula">Parent      = (i - 1) / 2<br>Left Child  = 2 * i + 1<br>Right Child = 2 * i + 2</div><p style="margin-top:14px">Example min-heap:</p><pre class="out">        10
        /  \
       15   20
@@ -142,16 +118,6 @@ Index:  0   1   2   3   4   5   6</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Write the class top to bottom: the array and the three index formulas, then getMin, insert, heapify, extractMin, and <span class="mono">main</span>.</li>
-        <li><strong>insert</strong>: put the element at the end, then bubble it up while it is smaller than its parent.</li>
-        <li><strong>heapify</strong>: take the smaller child; if the node is bigger than it, swap and continue from there.</li>
-        <li><strong>extractMin</strong>: remember the root, move the last element into the root, remove the last, heapify from the root.</li>
-        <li><span class="mono">main</span> inserts n numbers and extracts them all — they come out sorted. That is heap sort, and it is the next part.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>1 · The array and the index formulas</h4><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">#include</span> &lt;vector&gt;
 
@@ -346,15 +312,6 @@ Index:  0   1   2   3   4   5   6</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>Insert — O(log n).</strong> Add at the end, compare with the parent, swap while smaller. Walk through inserting 5 on the board.</li>
-        <li><strong>Extract min — O(log n).</strong> Save the root, replace it with the last element, remove the last, heapify down. Walk through it on the second example.</li>
-        <li><strong>Heapify — O(log n).</strong> Compare with the children, find the smallest, swap if the node is not the smallest, repeat in that subtree.</li>
-        <li>Then let the demo do a few of each and read the swap counter — it never exceeds the height.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>1 · Insert — O(log n)</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li>Add the element at the end of the array</li><li>Compare with its parent</li><li>If smaller than the parent (min-heap), swap</li><li>Continue until the heap property is satisfied</li></ol><p style="margin-top:14px"><strong>Example:</strong> insert 5 into <span class="mono">[10, 15, 20, 30, 40]</span>. It lands at index 5, whose parent is index 2 — the value 20.</p><pre class="out">Step 1: [10, 15, 20, 30, 40, 5]  — add at end
 Step 2: [10, 15, 5, 30, 40, 20]  — swap with parent (20)
 Step 3: [5, 15, 10, 30, 40, 20]  — swap with parent (10)</pre><p style="margin-top:12px">Two swaps — the heap has three levels, so it could never take more than two.</p></div>
@@ -377,13 +334,6 @@ Result: return 10, heap is [15, 30, 20, 50, 40]</pre><p style="margin-top:12px">
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Insert <span class="mono">50, 30, 20, 15, 10, 8, 16</span> one by one and write every array on the board.</li>
-        <li>Each new element starts at the end and rises while it is smaller than its parent. Point at which parent it is compared with — the formula (i − 1) / 2.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Insert 50, 30, 20, 15, 10, 8, 16</h4><pre class="out">Insert 50:  [50]
 
 Insert 30:  [50, 30]
@@ -421,13 +371,6 @@ Insert 16:  [8, 15, 10, 50, 20, 30, 16]</pre><p style="margin-top:14px">Final he
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>The program from the implementation is already <strong>heap sort</strong>: build the heap by inserting everything, then extract the minimum n times.</li>
-        <li>Both halves are O(n log n), so the whole sort is <strong>O(n log n)</strong>.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Build, then extract</h4><ol style="margin:0;padding-left:1.3em;line-height:1.75"><li><strong>Build heap</strong>: insert all elements — O(n log n)</li><li><strong>Extract all</strong>: extract min repeatedly — O(n log n)</li><li><strong>Result</strong>: sorted array in ascending order</li></ol><p style="margin-top:14px"><strong>Example.</strong> Input: <span class="mono">[64, 34, 25, 12, 22, 11, 90]</span></p><pre class="out">After building heap: [11, 22, 12, 64, 25, 34, 90]
 
 Extract operations:
@@ -478,13 +421,6 @@ Sorted: [11, 12, 22, 25, 34, 64, 90]</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Four places the same two operations — insert and extractMin — are all you need.</li>
-        <li>The priority queue is the main one: whatever has the smallest priority comes out first, no matter the order it went in.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>1 · Priority queue</h4><pre>MinHeap pq;
 pq.insert(5);  <span class="c">// Add task with priority 5</span>
 pq.insert(1);  <span class="c">// Add task with priority 1</span>
@@ -537,13 +473,6 @@ vector&lt;<span class="k">int</span>&gt; sorted;
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>getMin on an empty heap</strong> reads <span class="mono">a[0]</span> of an empty vector — undefined behaviour. Check first.</li>
-        <li><strong>buildHeap</strong> makes a heap from a whole array at once: heapify every non-leaf node, from the last one back to the root. That is O(n), not O(n log n).</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>1 · Add a size check</h4><pre><span class="k">int</span> getMin() {
     <span class="k">if</span> (a.empty()) {
         throw runtime_error(<span class="s">"Heap is empty"</span>);
@@ -574,12 +503,6 @@ vector&lt;<span class="k">int</span>&gt; sorted;
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>For a max-heap, <strong>reverse the comparisons</strong> — three places, each marked <em>Change</em> in the code.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Three comparisons flipped</h4><pre><span class="k">class</span> MaxHeap {
 <span class="k">public</span>:
     vector&lt;<span class="k">int</span>&gt; a;

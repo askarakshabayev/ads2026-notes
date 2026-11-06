@@ -57,13 +57,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>The <strong>Knuth–Morris–Pratt</strong> algorithm finds all occurrences of a pattern in a text in <strong>O(n + m)</strong> — n is the length of the text, m of the pattern.</li>
-        <li>Its key is the <strong>prefix function</strong>, which lets it search without redundant comparisons.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>KMP in one sentence</h4><p>Find every occurrence of a pattern in a text in <strong>O(n + m)</strong>, using one precomputed array — the <strong>prefix function</strong>.</p></div>
   </div>
 </section>
@@ -77,16 +70,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>π[i]</strong> is the length of the longest <strong>proper</strong> prefix of s[0…i] that is also a suffix of s[0…i]. Proper means not the whole substring.</li>
-        <li>Do example 1 by the definition on the board — list the prefixes and suffixes for every i. Then examples 2 and 3 quickly.</li>
-        <li>The naive computation tries every length at every position: O(n³).</li>
-        <li>The efficient one starts from the previous answer j = π[i−1]. If s[i] == s[j], the answer is j + 1; otherwise fall back to π[j−1] and try again.</li>
-        <li>Trace "abcabcd" step by step, then let the demo step through other strings.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Definition</h4><div class="formula">π[i] = length of the longest proper prefix of s[0…i]<br>       that is also a suffix of s[0…i]</div><p style="margin-top:12px"><strong>Proper prefix</strong> — a prefix that is not equal to the entire substring.</p></div>
     <div class="card pad board"><h4>Example 1 · s = "abcabcd"</h4><pre class="out">i = 0: s[0...0] = "a"
        Proper prefixes: (none)
@@ -456,15 +439,6 @@ Prefix function: 0 0 0 1 2 3 0</pre><p style="margin-top:12px"><strong>Time:</st
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Find all occurrences of a pattern in a text. Glue them: <code>pattern + "#" + text</code>, where # appears in neither.</li>
-        <li>Compute π of the combined string. Wherever π[i] equals the pattern length, the pattern ends at i — it starts in the text at i − 2m.</li>
-        <li>The separator stops a match from running across the border between the pattern and the text.</li>
-        <li>Work the first example on the board column by column, then the second one with overlapping occurrences.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Problem and idea</h4><p>Given a text (length n) and a pattern (length m), find all occurrences of the pattern in the text.</p><div class="formula" style="margin-top:12px">s = pattern + '#' + text</div><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Compute the prefix function of the combined string</li><li>When π[i] equals the pattern length, a match is found</li><li>The separator keeps the pattern from matching across the boundary</li></ul></div>
     <div class="card pad board"><h4>Example · text = "ababcabcabababd", pattern = "ababd"</h4><div class="out-lbl" style="margin-top:0">step 1 · combined string</div><pre class="out">s = "ababd#ababcabcabababd"</pre><div class="out-lbl">step 2 · prefix function</div><pre class="out">Index:  0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
 String: a b a b d # a b a b c  a  b  c  a  b  a  b  a  b  d 
@@ -556,14 +530,6 @@ Pattern found at index 10</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>One array, eight problems. Each of them is "build the right string, compute π, read one or a few values".</li>
-        <li>The period: if π[n−1] = k, the first k characters equal the last k, the shortest period has length n − k, and the string is periodic when n is divisible by it. Use the demo here.</li>
-        <li>Borders: π[n−1] is the longest one; jump k = π[k−1] to get every shorter one.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>1 · Pattern matching</h4><p>Find all occurrences of a pattern: create <code>pattern + '#' + text</code> and compute the prefix function.</p><div style="margin-top:12px"></div><pre><span class="k">void</span> find_all_occurrences(string text, string pattern) {
     string s = pattern + <span class="s">"#"</span> + text;
     vector&lt;<span class="k">int</span>&gt; pi = prefix_function(s);
@@ -793,16 +759,6 @@ With #:    "ab#cab" → no match (correct!)</pre><p style="margin-top:12px">In "
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>F is the plain KMP search and should be done first — it is the template, and everything else reuses it.</li>
-        <li>G is the period formula, literally <code>n − π[n−1]</code>. With the array the problem is one line; without it, it is impossible.</li>
-        <li>C is the rotation trick, B is occurrence counting, D is the longest overlap between a suffix and a prefix.</li>
-        <li><strong>E and H are the heavy pair.</strong> E mixes the prefix function with arithmetic that overflows int at 5·10¹¹; H runs on a string of 5·10⁶ characters.</li>
-        <li>A is the awkward one to read: repeat A until B fits inside it. The answer is bounded by ⌈|B|/|A|⌉ + 1 — derive that bound with them, or they will loop forever.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Problem to topic</h4><div class="map-row"><span class="map-idx">A</span><div><span class="map-name">Substring of a Repeated String</span><span class="pill key">key</span><div class="map-why">Repeat A until B fits — bound the count by ⌈|B|/|A|⌉ + 1, then one KMP</div></div></div>
 <div class="map-row"><span class="map-idx">B</span><div><span class="map-name">Password</span><span class="pill key">key</span><div class="map-why">Count occurrences, at least K times</div></div></div>
 <div class="map-row"><span class="map-idx">C</span><div><span class="map-name">Cyclic Shift</span><span class="pill key">key</span><div class="map-why">Cyclic shift — search t inside s + s</div></div></div>

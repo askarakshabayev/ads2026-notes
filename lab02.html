@@ -64,14 +64,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Every structure today is made of <strong>nodes</strong>: a value and a pointer to the next node. The last node points to <span class="mono">NULL</span>.</li>
-        <li>Write the class, create a few nodes with <code>new</code>, link them by hand, and walk the chain with <code>-&gt;next-&gt;next</code>.</li>
-        <li>The template version is the same node for any type — <span class="mono">Node&lt;string&gt;</span>, <span class="mono">Node&lt;int&gt;</span>.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Basic node structure</h4><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">using</span> <span class="k">namespace</span> std;
 
@@ -147,14 +139,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>A stack of plates: you only add to the top and take from the top. <strong>Last in, first out.</strong></li>
-        <li>Every operation is O(1) — push, pop, top, empty, size.</li>
-        <li>First the STL <code>stack</code>, then the same thing on nodes: the top of the stack is the head of the chain, push puts a new node in front of it.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Core operations</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><code>push(item)</code> — add an item to the top — O(1)</li><li><code>pop()</code> — remove the top item — O(1)</li><li><code>top()</code> / <code>peek()</code> — view the top item without removing it — O(1)</li><li><code>empty()</code> — check if the stack is empty — O(1)</li><li><code>size()</code> — get the number of elements — O(1)</li></ul></div>
     <div class="card pad board"><h4>C++ implementation using STL</h4><pre><span class="c">// C++ built-in stack</span>
 <span class="k">#include</span> &lt;iostream&gt;
@@ -282,14 +266,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Start with only <strong>round brackets</strong> and no stack: a counter goes up on <code>(</code> and down on <code>)</code>. It must never go negative and must end at zero.</li>
-        <li>Then ask what breaks with three kinds of brackets. A counter cannot tell <code>(</code> from <code>[</code> — we need to remember <strong>which</strong> bracket was opened last. That is exactly a stack.</li>
-        <li>The stack version: push every opening bracket; on a closing one, the top must be its pair — pop it. At the end the stack must be empty.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Simple problem · basic parentheses balance</h4><p>Check if only <code>()</code> brackets are properly balanced. <strong>Try solving without a stack first:</strong></p><div style="margin-top:12px"></div><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">using</span> <span class="k">namespace</span> std;
 
@@ -369,14 +345,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>A line at a store: the first person in line is served first. <strong>First in, first out.</strong></li>
-        <li>Elements come in at the rear and leave from the front; all operations are O(1).</li>
-        <li>The queue is what breadth-first search runs on — the two problems after the deque are both BFS.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Core operations</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><code>push()</code> / <code>enqueue(item)</code> — add an item to the rear — O(1)</li><li><code>pop()</code> / <code>dequeue()</code> — remove the front item — O(1)</li><li><code>front()</code> — view the front item without removing it — O(1)</li><li><code>empty()</code> — check if the queue is empty — O(1)</li><li><code>size()</code> — get the number of elements — O(1)</li></ul></div>
     <div class="card pad board"><h4>C++ implementation using STL</h4><pre><span class="k">#include</span> &lt;queue&gt;
 <span class="k">#include</span> &lt;iostream&gt;
@@ -461,13 +429,6 @@ Removing: 30</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>A combination of a stack and a queue: add and remove at <strong>both ends</strong>, all in O(1).</li>
-        <li>Trace the four lines on the board: push_front puts the element before everything else.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Core operations</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><code>push_back(item)</code> — add an item to the back — O(1)</li><li><code>push_front(item)</code> — add an item to the front — O(1)</li><li><code>pop_back()</code> — remove the back item — O(1)</li><li><code>pop_front()</code> — remove the front item — O(1)</li></ul><div style="margin-top:14px"></div><pre>deque&lt;<span class="k">int</span>&gt; q;
 q.push_back(10); 
 q.push_back(20);
@@ -485,14 +446,6 @@ q.push_front(40);</pre><p style="margin-top:12px">Front to back, the deque now h
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Given a and b, the fewest operations +1, ×2, ÷2, −1 that turn a into b.</li>
-        <li>Every number is a state, every operation is a step. <strong>BFS</strong> visits states in order of distance, so the first time it reaches b the distance is minimal.</li>
-        <li><span class="mono">used[x]</span> stores the number we came from — that is how the path is printed backwards from b.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Problem statement</h4><p>Given two positive integers <em>a</em> and <em>b</em>, find the minimum number of operations needed to transform <em>a</em> into <em>b</em>:</p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Add 1: x → x + 1</li><li>Multiply by 2: x → x * 2</li><li>Divide by 2: x → x / 2 (integer division)</li><li>Subtract 1: x → x − 1 (if the result ≥ 0)</li></ul><p style="margin-top:12px"><strong>Example:</strong> a = 2, b = 12 → 3 operations, path 2 → 3 → 6 → 12.</p></div>
     <div class="card pad board"><h4>Algorithm · BFS guarantees the minimum</h4><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">#include</span> &lt;queue&gt;
@@ -568,13 +521,6 @@ queue&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt;
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Same BFS, different states: a state is a square, a step is one of the eight knight moves.</li>
-        <li><span class="mono">a[x][y]</span> is both "visited" and the distance (+1, because the start is marked 1); <span class="mono">c[x][y]</span> is the square we came from.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Problem statement</h4><p>On a standard 8×8 chessboard, find the minimum number of moves for a knight to travel from (x1, y1) to (x2, y2).</p></div>
     <div class="card pad board"><h4>BFS over the board</h4><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">#include</span> &lt;queue&gt;
@@ -649,15 +595,6 @@ queue&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt;
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>A <strong>doubly linked list</strong>: every node has <span class="mono">next</span> and <span class="mono">prev</span>, the list keeps <span class="mono">front</span> and <span class="mono">tail</span>.</li>
-        <li>Write it function by function: push_back and push_front, pop_back and pop_front, delete a node you hold, print, find, insert after a node.</li>
-        <li>Each function has an <strong>empty-list case</strong> and a <strong>one-element case</strong> — say them out loud every time.</li>
-        <li>Deleting a node you hold is O(1): its neighbours are one pointer away in both directions.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>1 · The node</h4><pre><span class="k">class</span> Node {
     <span class="k">public</span>:
     <span class="k">int</span> data;

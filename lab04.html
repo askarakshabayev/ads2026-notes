@@ -64,15 +64,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>A <strong>Binary Search Tree</strong> is a binary tree in which every node holds a key and the keys obey one ordering property.</li>
-        <li><strong>All nodes in the left subtree</strong> of a node are less than or equal to it; <strong>all nodes in the right subtree</strong> are strictly greater. The whole subtree, not only the child.</li>
-        <li>Someone will ask about <strong>equal keys</strong> — answer with the three options on the second card, and say which one today's code uses: equal keys go left.</li>
-        <li>That property is what makes search, insertion and deletion efficient — <strong>especially while the tree stays balanced</strong>.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>The ordering property</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li><strong>Left subtree</strong> — every key <strong>less than or equal to</strong> the node's key (≤).</li><li><strong>Right subtree</strong> — every key <strong>strictly greater</strong> than the node's key (&gt;).</li></ol><p style="margin-top:14px">Draw it for the keys of today's program, <span class="mono">10 15 16 13 12 14 9 8 17</span>:</p><pre class="out">        10
        /  \
       9    15
@@ -93,15 +84,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>In-order traversal</strong> of a BST gives the elements in <strong>sorted order</strong>. Show it: build a tree in the demo and run in-order.</li>
-        <li>Search, insert and delete are <strong>O(log n) on average</strong> — each step goes down one level.</li>
-        <li>The <strong>worst case is O(n)</strong> — a skewed tree. Press <em>sorted 1…10</em>: the tree becomes a diagonal, height 10 instead of 4.</li>
-        <li><strong>Space is O(n)</strong> — one node per key.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Four facts</h4><div class="tw"><table><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody><tr><td class="k">In-order traversal</td><td>elements in <strong>sorted order</strong></td></tr><tr><td class="k">Search, insert, delete — average</td><td><span style="color:var(--prime)">O(log n)</span></td></tr><tr><td class="k">Search, insert, delete — worst (skewed tree)</td><td><span style="color:var(--mark)">O(n)</span></td></tr><tr><td class="k">Space for n nodes</td><td>O(n)</td></tr></tbody></table></div></div>
     <div class="card pad demo"><h4>Demo · the tree, live</h4><div class="ctl"><label class="f" style="flex:0 0 110px"><span>key</span><input type="number" id="bsv" value="35"></label><button class="pri" id="bsins">insert</button><button id="bssearch">search</button><button id="bsdel">delete</button><button id="bsmin">min</button><button id="bsmax">max</button><button id="bsrand">random</button><button id="bssorted">sorted 1…10</button><button id="bsclear">clear</button></div><div class="ctl"><div class="seg" id="bstrav"><button data-t="in">in-order</button><button data-t="pre">pre-order</button><button data-t="post">post-order</button><button data-t="level">level</button></div><button class="pri" id="bsplay">▶ Play</button><button id="bsstep">Step</button><label class="f" style="flex:1 1 130px"><span>speed</span><input type="range" id="bsspeed" min="1" max="10" value="6"></label></div><div class="readout" style="margin-top:0;margin-bottom:12px"><div class="stat"><div class="lab">nodes</div><div class="val" id="bsn">0</div></div><div class="stat"><div class="lab">height h</div><div class="val" id="bsh">0</div></div><div class="stat good"><div class="lab">⌈log₂(n+1)⌉ ideal</div><div class="val" id="bsideal">0</div></div><div class="stat"><div class="lab">comparisons, last op</div><div class="val" id="bscmp">—</div></div></div><div id="bswrap" style="overflow:auto;border:1px solid var(--line-soft);border-radius:8px;background:var(--surface-2);padding:6px"><svg id="bssvg" style="display:block"></svg></div><div class="log" id="bslog">Type a key and press insert. The walk down is animated — that walk is the algorithm.</div><div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:14px 0 6px">visit order</div><div class="track" id="bsout" style="flex-wrap:wrap;min-height:58px"></div></div>
   </div>
@@ -116,15 +98,6 @@
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Write the program top to bottom, one function at a time: the node, the class, insert, traversals, min and max, search, delete, height and count, then <span class="mono">main</span>.</li>
-        <li>Every recursive function has the same shape: <strong>stop at NULL</strong>, otherwise go left or right by comparing with the key.</li>
-        <li>Insert <strong>returns the (sub)tree root</strong> and the caller reattaches it: <code>node-&gt;left = insert(node-&gt;left, data)</code>. The same trick is used by delete.</li>
-        <li>Then show two more versions of the same program: the loop version of insert and of find_min next to the recursive ones — <strong>the same walk down, written two ways</strong>.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>1 · The node</h4><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">using</span> <span class="k">namespace</span> std;
 
@@ -759,14 +732,6 @@ Node *find_min2(Node *node) {
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>In-order</strong> — left, root, right. The result is the elements in <strong>sorted order</strong>; use it to get a sorted sequence from a BST.</li>
-        <li><strong>Pre-order</strong> — root, left, right. The root comes first; use it to <strong>create a copy</strong> of the tree.</li>
-        <li><strong>Post-order</strong> — left, right, root. The root comes last; use it to <strong>delete the tree safely</strong> — children before the parent.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Three orders</h4><div class="tw"><table><thead><tr><th>Traversal</th><th>Order</th><th>Result</th><th>Use case</th></tr></thead><tbody><tr><td class="k">In-order</td><td>Left → Root → Right</td><td>elements in <strong>sorted order</strong></td><td>sorted sequence from a BST</td></tr><tr><td class="k">Pre-order</td><td>Root → Left → Right</td><td>root comes first</td><td>creating a copy of the tree</td></tr><tr><td class="k">Post-order</td><td>Left → Right → Root</td><td>root comes last</td><td>deleting the tree safely</td></tr></tbody></table></div><p style="margin-top:14px">On the tree from the introduction:</p><pre class="out">in-order    8 9 10 12 13 14 15 16 17
 pre-order   10 9 8 15 13 12 14 16 17
 post-order  8 9 12 14 13 17 16 15 10</pre></div>
@@ -782,13 +747,6 @@ post-order  8 9 12 14 13 17 16 15 10</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>Every operation except traversal walks one path from the root, so its cost is the <strong>height</strong> of the tree.</li>
-        <li>Best case — the key is at the root. Average — a tree built from random order, height about log n. Worst — the skewed tree, height n.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Cost of each operation</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Average case</th><th class="n">Worst case</th><th class="n">Best case</th></tr></thead><tbody><tr><td class="k">Search</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td></tr><tr><td class="k">Insert</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td></tr><tr><td class="k">Delete</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td></tr><tr><td class="k">Find Min</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td></tr><tr><td class="k">Find Max</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td></tr><tr><td class="k">Traversal</td><td class="n">O(n)</td><td class="n">O(n)</td><td class="n">O(n)</td></tr></tbody></table></div></div>
   </div>
 </section>
@@ -802,15 +760,6 @@ post-order  8 9 12 14 13 17 16 15 10</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li><strong>Case 1 — a leaf.</strong> Simply remove the node. Example: delete 8.</li>
-        <li><strong>Case 2 — one child.</strong> Replace the node with its child. Example: delete 9 — it has only the left child 8.</li>
-        <li><strong>Case 3 — two children.</strong> Find the in-order predecessor (the rightmost node of the left subtree) <em>or</em> the in-order successor (the leftmost node of the right subtree), copy its value into the node, then delete the predecessor or successor.</li>
-        <li>The predecessor has no right child, the successor no left child — so deleting it is always case 1 or 2.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Case 1 · a leaf</h4><p>Simply remove the node. On the tree from the introduction: <strong>delete 8</strong> — 9 loses its left child, nothing else changes.</p></div>
     <div class="card pad board"><h4>Case 2 · one child</h4><p>Replace the node with its child. <strong>Delete 9</strong> — it has only the left child 8, so 8 takes its place under 10.</p></div>
     <div class="card pad board"><h4>Case 3 · two children</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Find the <strong>in-order predecessor</strong> — the rightmost node in the left subtree — <strong>or</strong> the <strong>in-order successor</strong> — the leftmost node in the right subtree.</li><li>Replace the node's data with the predecessor's / successor's.</li><li>Delete the predecessor / successor.</li></ul><p style="margin-top:14px"><strong>Delete 15</strong> with the successor, as <code>deleteNode</code> above does: the leftmost key of its right subtree is 16. 16 moves up into 15's place, and 17 takes the old place of 16.</p><pre class="out">        10                        10
@@ -832,13 +781,6 @@ post-order  8 9 12 14 13 17 16 15 10</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="say">
-      <h4>What to say</h4>
-      <ul>
-        <li>A sorted array searches fast but inserts slowly; a linked list inserts fast but searches slowly. A <strong>balanced BST</strong> does all three in O(log n).</li>
-        <li>A hash table is O(1) on average, but it keeps no order.</li>
-      </ul>
-    </div>
     <div class="card pad board"><h4>Side by side</h4><div class="tw"><table><thead><tr><th>Data Structure</th><th class="n">Search</th><th class="n">Insert</th><th class="n">Delete</th><th class="n">Space</th></tr></thead><tbody><tr><td class="k">Array (unsorted)</td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">Array (sorted)</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">Linked List</td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n"><span style="color:var(--prime)">O(1)</span></td><td class="n"><span style="color:var(--mark)">O(n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">BST (balanced)</td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n"><span style="color:var(--prime)">O(log n)</span></td><td class="n">O(n)</td></tr><tr><td class="k">Hash Table</td><td class="n"><span style="color:var(--prime)">O(1)*</span></td><td class="n"><span style="color:var(--prime)">O(1)*</span></td><td class="n"><span style="color:var(--prime)">O(1)*</span></td><td class="n">O(n)</td></tr></tbody></table></div><p style="margin-top:11px;font-size:.85rem;color:var(--ink-3)">* average case for a hash table</p></div>
   </div>
 </section>
