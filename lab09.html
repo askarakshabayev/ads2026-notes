@@ -85,9 +85,6 @@
         <li>The naive computation tries every length at every position: O(n³).</li>
         <li>The efficient one starts from the previous answer j = π[i−1]. If s[i] == s[j], the answer is j + 1; otherwise fall back to π[j−1] and try again.</li>
         <li>Trace "abcabcd" step by step, then let the demo step through other strings.</li>
-        <li>In "abcabcd" every fallback ends at 0. Show that <code>while</code> can turn several times and still find a match: "aabaabaaa" (5 → 2 → 1, π = 2), then "abacabadabacabab", where the borders abacaba ⊃ aba ⊃ a are easy to see, then "aabaabaabaaa" with three fallbacks.</li>
-        <li>To show the whole picture in one string use "abaababaabaababab": π goes up to 6, falls to 4, climbs to 8 and falls to 2 at the end. For a drop from 5 to 3 use "aabaaaaabaabaaabaaaaaa" (5 → 3, 6 → 3, 8 → 2); 5 → 3 and 6 → 4 cannot happen in one string.</li>
-        <li>The point to say out loud: after a mismatch we do not restart from 0 — we try the next shorter border, π[j−1], which is the longest border of the border.</li>
       </ul>
     </div>
     <div class="card pad board"><h4>Definition</h4><div class="formula">π[i] = length of the longest proper prefix of s[0…i]<br>       that is also a suffix of s[0…i]</div><p style="margin-top:12px"><strong>Proper prefix</strong> — a prefix that is not equal to the entire substring.</p></div>
