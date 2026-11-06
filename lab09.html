@@ -584,23 +584,7 @@ Occurrences at: 0, 1, 2 → count = 3</pre></div>
 pi[8] = 6 (prefix "abcabc" = suffix "abcabc")
 len = 9 - 6 = 3
 9 % 3 == 0 → period length is 3</pre><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>If π[n−1] = k, the first k characters match the last k</li><li>The shortest period has length n − k</li><li>If n is divisible by n − k, the string is periodic</li></ul></div>
-    <div class="card pad board"><h4>4 · String compression</h4><p>Can the string be written as a repeated pattern? Check whether the shortest period divides its length.</p><div style="margin-top:12px"></div><pre>string compress(string s) {
-    <span class="k">int</span> n = s.size();
-    <span class="k">int</span> period_len = shortest_period(s);
-
-    <span class="k">if</span> (period_len &lt; n) {
-        <span class="k">int</span> count = n / period_len;
-        string pattern = s.substr(0, period_len);
-        <span class="k">return</span> pattern + <span class="s">" × "</span> + to_string(count);
-    }
-
-    <span class="k">return</span> s;  <span class="c">// Cannot compress</span>
-}
-
-<span class="c">// Example: "abcabcabc" → "abc × 3"</span>
-<span class="c">// Example: "abcdef" → "abcdef" (no compression)</span></pre><div class="out-lbl">example</div><pre class="out">"abcabcabc" → "abc × 3"
-"abcdef"    → "abcdef" (period 6 = whole string, no compression)</pre></div>
-    <div class="card pad board"><h4>5 · Pattern in a cyclic string</h4><p>Does the pattern occur in some rotation of the text? Search in <code>text + text</code>.</p><div style="margin-top:12px"></div><pre><span class="k">bool</span> pattern_in_rotation(string text, string pattern) {
+    <div class="card pad board"><h4>4 · Pattern in a cyclic string</h4><p>Does the pattern occur in some rotation of the text? Search in <code>text + text</code>.</p><div style="margin-top:12px"></div><pre><span class="k">bool</span> pattern_in_rotation(string text, string pattern) {
     string doubled = text + text;
     string s = pattern + <span class="s">"#"</span> + doubled;
     vector&lt;<span class="k">int</span>&gt; pi = prefix_function(s);
@@ -620,7 +604,7 @@ len = 9 - 6 = 3
 <span class="c">// Pattern "dea" found → true</span></pre><div class="out-lbl">example</div><pre class="out">text = "abcde", pattern = "dea"
 s = "dea#abcdeabcde"
 "dea" found at index 3 of the doubled text → true</pre></div>
-    <div class="card pad board"><h4>6 · Longest palindromic prefix</h4><p>Compute the prefix function of <code>s + '#' + reverse(s)</code>; the last value is the answer.</p><div style="margin-top:12px"></div><pre><span class="k">int</span> longest_palindrome_prefix(string s) {
+    <div class="card pad board"><h4>5 · Longest palindromic prefix</h4><p>Compute the prefix function of <code>s + '#' + reverse(s)</code>; the last value is the answer.</p><div style="margin-top:12px"></div><pre><span class="k">int</span> longest_palindrome_prefix(string s) {
     string rev = s;
     reverse(rev.begin(), rev.end());
 
@@ -636,7 +620,7 @@ s = "dea#abcdeabcde"
 <span class="c">// π[14] = 7 → entire string is palindrome</span></pre><div class="out-lbl">example</div><pre class="out">s = "abacaba", rev = "abacaba"
 combined = "abacaba#abacaba"
 π[14] = 7 → the entire string is a palindrome</pre></div>
-    <div class="card pad board"><h4>7 · All borders</h4><p>All lengths k for which the prefix of length k equals the suffix of length k: start from π[n−1] and keep jumping back.</p><div style="margin-top:12px"></div><pre>vector&lt;<span class="k">int</span>&gt; find_all_borders(string s) {
+    <div class="card pad board"><h4>6 · All borders</h4><p>All lengths k for which the prefix of length k equals the suffix of length k: start from π[n−1] and keep jumping back.</p><div style="margin-top:12px"></div><pre>vector&lt;<span class="k">int</span>&gt; find_all_borders(string s) {
     <span class="k">int</span> n = s.size();
     vector&lt;<span class="k">int</span>&gt; pi = prefix_function(s);
     vector&lt;<span class="k">int</span>&gt; borders;
@@ -654,7 +638,7 @@ combined = "abacaba#abacaba"
 <span class="c">// Example: s = "abcabcab"</span>
 <span class="c">// Borders: lengths 2, 5 ("ab", "abcab")</span></pre><div class="out-lbl">example</div><pre class="out">s = "abcabcab"
 Borders: lengths 2, 5 ("ab", "abcab")</pre></div>
-    <div class="card pad board"><h4>8 · Several patterns</h4><p>For each pattern, build its own <code>pattern + '#' + text</code>.</p><div style="margin-top:12px"></div><pre><span class="k">void</span> find_multiple_patterns(string text, vector&lt;string&gt; patterns) {
+    <div class="card pad board"><h4>7 · Several patterns</h4><p>For each pattern, build its own <code>pattern + '#' + text</code>.</p><div style="margin-top:12px"></div><pre><span class="k">void</span> find_multiple_patterns(string text, vector&lt;string&gt; patterns) {
     <span class="k">for</span> (<span class="k">int</span> k = 0; k &lt; patterns.size(); k++) {
         string s = patterns[k] + <span class="s">"#"</span> + text;
         vector&lt;<span class="k">int</span>&gt; pi = prefix_function(s);
@@ -733,7 +717,7 @@ With #:    "ab#cab" → no match (correct!)</pre><p style="margin-top:12px">In "
     </div>
   </div>
   <div class="stack">
-    <div class="card pad board"><h4>Eight things to remember</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li><strong>The prefix function is the key</strong> — the longest proper prefix that is also a suffix</li><li><strong>Pattern matching with <code>pattern + '#' + text</code></strong> — elegant and simple</li><li><strong>O(n + m) guaranteed</strong> — no worst-case degradation</li><li><strong>When π[i] = m, the pattern is found</strong> — at position i − 2m</li><li><strong>The separator '#' is essential</strong> — it prevents false matches</li><li><strong>The prefix function is O(n)</strong></li><li><strong>Many applications</strong> — periods, compression, palindromes</li><li><strong>No false positives</strong> — unlike hashing</li></ol></div>
+    <div class="card pad board"><h4>Eight things to remember</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li><strong>The prefix function is the key</strong> — the longest proper prefix that is also a suffix</li><li><strong>Pattern matching with <code>pattern + '#' + text</code></strong> — elegant and simple</li><li><strong>O(n + m) guaranteed</strong> — no worst-case degradation</li><li><strong>When π[i] = m, the pattern is found</strong> — at position i − 2m</li><li><strong>The separator '#' is essential</strong> — it prevents false matches</li><li><strong>The prefix function is O(n)</strong></li><li><strong>Many applications</strong> — periods, rotations, palindromes</li><li><strong>No false positives</strong> — unlike hashing</li></ol></div>
   </div>
 </section>
 
