@@ -86,7 +86,7 @@
         <li>The efficient one starts from the previous answer j = π[i−1]. If s[i] == s[j], the answer is j + 1; otherwise fall back to π[j−1] and try again.</li>
         <li>Trace "abcabcd" step by step, then let the demo step through other strings.</li>
         <li>In "abcabcd" every fallback ends at 0. Show that <code>while</code> can turn several times and still find a match: "aabaabaaa" (5 → 2 → 1, π = 2), then "abacabadabacabab", where the borders abacaba ⊃ aba ⊃ a are easy to see, then "aabaabaabaaa" with three fallbacks.</li>
-        <li>To show the whole picture in one string use "abaababaabaababab": π goes up to 6, falls to 4, climbs to 8 and falls to 2 at the end.</li>
+        <li>To show the whole picture in one string use "abaababaabaababab": π goes up to 6, falls to 4, climbs to 8 and falls to 2 at the end. For a drop from 5 to 3 use "aabaaaaabaabaaabaaaaaa" (5 → 3, 6 → 3, 8 → 2); 5 → 3 and 6 → 4 cannot happen in one string.</li>
         <li>The point to say out loud: after a mismatch we do not restart from 0 — we try the next shorter border, π[j−1], which is the longest border of the border.</li>
       </ul>
     </div>
@@ -422,6 +422,29 @@ j = 3           s[3] = 'a' ≠ 'b' → j = π[2] = 1
                                                a  b  a <span style="color:var(--mark)"> a</span>
 j = 1           s[1] = 'b' = s[16] → match, π[16] = 1 + 1 = 2
                                                      a <span style="color:var(--prime)"> b</span></pre><p style="margin-top:12px">The lengths tried are the borders of <span class="mono">s[0…15]</span>, each one a border of the previous: <span class="mono">"abaababa" ⊃ "aba" ⊃ "a"</span>. j only goes down, so the loop always stops.</p></div>
+    <div class="card pad board"><h4>Three drops in one string · s = "aabaaaaabaabaaabaaaaaa"</h4><p>π climbs, falls back, climbs again: <span class="mono">5 → 3</span> at i = 11, <span class="mono">6 → 3</span> at i = 15, <span class="mono">8 → 2</span> at the end. Each time the loop does not restart from 0 — it lands on a shorter border and goes on from there.</p><pre class="out">index   0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21
+s       a  a  b  a  a  a  a  a  b  a  a  b  a  a  a  b  a  a  a  a  a  a
+π       0  1  0  1  2  2  2  2  3  4  5  3  4  5  6  3  4  5  6  7  8  2</pre><div class="out-lbl" style="margin-top:0">i = 11, s[11] = 'b' — try the borders of s[0…10] from the longest</div><pre class="out">index   0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21
+s       a  a  b  a  a  a  a  a  b  a  a  b  a  a  a  b  a  a  a  a  a  a
+
+j = π[10] = 5   s[5] = 'a' ≠ 'b' → j = π[4] = 2
+                          a  a  b  a  a <span style="color:var(--mark)"> a</span>
+j = 2           s[2] = 'b' = s[11] → match, π[11] = 2 + 1 = 3
+                                   a  a <span style="color:var(--prime)"> b</span></pre><p style="margin-top:12px">The lengths tried are the borders of <span class="mono">s[0…10]</span>, each one a border of the previous: <span class="mono">"aabaa" ⊃ "aa" ⊃ "a"</span>. j only goes down, so the loop always stops.</p><div class="out-lbl" style="margin-top:0">i = 15, s[15] = 'b' — try the borders of s[0…14] from the longest</div><pre class="out">index   0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21
+s       a  a  b  a  a  a  a  a  b  a  a  b  a  a  a  b  a  a  a  a  a  a
+
+j = π[14] = 6   s[6] = 'a' ≠ 'b' → j = π[5] = 2
+                                   a  a  b  a  a  a <span style="color:var(--mark)"> a</span>
+j = 2           s[2] = 'b' = s[15] → match, π[15] = 2 + 1 = 3
+                                               a  a <span style="color:var(--prime)"> b</span></pre><p style="margin-top:12px">The lengths tried are the borders of <span class="mono">s[0…14]</span>, each one a border of the previous: <span class="mono">"aabaaa" ⊃ "aa" ⊃ "a"</span>. j only goes down, so the loop always stops.</p><div class="out-lbl" style="margin-top:0">i = 21, s[21] = 'a' — try the borders of s[0…20] from the longest</div><pre class="out">index   0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21
+s       a  a  b  a  a  a  a  a  b  a  a  b  a  a  a  b  a  a  a  a  a  a
+
+j = π[20] = 8   s[8] = 'b' ≠ 'a' → j = π[7] = 2
+                                               a  a  b  a  a  a  a  a <span style="color:var(--mark)"> b</span>
+j = 2           s[2] = 'b' ≠ 'a' → j = π[1] = 1
+                                                                 a  a <span style="color:var(--mark)"> b</span>
+j = 1           s[1] = 'a' = s[21] → match, π[21] = 1 + 1 = 2
+                                                                    a <span style="color:var(--prime)"> a</span></pre><p style="margin-top:12px">The lengths tried are the borders of <span class="mono">s[0…20]</span>, each one a border of the previous: <span class="mono">"aabaaaaa" ⊃ "aa" ⊃ "a"</span>. j only goes down, so the loop always stops.</p></div>
     <div class="card pad board"><h4>Another version · both versions in one file</h4><p>The brute force and the fast version side by side; <span class="mono">main</span> uses the fast one.</p><div style="margin-top:12px"><details class="code"><summary>the full program — two versions<span class="lines">42 lines</span></summary><pre><span class="c">// abababaa</span>
 <span class="k">#include</span> &lt;iostream&gt;
 <span class="k">#include</span> &lt;vector&gt;
@@ -464,7 +487,7 @@ vector&lt;<span class="k">int</span>&gt; prefix_functionv2(string s) {
         cout &lt;&lt; pi[i] &lt;&lt; <span class="s">" "</span>;
     <span class="k">return</span> 0;
 }</pre></details></div><div class="out-lbl">input</div><pre class="out">abababaa</pre><div class="out-lbl">output</div><pre class="out">0 0 1 2 3 4 5 1</pre></div>
-    <div class="card pad demo"><h4>Demo · the prefix function, step by step</h4><div class="ctl"><label class="f" style="flex:1 1 220px"><span>string</span><input type="text" id="pfs" value="abacaba"></label><button class="pri" id="pfrun">Compute</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-pf="abacaba">abacaba</button><button class="chip" data-pf="aabaaab">aabaaab</button><button class="chip" data-pf="aaaaa">aaaaa</button><button class="chip" data-pf="abcdef">no repeats</button><button class="chip" data-pf="abababab">abababab</button><button class="chip" data-pf="aabaabaaa">aabaabaaa</button><button class="chip" data-pf="abacabadabacabab">abacabadabacabab</button><button class="chip" data-pf="aabaabaabaaa">aabaabaabaaa</button><button class="chip" data-pf="abaababaabaababab">abaababaabaababab</button></div><div class="track" id="pftrack" style="flex-wrap:wrap"></div><div class="readout"><div class="stat"><div class="lab">π of the last position</div><div class="val" id="pflast">—</div></div><div class="stat good"><div class="lab">shortest period</div><div class="val" id="pfper">—</div></div><div class="stat"><div class="lab">fallbacks total</div><div class="val" id="pffb">—</div></div></div><div class="log" id="pflog" style="white-space:pre-line"></div></div>
+    <div class="card pad demo"><h4>Demo · the prefix function, step by step</h4><div class="ctl"><label class="f" style="flex:1 1 220px"><span>string</span><input type="text" id="pfs" value="abacaba"></label><button class="pri" id="pfrun">Compute</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-pf="abacaba">abacaba</button><button class="chip" data-pf="aabaaab">aabaaab</button><button class="chip" data-pf="aaaaa">aaaaa</button><button class="chip" data-pf="abcdef">no repeats</button><button class="chip" data-pf="abababab">abababab</button><button class="chip" data-pf="aabaabaaa">aabaabaaa</button><button class="chip" data-pf="abacabadabacabab">abacabadabacabab</button><button class="chip" data-pf="aabaabaabaaa">aabaabaabaaa</button><button class="chip" data-pf="abaababaabaababab">abaababaabaababab</button><button class="chip" data-pf="aabaaaaabaabaaabaaaaaa">aabaaaaabaabaaabaaaaaa</button></div><div class="track" id="pftrack" style="flex-wrap:wrap"></div><div class="readout"><div class="stat"><div class="lab">π of the last position</div><div class="val" id="pflast">—</div></div><div class="stat good"><div class="lab">shortest period</div><div class="val" id="pfper">—</div></div><div class="stat"><div class="lab">fallbacks total</div><div class="val" id="pffb">—</div></div></div><div class="log" id="pflog" style="white-space:pre-line"></div></div>
   </div>
 </section>
 
@@ -874,13 +897,17 @@ function pfRun(){
       (v>0?'':'background:var(--surface-2);border-color:var(--line);color:var(--ink-3)')+'">'+c+'</div>'+
       '<div class="mono" style="font-size:.76rem;color:'+(v>0?'var(--accent)':'var(--ink-3)')+';margin-top:3px">'+v+'</div></div>';
   }).join('');
-  var last=r.pi[s.length-1], per=s.length-last;
+  var n=s.length, last=r.pi[n-1], cand=n-last, full=(n%cand===0), per=full?cand:n;
   el('pflast').textContent=last;
   el('pfper').textContent=per;
+  el('pfper').parentElement.className='stat'+(full&&per<n?' good':'');
   el('pffb').textContent=r.fb;
   el('pflog').textContent = last>0
     ? 'π of the last position is '+last+' — the first '+last+' characters ("'+s.slice(0,last)+'") are also the last '+last+'.'
     : 'π of the last position is 0 — no proper prefix of this string is also a suffix.';
+  el('pflog').textContent += '\nPeriod: n − π = '+n+' − '+last+' = '+cand+(full
+    ? (per<n ? ', '+n+' % '+cand+' = 0 → "'+s.slice(0,per)+'" repeated '+(n/per)+' times.' : ' = n → no shorter period.')
+    : ', '+n+' % '+cand+' ≠ 0 → no repeating period, the answer is n = '+n+'.');
   if(r.chains.length) el('pflog').textContent += '\nFallbacks (j = π[j−1]):\n'+r.chains.join('\n');
 }
 on('pfrun','click',pfRun); on('pfs','change',pfRun);
@@ -891,7 +918,7 @@ pfRun();
 function pdRun(){
   var s=(el('pds').value||'').toLowerCase().replace(/[^a-z]/g,'')||'a';
   var pi=prefixFunction(s).pi, n=s.length;
-  var per=n-pi[n-1], full=(n%per===0);
+  var cand=n-pi[n-1], full=(n%cand===0), per=full?cand:n;
   el('pdp').textContent=per;
   el('pdf').textContent=full?'yes':'no';
   el('pdf').parentElement.className='stat '+(full?'good':'');
@@ -903,7 +930,7 @@ function pdRun(){
     : '<span class="empty">no borders — no proper prefix is also a suffix</span>';
   el('pdlog').textContent = full
     ? 'n = '+n+' is divisible by the period '+per+', so the string is "'+s.slice(0,per)+'" repeated '+(n/per)+' times.'
-    : 'n = '+n+' is NOT divisible by the period '+per+' — the repetition is cut off partway. This is the edge case the statements care about.';
+    : 'n − π = '+cand+' does NOT divide n = '+n+' — the repetition is cut off partway, so there is no repeating period and the answer is n. This is the edge case the statements care about.';
 }
 on('pdrun','click',pdRun); on('pds','change',pdRun);
 each('[data-pd]',function(b){ b.addEventListener('click',function(){ el('pds').value=b.getAttribute('data-pd'); pdRun(); }); });
