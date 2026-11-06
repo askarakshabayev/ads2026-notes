@@ -208,62 +208,7 @@ vector&lt;<span class="k">int</span>&gt; prefix_function(string s) {
         cout &lt;&lt; p[i] &lt;&lt; <span class="s">" "</span>;
     <span class="k">return</span> 0;
 }</pre></details></div><div class="out-lbl">input</div><pre class="out">abcabcd</pre><div class="out-lbl">output</div><pre class="out">0 0 0 1 2 3 0</pre></div>
-    <div class="card pad board"><h4>Efficient approach — O(n)</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li>Start with π[0] = 0</li><li>For each position i, look at the previous match length j = π[i−1]</li><li>If s[i] == s[j], then π[i] = j + 1</li><li>If s[i] != s[j], fall back to j = π[j−1] and try again</li><li>Continue falling back until a match is found or j reaches 0</li></ol><div style="margin-top:12px"></div><pre><span class="k">#include</span> &lt;iostream&gt;
-<span class="k">#include</span> &lt;vector&gt;
-<span class="k">using</span> <span class="k">namespace</span> std;
-
-vector&lt;<span class="k">int</span>&gt; prefix_function(string s) {
-    <span class="k">int</span> n = s.size();
-    vector&lt;<span class="k">int</span>&gt; pi(n);
-
-    pi[0] = 0;  <span class="c">// First element is always 0</span>
-
-    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++) {
-        <span class="k">int</span> j = pi[i - 1];  <span class="c">// Previous prefix length</span>
-
-        <span class="c">// Fall back until we find a match or reach 0</span>
-        <span class="k">while</span> (j &gt; 0 &amp;&amp; s[i] != s[j]) {
-            j = pi[j - 1];
-        }
-
-        <span class="c">// If characters match, increment the length</span>
-        <span class="k">if</span> (s[i] == s[j]) {
-            j++;
-        }
-
-        pi[i] = j;
-    }
-
-    <span class="k">return</span> pi;
-}
-
-<span class="k">int</span> main() {
-    string s;
-    cout &lt;&lt; <span class="s">"Enter string: "</span>;
-    cin &gt;&gt; s;
-
-    vector&lt;<span class="k">int</span>&gt; pi = prefix_function(s);
-
-    cout &lt;&lt; <span class="s">"\nString:          "</span>;
-    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++)
-        cout &lt;&lt; s[i] &lt;&lt; <span class="s">" "</span>;
-    cout &lt;&lt; endl;
-
-    cout &lt;&lt; <span class="s">"Index:           "</span>;
-    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++)
-        cout &lt;&lt; i &lt;&lt; <span class="s">" "</span>;
-    cout &lt;&lt; endl;
-
-    cout &lt;&lt; <span class="s">"Prefix function: "</span>;
-    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; pi.size(); i++)
-        cout &lt;&lt; pi[i] &lt;&lt; <span class="s">" "</span>;
-    cout &lt;&lt; endl;
-
-    <span class="k">return</span> 0;
-}</pre><div class="out-lbl">input</div><pre class="out">abcabcd</pre><div class="out-lbl">output</div><pre class="out">Enter string: 
-String:          a b c a b c d 
-Index:           0 1 2 3 4 5 6 
-Prefix function: 0 0 0 1 2 3 0</pre><p style="margin-top:12px"><strong>Time:</strong> O(n) · <strong>Space:</strong> O(n)</p></div>
+    <div class="card pad board"><h4>Efficient approach — O(n)</h4><ol style="margin:0;padding-left:1.3em;line-height:1.8"><li>Start with π[0] = 0</li><li>For each position i, look at the previous match length j = π[i−1]</li><li>If s[i] == s[j], then π[i] = j + 1</li><li>If s[i] != s[j], fall back to j = π[j−1] and try again</li><li>Continue falling back until a match is found or j reaches 0</li></ol></div>
     <div class="card pad board"><h4>Step-by-step trace · s = "abcabcd"</h4><pre class="out">i = 0: pi[0] = 0 (by definition)
 
 i = 1:
@@ -442,48 +387,62 @@ j = 2           s[2] = 'b' ≠ 'a' → j = π[1] = 1
                                                                  a  a <span style="color:var(--mark)"> b</span>
 j = 1           s[1] = 'a' = s[21] → match, π[21] = 1 + 1 = 2
                                                                     a <span style="color:var(--prime)"> a</span></pre><p style="margin-top:12px">The lengths tried are the borders of <span class="mono">s[0…20]</span>, each one a border of the previous: <span class="mono">"aabaaaaa" ⊃ "aa" ⊃ "a"</span>. j only goes down, so the loop always stops.</p></div>
-    <div class="card pad board"><h4>Another version · both versions in one file</h4><p>The brute force and the fast version side by side; <span class="mono">main</span> uses the fast one.</p><div style="margin-top:12px"><details class="code"><summary>the full program — two versions<span class="lines">42 lines</span></summary><pre><span class="c">// abababaa</span>
-<span class="k">#include</span> &lt;iostream&gt;
+    <div class="card pad board"><h4>Efficient approach — the code</h4><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">#include</span> &lt;vector&gt;
-
 <span class="k">using</span> <span class="k">namespace</span> std;
 
 vector&lt;<span class="k">int</span>&gt; prefix_function(string s) {
     <span class="k">int</span> n = s.size();
     vector&lt;<span class="k">int</span>&gt; pi(n);
-    pi[0] = 0;
-    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++) {
-        <span class="k">for</span> (<span class="k">int</span> l = 1; l &lt;= i; l++) {
-            <span class="k">if</span> (s.substr(0, l) == s.substr(i - l + 1, l))
-                pi[i] = l;
-        }
-    }
-    <span class="k">return</span> pi;
-}
 
-vector&lt;<span class="k">int</span>&gt; prefix_functionv2(string s) {
-    <span class="k">int</span> n = s.size();
-    vector&lt;<span class="k">int</span>&gt; pi(n);
-    pi[0] = 0;
+    pi[0] = 0;  <span class="c">// First element is always 0</span>
+
     <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++) {
-        <span class="k">int</span> j = pi[i - 1];
-        <span class="k">while</span> (j &gt; 0 &amp;&amp; s[i] != s[j])
+        <span class="k">int</span> j = pi[i - 1];  <span class="c">// Previous prefix length</span>
+
+        <span class="c">// Fall back until we find a match or reach 0</span>
+        <span class="k">while</span> (j &gt; 0 &amp;&amp; s[i] != s[j]) {
             j = pi[j - 1];
-        <span class="k">if</span> (s[i] == s[j])
+        }
+
+        <span class="c">// If characters match, increment the length</span>
+        <span class="k">if</span> (s[i] == s[j]) {
             j++;
+        }
+
         pi[i] = j;
     }
+
     <span class="k">return</span> pi;
 }
 
 <span class="k">int</span> main() {
     string s;
+    cout &lt;&lt; <span class="s">"Enter string: "</span>;
     cin &gt;&gt; s;
-    vector&lt;<span class="k">int</span>&gt; pi = prefix_functionv2(s);
+
+    vector&lt;<span class="k">int</span>&gt; pi = prefix_function(s);
+
+    cout &lt;&lt; <span class="s">"\nString:          "</span>;
     <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++)
+        cout &lt;&lt; s[i] &lt;&lt; <span class="s">" "</span>;
+    cout &lt;&lt; endl;
+
+    cout &lt;&lt; <span class="s">"Index:           "</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; s.size(); i++)
+        cout &lt;&lt; i &lt;&lt; <span class="s">" "</span>;
+    cout &lt;&lt; endl;
+
+    cout &lt;&lt; <span class="s">"Prefix function: "</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; pi.size(); i++)
         cout &lt;&lt; pi[i] &lt;&lt; <span class="s">" "</span>;
+    cout &lt;&lt; endl;
+
     <span class="k">return</span> 0;
-}</pre></details></div><div class="out-lbl">input</div><pre class="out">abababaa</pre><div class="out-lbl">output</div><pre class="out">0 0 1 2 3 4 5 1</pre></div>
+}</pre><div class="out-lbl">input</div><pre class="out">abcabcd</pre><div class="out-lbl">output</div><pre class="out">Enter string: 
+String:          a b c a b c d 
+Index:           0 1 2 3 4 5 6 
+Prefix function: 0 0 0 1 2 3 0</pre><p style="margin-top:12px"><strong>Time:</strong> O(n) · <strong>Space:</strong> O(n)</p></div>
     <div class="card pad demo"><h4>Demo · the prefix function, step by step</h4><div class="ctl"><label class="f" style="flex:1 1 220px"><span>string</span><input type="text" id="pfs" value="abacaba"></label><button class="pri" id="pfrun">Compute</button></div><div class="chips" style="margin-bottom:12px"><button class="chip" data-pf="abacaba">abacaba</button><button class="chip" data-pf="aabaaab">aabaaab</button><button class="chip" data-pf="aaaaa">aaaaa</button><button class="chip" data-pf="abcdef">no repeats</button><button class="chip" data-pf="abababab">abababab</button><button class="chip" data-pf="aabaabaaa">aabaabaaa</button><button class="chip" data-pf="abacabadabacabab">abacabadabacabab</button><button class="chip" data-pf="aabaabaabaaa">aabaabaabaaa</button><button class="chip" data-pf="abaababaabaababab">abaababaabaababab</button><button class="chip" data-pf="aabaaaaabaabaaabaaaaaa">aabaaaaabaabaaabaaaaaa</button></div><div class="track" id="pftrack" style="flex-wrap:wrap"></div><div class="readout"><div class="stat"><div class="lab">π of the last position</div><div class="val" id="pflast">—</div></div><div class="stat good"><div class="lab">shortest period</div><div class="val" id="pfper">—</div></div><div class="stat"><div class="lab">fallbacks total</div><div class="val" id="pffb">—</div></div></div><div class="log" id="pflog" style="white-space:pre-line"></div></div>
   </div>
 </section>
@@ -507,6 +466,18 @@ vector&lt;<span class="k">int</span>&gt; prefix_functionv2(string s) {
       </ul>
     </div>
     <div class="card pad board"><h4>Problem and idea</h4><p>Given a text (length n) and a pattern (length m), find all occurrences of the pattern in the text.</p><div class="formula" style="margin-top:12px">s = pattern + '#' + text</div><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>Compute the prefix function of the combined string</li><li>When π[i] equals the pattern length, a match is found</li><li>The separator keeps the pattern from matching across the boundary</li></ul></div>
+    <div class="card pad board"><h4>Example · text = "ababcabcabababd", pattern = "ababd"</h4><div class="out-lbl" style="margin-top:0">step 1 · combined string</div><pre class="out">s = "ababd#ababcabcabababd"</pre><div class="out-lbl">step 2 · prefix function</div><pre class="out">Index:  0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+String: a b a b d # a b a b c  a  b  c  a  b  a  b  a  b  d 
+π:      0 0 1 2 0 0 1 2 3 4 0  1  2  0  1  2  3  4  3  4  5 </pre><div class="out-lbl">step 3 · matches</div><pre class="out">π[20] = 5: position in text = 20 - 2×5 = 10</pre><div class="out-lbl">verification</div><pre class="out">text  = "ababcabcabababd"
+index    012345678901234
+                   ^^^^^   (index 10–14: "ababd")</pre></div>
+    <div class="card pad board"><h4>Another example · text = "aabaacaabaa", pattern = "aaba"</h4><pre class="out">s = "aaba#aabaacaabaa"</pre><div style="margin-top:12px"></div><pre class="out">Index:  0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+String: a a b a # a a b a a c  a  a  b  a  a 
+π:      0 1 0 1 0 1 2 3 4 2 0  1  2  3  4  2 </pre><div class="out-lbl">matches, where π[i] = 4</div><pre class="out">π[8] = 4 → position = 8 - 2×4 = 0
+π[14] = 4 → position = 14 - 2×4 = 6</pre><div class="out-lbl">verification</div><pre class="out">text  = "aabaacaabaa"
+index    01234567890
+         ^^^^   (index 0–3: "aaba")
+               ^^^^   (index 6–9: "aaba")</pre></div>
     <div class="card pad board"><h4>KMP implementation</h4><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">#include</span> &lt;vector&gt;
 <span class="k">using</span> <span class="k">namespace</span> std;
@@ -572,18 +543,6 @@ ababd</pre><div class="out-lbl">output</div><pre class="out">Enter text: Enter p
 Searching for pattern in text...
 
 Pattern found at index 10</pre></div>
-    <div class="card pad board"><h4>Example · text = "ababcabcabababd", pattern = "ababd"</h4><div class="out-lbl" style="margin-top:0">step 1 · combined string</div><pre class="out">s = "ababd#ababcabcabababd"</pre><div class="out-lbl">step 2 · prefix function</div><pre class="out">Index:  0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
-String: a b a b d # a b a b c  a  b  c  a  b  a  b  a  b  d 
-π:      0 0 1 2 0 0 1 2 3 4 0  1  2  0  1  2  3  4  3  4  5 </pre><div class="out-lbl">step 3 · matches</div><pre class="out">π[20] = 5: position in text = 20 - 2×5 = 10</pre><div class="out-lbl">verification</div><pre class="out">text  = "ababcabcabababd"
-index    012345678901234
-                   ^^^^^   (index 10–14: "ababd")</pre></div>
-    <div class="card pad board"><h4>Another example · text = "aabaacaabaa", pattern = "aaba"</h4><pre class="out">s = "aaba#aabaacaabaa"</pre><div style="margin-top:12px"></div><pre class="out">Index:  0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
-String: a a b a # a a b a a c  a  a  b  a  a 
-π:      0 1 0 1 0 1 2 3 4 2 0  1  2  3  4  2 </pre><div class="out-lbl">matches, where π[i] = 4</div><pre class="out">π[8] = 4 → position = 8 - 2×4 = 0
-π[14] = 4 → position = 14 - 2×4 = 6</pre><div class="out-lbl">verification</div><pre class="out">text  = "aabaacaabaa"
-index    01234567890
-         ^^^^   (index 0–3: "aaba")
-               ^^^^   (index 6–9: "aaba")</pre></div>
     <div class="card pad board"><h4>Time complexity</h4><div class="tw"><table><thead><tr><th>Operation</th><th class="n">Time</th></tr></thead><tbody><tr><td class="k">Create the combined string</td><td class="n">O(n + m)</td></tr><tr><td class="k">Compute the prefix function</td><td class="n">O(n + m)</td></tr><tr><td class="k">Find matches</td><td class="n">O(n + m)</td></tr><tr><td class="k"><strong>Total</strong></td><td class="n"><span style="color:var(--prime)"><strong>O(n + m)</strong></span></td></tr></tbody></table></div></div>
   </div>
 </section>
