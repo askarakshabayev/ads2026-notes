@@ -619,7 +619,15 @@ s = "dea#abcdeabcde"
 <span class="c">// combined = "abacaba#abacaba"</span>
 <span class="c">// π[14] = 7 → entire string is palindrome</span></pre><div class="out-lbl">example</div><pre class="out">s = "abacaba", rev = "abacaba"
 combined = "abacaba#abacaba"
-π[14] = 7 → the entire string is a palindrome</pre></div>
+π[14] = 7 → the entire string is a palindrome</pre><div class="out-lbl">example</div><pre class="out">s = "abab", rev = "baba"
+combined = "abab#baba"
+
+index      0  1  2  3  4  5  6  7  8
+combined   a  b  a  b  #  b  a  b  a
+π          0  0  1  2  0  0  1  2  3
+
+π[8] = 3 → the longest palindromic prefix is "aba" (length 3)
+"abab" itself is not a palindrome; "aba" is the longest prefix that reads the same backwards</pre></div>
     <div class="card pad board"><h4>6 · All borders</h4><p>All lengths k for which the prefix of length k equals the suffix of length k: start from π[n−1] and keep jumping back.</p><div style="margin-top:12px"></div><pre>vector&lt;<span class="k">int</span>&gt; find_all_borders(string s) {
     <span class="k">int</span> n = s.size();
     vector&lt;<span class="k">int</span>&gt; pi = prefix_function(s);
