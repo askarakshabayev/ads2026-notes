@@ -203,7 +203,9 @@ function slToggle(on,idx){
   }
   if(WB.open) wbResize();
 }
+var HAS_SAY=!!document.querySelector('.say');
 function slNotes(){
+  if(!HAS_SAY) return;
   SL.notes=!SL.notes; body.classList.toggle('sl-notes',SL.notes);
   var b=document.getElementById('sl-notes'); if(b) b.classList.toggle('on',SL.notes);
   try{ localStorage.setItem('ads-sl-notes',SL.notes?'1':'0'); }catch(e){}
@@ -214,14 +216,15 @@ function slBar(){
     '<span class="pos" id="sl-pos"></span>'+
     '<button id="sl-next" title="Next (→, Space, PgDn)">›</button>'+
     '<span class="lbl" id="sl-lbl"></span>'+
-    '<button id="sl-notes" class="txt" title="Speaker notes (N)">notes</button>'+
+    /* заметки докладчика — блоки .say; на сайте их больше нет (06.11.2026), без них кнопка не нужна */
+    (HAS_SAY?'<button id="sl-notes" class="txt" title="Speaker notes (N)">notes</button>':'')+
     '<button id="sl-exit" class="txt" title="Back to the page (P, Esc)">exit</button>';
   body.appendChild(bar);
   var prog=document.createElement('div'); prog.className='sl-prog'; prog.innerHTML='<i id="sl-prog"></i>';
   bar.appendChild(prog);
   document.getElementById('sl-prev').onclick=function(){ slShow(SL.i-1); };
   document.getElementById('sl-next').onclick=function(){ slShow(SL.i+1); };
-  document.getElementById('sl-notes').onclick=slNotes;
+  if(HAS_SAY) document.getElementById('sl-notes').onclick=slNotes;
   document.getElementById('sl-exit').onclick=function(){ slToggle(false); };
 }
 function slInit(){
