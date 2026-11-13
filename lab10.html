@@ -1085,7 +1085,7 @@ Final output: 0 1 2 3 4</pre></div>
     </div>
   </div>
   <div class="stack">
-    <div class="card pad board"><h4>1 · Shortest path in an unweighted graph</h4><p>BFS finds the shortest path — the minimum number of edges — from the source to every other vertex.</p><pre><span class="k">int</span> shortestPath(Graph&amp; g, <span class="k">int</span> source, <span class="k">int</span> target) {
+    <div class="card pad board"><h4>1 · Shortest path in an unweighted graph</h4><p>BFS finds the shortest path — the minimum number of edges — from the source to every other vertex.</p><pre><span class="k">int</span> shortestPath(<span class="k">int</span> source, <span class="k">int</span> target) {   <span class="c">// changed: no Graph&amp; g — it was never used, n and adj are the globals</span>
     vector&lt;<span class="k">bool</span>&gt; visited(n, <span class="k">false</span>);
     vector&lt;<span class="k">int</span>&gt; distance(n, -1);
     queue&lt;<span class="k">int</span>&gt; q;
@@ -1112,7 +1112,7 @@ Final output: 0 1 2 3 4</pre></div>
 
     <span class="k">return</span> -1;  <span class="c">// No path exists</span>
 }</pre></div>
-    <div class="card pad board"><h4>2 · Check if the graph is connected</h4><p>One BFS from vertex 0 and count how many vertices it reaches.</p><pre><span class="k">bool</span> isConnected(Graph&amp; g) {
+    <div class="card pad board"><h4>2 · Check if the graph is connected</h4><p>One BFS from vertex 0 and count how many vertices it reaches.</p><pre><span class="k">bool</span> isConnected() {   <span class="c">// changed: no Graph&amp; g — it was never used, n and adj are the globals</span>
     vector&lt;<span class="k">bool</span>&gt; visited(n, <span class="k">false</span>);
     queue&lt;<span class="k">int</span>&gt; q;
 
@@ -1135,7 +1135,7 @@ Final output: 0 1 2 3 4</pre></div>
 
     <span class="k">return</span> count == n;
 }</pre></div>
-    <div class="card pad board"><h4>3 · Find connected components</h4><pre><span class="k">int</span> countComponents(Graph&amp; g) {
+    <div class="card pad board"><h4>3 · Find connected components</h4><pre><span class="k">int</span> countComponents() {   <span class="c">// changed: no Graph&amp; g — it was never used, n and adj are the globals</span>
     vector&lt;<span class="k">bool</span>&gt; visited(n, <span class="k">false</span>);
     <span class="k">int</span> components = 0;
 
@@ -1164,7 +1164,7 @@ Final output: 0 1 2 3 4</pre></div>
 
     <span class="k">return</span> components;
 }</pre></div>
-    <div class="card pad board"><h4>4 · Bipartite graph check</h4><p>Check whether the graph can be coloured with 2 colours.</p><pre><span class="k">bool</span> isBipartite(Graph&amp; g) {
+    <div class="card pad board"><h4>4 · Bipartite graph check</h4><p>Check whether the graph can be coloured with 2 colours.</p><pre><span class="k">bool</span> isBipartite() {   <span class="c">// changed: no Graph&amp; g — it was never used, n and adj are the globals</span>
     vector&lt;<span class="k">int</span>&gt; color(n, -1);
     queue&lt;<span class="k">int</span>&gt; q;
 
@@ -1191,7 +1191,7 @@ Final output: 0 1 2 3 4</pre></div>
 
     <span class="k">return</span> <span class="k">true</span>;
 }</pre></div>
-    <div class="card pad board"><h4>5 · Level order traversal</h4><p>Print the vertices level by level — <code>q.size()</code> at the start of a level is exactly that level.</p><pre><span class="k">void</span> levelOrder(Graph&amp; g, <span class="k">int</span> source) {
+    <div class="card pad board"><h4>5 · Level order traversal</h4><p>Print the vertices level by level — <code>q.size()</code> at the start of a level is exactly that level.</p><pre><span class="k">void</span> levelOrder(<span class="k">int</span> source) {   <span class="c">// changed: no Graph&amp; g — it was never used, n and adj are the globals</span>
     vector&lt;<span class="k">bool</span>&gt; visited(n, <span class="k">false</span>);
     queue&lt;<span class="k">int</span>&gt; q;
 
