@@ -2972,6 +2972,7 @@ stack&lt;<span class="k">int</span>&gt; finishOrder;
 }</pre></details><div class="out-lbl">output</div><pre class="out">SCC 1: 0 2 1
 SCC 2: 3
 SCC 3: 4</pre><p style="margin-top:12px">0 → 1 → 2 → 0 is a cycle, so {0, 1, 2} is one component; 3 and 4 are reachable from it but cannot get back, so each is a component on its own.</p></div>
+    <div class="card pad demo"><h4>Demo · Kosaraju step by step</h4><div class="ctl"><button class="pri" id="scplay">▶ Play</button><button id="scback">‹ Back</button><button id="scstep">Step ›</button><button id="screset">Reset</button></div><div class="readout" style="margin-top:0;margin-bottom:10px"><div class="stat"><div class="lab">phase</div><div class="val" id="scphase">—</div></div><div class="stat"><div class="lab">finish stack (top on the left)</div><div class="val" id="scstack">—</div></div><div class="stat good"><div class="lab">components found</div><div class="val" id="sccomps">—</div></div></div><svg id="scsvg" viewBox="0 0 660 250" style="width:100%;height:auto;display:block"></svg><div class="log" id="sclog" style="white-space:pre-line;min-height:2.8em"></div><p style="margin-top:10px;font-size:.83rem;color:var(--ink-3)">Nine vertices, four components: {3, 4, 5} → {0, 1, 2} → {6, 7} → {8}. Pass 1 is a DFS on the original graph: grey = on the recursion stack, dark = finished; a vertex goes on the stack when it finishes. Pass 2 flips every arrow and takes vertices from the top of the stack; each DFS stays inside one component, because the arrows that led out of it now point in.</p></div>
   </div>
 </section>
 
@@ -3233,6 +3234,107 @@ each('#gvmode button',function(b){ b.addEventListener('click',function(){
   each('#gvmode button',function(x){x.classList.remove('on');});
   b.classList.add('on'); mode=b.getAttribute('data-m'); stop(); reset(); }); });
 reset();
+})();
+/* ---------- Kosaraju demo ---------- */
+(function(){
+var N=window.NOTES, el=N.el, on=N.on;
+if(!document.getElementById('scsvg')) return;
+var P;
+/* positions: {3,4,5} left, {0,1,2} middle, {6,7} right, 8 far right */
+P=[[250,60],[370,60],[310,190],[60,60],[130,190],[150,60],[480,60],[600,60],[600,190]];
+var E=[[3,4],[4,5],[5,3],[5,0],[0,1],[1,2],[2,0],[1,6],[6,7],[7,6],[7,8]];
+var n=9, R=19, COL=['var(--prime)','var(--accent)','var(--mark)','#d08a1c'];
+var adj=[],rev=[];
+for(var i=0;i<n;i++){adj.push([]);rev.push([]);}
+E.forEach(function(e){adj[e[0]].push(e[1]);rev[e[1]].push(e[0]);});
+
+/* record every step, then the page replays them */
+var S=[];
+(function(){
+  var vis=[],onst=[],fin=[],stack=[],path=[];
+  for(var i=0;i<n;i++){vis[i]=onst[i]=fin[i]=false;}
+  function snap(o){ o.ph=1; o.vis=vis.slice(); o.onst=onst.slice(); o.fin=fin.slice(); o.stack=stack.slice(); S.push(o); }
+  function dfs(v){
+    vis[v]=onst[v]=true; snap({cur:v,msg:'DFS1 enters '+v+'.'});
+    adj[v].forEach(function(u){
+      if(!vis[u]){ snap({cur:v,edge:[v,u],msg:'Edge '+v+' → '+u+': '+u+' is new, go into it.'}); dfs(u); }
+      else snap({cur:v,edge:[v,u],msg:'Edge '+v+' → '+u+': '+u+' is already visited, skip.'});
+    });
+    onst[v]=false; fin[v]=true; stack.unshift(v);
+    snap({cur:v,msg:v+' is finished → push '+v+' on the stack.'});
+  }
+  for(var i=0;i<n;i++) if(!vis[i]){ snap({cur:-1,msg:'Pass 1: start a DFS from '+i+' (the first unvisited vertex).'}); dfs(i); }
+  snap({cur:-1,msg:'Pass 1 done. The vertex that finished last, '+stack[0]+', is on top.'});
+  var vis2=[],comp=[],k=-1,st=stack.slice();
+  for(var i=0;i<n;i++){vis2[i]=false;comp[i]=-1;}
+  function snap2(o){ o.ph=2; o.vis=vis2.slice(); o.comp=comp.slice(); o.stack=st.slice(); o.k=k; S.push(o); }
+  snap2({cur:-1,msg:'Pass 2: flip every arrow. Now take vertices from the top of the stack.'});
+  function dfs2(v){
+    vis2[v]=true; comp[v]=k; snap2({cur:v,msg:'DFS2 enters '+v+' → component '+(k+1)+'.'});
+    rev[v].forEach(function(u){
+      if(!vis2[u]){ snap2({cur:v,edge:[v,u],msg:'Reversed edge '+v+' → '+u+': '+u+' is new, it joins component '+(k+1)+'.'}); dfs2(u); }
+      else snap2({cur:v,edge:[v,u],msg:comp[u]===k ? 'Reversed edge '+v+' → '+u+': '+u+' is already in this component, skip.'
+        : 'Reversed edge '+v+' → '+u+': '+u+' belongs to component '+(comp[u]+1)+', which is finished — DFS2 cannot leak into it.'});
+    });
+  }
+  while(st.length){
+    var v=st.shift();
+    if(vis2[v]){ snap2({cur:v,msg:'Pop '+v+': already in component '+(comp[v]+1)+', skip.'}); continue; }
+    k++; snap2({cur:v,msg:'Pop '+v+': not visited → a new component starts here.'});
+    dfs2(v);
+    var mem=[]; for(var i=0;i<n;i++) if(comp[i]===k) mem.push(i);
+    snap2({cur:-1,msg:'Component '+(k+1)+' = {'+mem.join(', ')+'}.'});
+  }
+  snap2({cur:-1,msg:'Stack is empty: '+(k+1)+' strongly connected components.'});
+})();
+
+var at=0, timer=null;
+function arrow(a,b,curve){
+  var x1=P[a][0],y1=P[a][1],x2=P[b][0],y2=P[b][1],dx=x2-x1,dy=y2-y1,L=Math.sqrt(dx*dx+dy*dy),ux=dx/L,uy=dy/L;
+  var off=curve?16:0, nx=-uy*off, ny=ux*off;
+  var sx=x1+ux*R+nx*0.6, sy=y1+uy*R+ny*0.6, ex=x2-ux*(R+3)+nx*0.6, ey=y2-uy*(R+3)+ny*0.6;
+  var mx=(x1+x2)/2+nx, my=(y1+y2)/2+ny;
+  return 'M'+sx+','+sy+' Q'+mx+','+my+' '+ex+','+ey;
+}
+function has(a,b){ return E.some(function(e){return e[0]===a&&e[1]===b;}); }
+function draw(){
+  var s=S[at], h='<defs>';
+  ['n','h'].forEach(function(t){ h+='<marker id="sca'+t+'" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:'+(t==='h'?'var(--mark)':'var(--ink-3)')+'"/></marker>'; });
+  h+='</defs>';
+  E.forEach(function(e){
+    var a=e[0],b=e[1]; if(s.ph===2){ a=e[1]; b=e[0]; }
+    var hot=s.edge&&s.edge[0]===a&&s.edge[1]===b;
+    h+='<path d="'+arrow(a,b,has(e[1],e[0]))+'" style="fill:none;stroke:'+(hot?'var(--mark)':'var(--ink-3)')+'" stroke-width="'+(hot?2.6:1.4)+'" opacity="'+(hot?1:.7)+'" marker-end="url(#sca'+(hot?'h':'n')+')"/>';
+  });
+  for(var v=0;v<n;v++){
+    var fill='var(--surface-2)', stroke='var(--line)', tc='var(--ink)';
+    if(s.ph===1){
+      if(s.onst[v]){ fill='var(--accent-soft)'; stroke='var(--accent)'; tc='var(--accent-ink)'; }
+      else if(s.fin[v]){ fill='var(--ink-3)'; stroke='var(--ink-3)'; tc='var(--surface)'; }
+    } else if(s.comp[v]>=0){ fill=COL[s.comp[v]%COL.length]; stroke=fill; tc='#fff'; }
+    var cur=(s.cur===v);
+    h+='<circle cx="'+P[v][0]+'" cy="'+P[v][1]+'" r="'+R+'" style="fill:'+fill+';stroke:'+(cur?'var(--mark)':stroke)+'" stroke-width="'+(cur?3.5:1.5)+'"/>';
+    h+='<text x="'+P[v][0]+'" y="'+(P[v][1]+5)+'" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="15" style="fill:'+tc+'">'+v+'</text>';
+  }
+  el('scsvg').innerHTML=h;
+  el('scphase').textContent=s.ph===1?'1 · DFS, original graph':'2 · DFS, reversed graph';
+  el('scstack').textContent=s.stack.length?s.stack.join(' '):'empty';
+  var cs=[]; if(s.ph===2){ for(var c=0;c<=s.k;c++){ var m=[]; for(var v=0;v<n;v++) if(s.comp[v]===c) m.push(v); cs.push('{'+m.join(',')+'}'); } }
+  el('sccomps').textContent=cs.length?cs.join(' '):'—';
+  el('sclog').textContent='Step '+(at+1)+' / '+S.length+'\n'+s.msg;
+}
+function go(i){ at=Math.max(0,Math.min(S.length-1,i)); draw(); if(at===S.length-1) stop(); }
+function stop(){ if(timer){clearInterval(timer);timer=null;} el('scplay').textContent='▶ Play'; }
+on('scstep','click',function(){ stop(); go(at+1); });
+on('scback','click',function(){ stop(); go(at-1); });
+on('screset','click',function(){ stop(); go(0); });
+on('scplay','click',function(){
+  if(timer){ stop(); return; }
+  if(at===S.length-1) go(0);
+  el('scplay').textContent='❚❚ Pause';
+  timer=setInterval(function(){ go(at+1); },900);
+});
+go(0);
 })();
 
 </script>
