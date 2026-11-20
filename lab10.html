@@ -2985,6 +2985,7 @@ SCC 3: 4</pre><p style="margin-top:12px">0 → 1 → 2 → 0 is a cycle, so {0, 
     </div>
   </div>
   <div class="stack">
+    <div class="card pad demo"><h4>Demo · bridges and articulation points step by step</h4><div class="ctl"><button class="pri" id="brplay">▶ Play</button><button id="brback">‹ Back</button><button id="brstep">Step ›</button><button id="brreset">Reset</button></div><div class="readout" style="margin-top:0;margin-bottom:10px"><div class="stat"><div class="lab">timer</div><div class="val" id="brtimer">0</div></div><div class="stat bad"><div class="lab">bridges</div><div class="val" id="brbr">—</div></div><div class="stat bad"><div class="lab">articulation points</div><div class="val" id="brap">—</div></div></div><svg id="brsvg" viewBox="0 0 710 250" style="width:100%;height:auto;display:block"></svg><div class="log" id="brlog" style="white-space:pre-line;min-height:4.2em"></div><p style="margin-top:10px;font-size:.83rem;color:var(--ink-3)">Two triangles joined by the edge 1 — 3, and a tail 4 — 6 — 7. The numbers next to a vertex are <code>disc / low</code>. Solid grey = DFS tree edge, dashed = back edge, red = bridge; a red ring marks an articulation point. An edge inside a cycle is never a bridge: the back edge of that cycle gives its subtree another way up.</p></div>
     <div class="card pad board"><h4>Bridge (cut edge)</h4><p>An edge whose removal increases the number of connected components.</p><details class="code"><summary>Bridges — the full program<span class="lines">72 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">#include</span> &lt;vector&gt;
 <span class="k">using</span> <span class="k">namespace</span> std;
@@ -3058,6 +3059,89 @@ vector&lt;<span class="k">int</span>&gt; adj[MAXN];
     <span class="k">return</span> 0;
 }</pre></details><div class="out-lbl">output</div><pre class="out">Bridge: 3 - 4
 Bridge: 1 - 3</pre><p style="margin-top:12px">The triangle 0 — 1 — 2 has no bridges: removing any one of its edges leaves the other two. The edges 1 — 3 and 3 — 4 are both bridges.</p></div>
+    <div class="card pad board"><h4>Articulation point (cut vertex)</h4><p>A vertex whose removal (with its edges) increases the number of connected components. Same DFS, same <code>disc</code> and <code>low</code>; only the check changes:</p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><strong>not the root:</strong> v is a cut vertex if some child u has <code>low[u] &gt;= disc[v]</code> — u's subtree cannot climb above v without v (<code>&gt;=</code>, not <code>&gt;</code>: reaching v itself does not help once v is gone)</li><li><strong>the root:</strong> a cut vertex only if DFS left it two or more times (two or more children in the DFS tree)</li></ul><div style="margin-top:12px"></div><details class="code"><summary>Articulation points — the full program<span class="lines">83 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> MAXN = 100;
+vector&lt;<span class="k">int</span>&gt; adj[MAXN];
+<span class="k">bool</span> visited[MAXN];
+<span class="k">bool</span> isAP[MAXN];  <span class="c">// Articulation point (cut vertex)</span>
+<span class="k">int</span> disc[MAXN];   <span class="c">// Discovery time</span>
+<span class="k">int</span> low[MAXN];    <span class="c">// Lowest discovery time reachable</span>
+<span class="k">int</span> timer = 0;
+<span class="k">int</span> n;
+
+<span class="k">void</span> DFS_ap(<span class="k">int</span> v, <span class="k">int</span> parent) {
+    visited[v] = <span class="k">true</span>;
+    disc[v] = low[v] = timer++;
+    <span class="k">int</span> children = 0;  <span class="c">// Children of v in the DFS tree</span>
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; adj[v].size(); i++) {
+        <span class="k">int</span> u = adj[v][i];
+
+        <span class="k">if</span> (u == parent)
+            continue;
+
+        <span class="k">if</span> (visited[u]) {
+            low[v] = min(low[v], disc[u]);
+        } <span class="k">else</span> {
+            DFS_ap(u, v);
+            low[v] = min(low[v], low[u]);
+            children++;
+
+            <span class="c">// Not the root: nothing below u climbs above v,</span>
+            <span class="c">// so removing v cuts u's subtree off</span>
+            <span class="k">if</span> (parent != -1 &amp;&amp; low[u] &gt;= disc[v])
+                isAP[v] = <span class="k">true</span>;
+        }
+    }
+
+    <span class="c">// The root is a cut vertex only if DFS left it two or more times</span>
+    <span class="k">if</span> (parent == -1 &amp;&amp; children &gt;= 2)
+        isAP[v] = <span class="k">true</span>;
+}
+
+<span class="k">void</span> findArticulationPoints() {
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        visited[i] = <span class="k">false</span>;
+        isAP[i] = <span class="k">false</span>;
+    }
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) {
+        <span class="k">if</span> (!visited[i])
+            DFS_ap(i, -1);
+    }
+
+    cout &lt;&lt; <span class="s">"Articulation points:"</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        <span class="k">if</span> (isAP[i])
+            cout &lt;&lt; <span class="s">" "</span> &lt;&lt; i;
+    cout &lt;&lt; endl;
+}
+
+<span class="k">int</span> main() {
+    n = 5;
+
+    adj[0].push_back(1);
+    adj[1].push_back(0);
+
+    adj[1].push_back(2);
+    adj[2].push_back(1);
+
+    adj[2].push_back(0);
+    adj[0].push_back(2);
+
+    adj[1].push_back(3);
+    adj[3].push_back(1);
+
+    adj[3].push_back(4);
+    adj[4].push_back(3);
+
+    findArticulationPoints();
+
+    <span class="k">return</span> 0;
+}</pre></details><div class="out-lbl">output</div><pre class="out">Articulation points: 1 3</pre><p style="margin-top:12px">Same graph as above: removing 1 cuts {0, 2} off, removing 3 cuts 4 off. 0, 2 and 4 are not cut vertices.</p></div>
   </div>
 </section>
 
@@ -3333,6 +3417,109 @@ on('scplay','click',function(){
   if(at===S.length-1) go(0);
   el('scplay').textContent='❚❚ Pause';
   timer=setInterval(function(){ go(at+1); },900);
+});
+go(0);
+})();
+/* ---------- bridges and articulation points demo ---------- */
+(function(){
+var N=window.NOTES, el=N.el, on=N.on;
+if(!document.getElementById('brsvg')) return;
+var P=[[60,60],[175,130],[60,200],[300,130],[420,60],[420,200],[545,60],[650,60]];
+var E=[[0,1],[1,2],[2,0],[1,3],[3,4],[4,5],[5,3],[4,6],[6,7]];
+var n=8, R=19, adj=[];
+for(var i=0;i<n;i++) adj.push([]);
+E.forEach(function(e){ adj[e[0]].push(e[1]); adj[e[1]].push(e[0]); });
+function ek(a,b){ return a<b?a+'-'+b:b+'-'+a; }
+
+var S=[];
+(function(){
+  var vis=[],disc=[],low=[],onst=[],ap=[],tree={},back={},br={},t=0;
+  for(var i=0;i<n;i++){ vis[i]=onst[i]=ap[i]=false; disc[i]=low[i]=-1; }
+  function snap(o){ o.vis=vis.slice(); o.disc=disc.slice(); o.low=low.slice(); o.onst=onst.slice(); o.ap=ap.slice();
+    o.tree=Object.assign({},tree); o.back=Object.assign({},back); o.br=Object.assign({},br); o.t=t; S.push(o); }
+  function dfs(v,p){
+    vis[v]=onst[v]=true; disc[v]=low[v]=t++; var ch=0;
+    snap({cur:v,msg:'Enter '+v+': disc['+v+'] = low['+v+'] = '+disc[v]+'.'});
+    adj[v].forEach(function(u){
+      if(u===p){ snap({cur:v,edge:[v,u],msg:v+' — '+u+': that is the edge we came by (parent), skip.'}); return; }
+      if(vis[u]){
+        var was=low[v]; low[v]=Math.min(low[v],disc[u]);
+        if(disc[u]<disc[v]) back[ek(v,u)]=1;
+        snap({cur:v,edge:[v,u],msg:v+' — '+u+': '+u+' is already visited → back edge. low['+v+'] = min('+was+', disc['+u+'] = '+disc[u]+') = '+low[v]+'.'});
+        return;
+      }
+      tree[ek(v,u)]=1; ch++;
+      snap({cur:v,edge:[v,u],msg:v+' — '+u+': '+u+' is new → tree edge, go down.'});
+      dfs(u,v);
+      var was=low[v]; low[v]=Math.min(low[v],low[u]);
+      var m='Back in '+v+' from '+u+': low['+v+'] = min('+was+', low['+u+'] = '+low[u]+') = '+low[v]+'.';
+      if(low[u]>disc[v]){ br[ek(v,u)]=1; m+='\nlow['+u+'] = '+low[u]+' > disc['+v+'] = '+disc[v]+' → '+v+' — '+u+' is a BRIDGE.'; }
+      else m+='\nlow['+u+'] = '+low[u]+' ≤ disc['+v+'] = '+disc[v]+' → '+v+' — '+u+' is not a bridge (the subtree of '+u+' has another way up).';
+      if(p!==-1){
+        if(low[u]>=disc[v]){ ap[v]=true; m+='\nlow['+u+'] ≥ disc['+v+'] → '+v+' is an ARTICULATION POINT.'; }
+      }
+      snap({cur:v,edge:[v,u],msg:m});
+    });
+    onst[v]=false;
+    if(p===-1){
+      if(ch>=2) ap[v]=true;
+      snap({cur:v,msg:v+' is the root with '+ch+' child'+(ch===1?'':'ren')+' in the DFS tree → '+(ch>=2?'an articulation point.':'not an articulation point.')});
+    } else snap({cur:v,msg:'Leave '+v+' (low['+v+'] = '+low[v]+').'});
+  }
+  snap({cur:-1,msg:'Start DFS from 0. Each vertex gets disc (when it was found) and low (the smallest disc its subtree can reach with one back edge).'});
+  for(var i=0;i<n;i++) if(!vis[i]) dfs(i,-1);
+  var b=Object.keys(br).map(function(k){return k.replace('-',' — ');}), a=[]; for(var i=0;i<n;i++) if(ap[i]) a.push(i);
+  snap({cur:-1,msg:'Done. Bridges: '+b.join(', ')+'. Articulation points: '+a.join(', ')+'.'});
+})();
+
+var at=0, timer=null;
+function line(a,b){
+  var x1=P[a][0],y1=P[a][1],x2=P[b][0],y2=P[b][1],dx=x2-x1,dy=y2-y1,L=Math.sqrt(dx*dx+dy*dy),ux=dx/L,uy=dy/L;
+  return [x1+ux*R,y1+uy*R,x2-ux*R,y2-uy*R];
+}
+function draw(){
+  var s=S[at], h='';
+  E.forEach(function(e){
+    var k=ek(e[0],e[1]), c=line(e[0],e[1]);
+    var hot=s.edge&&ek(s.edge[0],s.edge[1])===k;
+    var col='var(--line)', w=1.6, dash='';
+    if(s.tree[k]){ col='var(--ink-3)'; w=2.4; }
+    if(s.back[k]){ col='var(--accent)'; w=2; dash='6 5'; }
+    if(s.br[k]){ col='var(--mark)'; w=4; }
+    if(hot){ w+=1.5; }
+    h+='<line x1="'+c[0]+'" y1="'+c[1]+'" x2="'+c[2]+'" y2="'+c[3]+'" style="stroke:'+(hot&&!s.br[k]?'var(--accent-ink)':col)+'" stroke-width="'+w+'"'+(dash?' stroke-dasharray="'+dash+'"':'')+' stroke-linecap="round"/>';
+  });
+  for(var v=0;v<n;v++){
+    var fill='var(--surface-2)', stroke='var(--line)', tc='var(--ink)';
+    if(s.onst[v]){ fill='var(--accent-soft)'; stroke='var(--accent)'; tc='var(--accent-ink)'; }
+    else if(s.vis[v]){ fill='var(--ink-3)'; stroke='var(--ink-3)'; tc='var(--surface)'; }
+    if(s.ap[v]){ h+='<circle cx="'+P[v][0]+'" cy="'+P[v][1]+'" r="'+(R+6)+'" style="fill:none;stroke:var(--mark)" stroke-width="3"/>'; }
+    var cur=(s.cur===v);
+    h+='<circle cx="'+P[v][0]+'" cy="'+P[v][1]+'" r="'+R+'" style="fill:'+fill+';stroke:'+(cur?'var(--accent-ink)':stroke)+'" stroke-width="'+(cur?3.5:1.5)+'"/>';
+    h+='<text x="'+P[v][0]+'" y="'+(P[v][1]+5)+'" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="15" style="fill:'+tc+'">'+v+'</text>';
+    if(s.disc[v]>=0){
+      var ly=P[v][1]<130?P[v][1]-30:P[v][1]+40;
+      h+='<text x="'+P[v][0]+'" y="'+ly+'" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="12.5" style="fill:var(--ink-3)">'+s.disc[v]+' / '+s.low[v]+'</text>';
+    }
+  }
+  el('brsvg').innerHTML=h;
+  el('brtimer').textContent=s.t;
+  var b=Object.keys(s.br).map(function(k){return k.replace('-','—');});
+  el('brbr').textContent=b.length?b.join('  '):'—';
+  var a=[]; for(var v=0;v<n;v++) if(s.ap[v]) a.push(v);
+  el('brap').textContent=a.length?a.join('  '):'—';
+  el('brlog').textContent='Step '+(at+1)+' / '+S.length+'\n'+s.msg;
+}
+function go(i){ at=Math.max(0,Math.min(S.length-1,i)); draw(); if(at===S.length-1) stop(); }
+function stop(){ if(timer){clearInterval(timer);timer=null;} el('brplay').textContent='▶ Play'; }
+on('brstep','click',function(){ stop(); go(at+1); });
+on('brback','click',function(){ stop(); go(at-1); });
+on('brreset','click',function(){ stop(); go(0); });
+on('brplay','click',function(){
+  if(timer){ stop(); return; }
+  if(at===S.length-1) go(0);
+  el('brplay').textContent='❚❚ Pause';
+  timer=setInterval(function(){ go(at+1); },1100);
 });
 go(0);
 })();
