@@ -332,7 +332,7 @@ vector&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt
     p[b] = a;                        <span class="c">// the lower tree goes under the taller one</span>
     <span class="k">if</span> (r[a] == r[b]) r[a]++;        <span class="c">// two equal heights: the result is one taller</span>
 }</pre><p style="margin-top:12px">Always hang the <strong>lower</strong> tree under the taller one. The height grows only when two trees of equal rank are merged, so a tree of rank k has at least 2<sup>k</sup> vertices and the height never exceeds log₂ n.</p></div>
-    <div class="card pad board"><h4>Complexity</h4><div class="tw"><table><thead><tr><th>Version</th><th>find_set / union_sets</th></tr></thead><tbody><tr><td class="k">naive</td><td>O(n) in the worst case</td></tr><tr><td class="k">path compression only</td><td>O(log n) amortised</td></tr><tr><td class="k">union by rank only</td><td>O(log n)</td></tr><tr><td class="k">both together</td><td>O(α(n)) amortised — α is the inverse Ackermann function, at most 4 for any real n</td></tr></tbody></table></div><p style="margin-top:12px">The lecture code (the <span class="mono">DSU</span> struct in Kruskal below) uses both: <span class="mono">parent[v] = find(parent[v])</span> is the compression, the <span class="mono">rank</span> array is union by rank.</p></div>
+    <div class="card pad board"><h4>Complexity</h4><div class="tw"><table><thead><tr><th>Version</th><th>find_set / union_sets</th></tr></thead><tbody><tr><td class="k">naive</td><td>O(n) in the worst case</td></tr><tr><td class="k">path compression only</td><td>O(log n) amortised</td></tr><tr><td class="k">union by rank only</td><td>O(log n)</td></tr><tr><td class="k">both together</td><td>O(α(n)) amortised — α is the inverse Ackermann function, at most 4 for any real n</td></tr></tbody></table></div><p style="margin-top:12px">Kruskal below uses these functions as they are, with both optimisations.</p></div>
   </div>
 </section>
 
@@ -356,24 +356,27 @@ Add  (3,4,4): merge {3} with {4}
 Add  (1,3,5): merge {1,2,5,6} with {3,4}
 MST edges: (1,2), (2,5), (2,6), (3,4), (1,3) with total cost 13</pre><p style="margin-top:12px">Five edges are taken, so the loop stops there: n − 1 = 5. Of the remaining edges only (1,5,3) was looked at, and it would have closed the cycle 1 – 2 – 5. These are the same five edges Prim found, taken in a different order.</p></div>
     <div class="card pad demo"><h4>Demo · Kruskal, edge by edge</h4><div class="ctl"><button class="pri" id="mkstep">Step</button><button id="mkplay">▶ Play</button><button id="mkreset">New graph</button></div><div class="readout" style="margin-top:0;margin-bottom:12px"><div class="stat good"><div class="lab">MST cost</div><div class="val" id="mkcost">0</div></div><div class="stat"><div class="lab">edges taken</div><div class="val" id="mktak">0 / 0</div></div><div class="stat bad"><div class="lab">rejected (cycles)</div><div class="val" id="mkrej">0</div></div></div><div class="steps"><table><thead><tr><th class="n">w</th><th>edge</th><th>find(u)</th><th>find(v)</th><th>verdict</th></tr></thead><tbody id="mksteps"></tbody></table></div><div class="log" id="mklog">Edges are sorted by weight. Step through and watch which ones DSU rejects.</div></div>
-    <div class="card pad board"><h4>1 · The DSU</h4><pre><span class="k">struct</span> DSU {
-    vector&lt;<span class="k">int</span>&gt; parent, rank;
-    DSU(<span class="k">int</span> n) : parent(n), rank(n, 0) {
-        iota(parent.begin(), parent.end(), 0);
-    }
-    <span class="k">int</span> find(<span class="k">int</span> v) {
-        <span class="k">if</span> (parent[v] == v) <span class="k">return</span> v;
-        <span class="k">return</span> parent[v] = find(parent[v]); <span class="c">// path compression</span>
-    }
-    <span class="k">bool</span> unite(<span class="k">int</span> a, <span class="k">int</span> b) {
-        a = find(a); b = find(b);
-        <span class="k">if</span> (a == b) <span class="k">return</span> <span class="k">false</span>;          <span class="c">// already in same set</span>
-        <span class="k">if</span> (rank[a] &lt; rank[b]) swap(a, b); <span class="c">// union by rank</span>
-        parent[b] = a;
-        <span class="k">if</span> (rank[a] == rank[b]) rank[a]++;
-        <span class="k">return</span> <span class="k">true</span>;
-    }
-};</pre><p style="margin-top:12px"><span class="mono">find</span> returns the root of the set and, on the way back, points every node straight at it (path compression). <span class="mono">unite</span> hangs the lower tree under the higher one (union by rank) and returns <span class="mono">false</span> when both ends are already in one set — that edge would close a cycle.</p></div>
+    <div class="card pad board"><h4>1 · The DSU</h4><pre><span class="k">const</span> <span class="k">int</span> N = 200005;
+<span class="k">int</span> p[N], r[N];
+
+<span class="k">void</span> make_set(<span class="k">int</span> v) {
+    p[v] = v;
+    r[v] = 0;
+}
+
+<span class="k">int</span> find_set(<span class="k">int</span> v) {
+    <span class="k">if</span> (v == p[v]) <span class="k">return</span> v;
+    <span class="k">return</span> p[v] = find_set(p[v]);    <span class="c">// path compression</span>
+}
+
+<span class="k">void</span> union_sets(<span class="k">int</span> a, <span class="k">int</span> b) {
+    a = find_set(a);
+    b = find_set(b);
+    <span class="k">if</span> (a == b) <span class="k">return</span>;
+    <span class="k">if</span> (r[a] &lt; r[b]) swap(a, b);     <span class="c">// union by rank</span>
+    p[b] = a;
+    <span class="k">if</span> (r[a] == r[b]) r[a]++;
+}</pre><p style="margin-top:12px">Exactly the functions from the DSU section: path compression in <span class="mono">find_set</span>, union by rank in <span class="mono">union_sets</span>.</p></div>
     <div class="card pad board"><h4>2 · The edge</h4><pre><span class="k">struct</span> Edge {
     <span class="k">int</span> u, v, w;
     <span class="k">bool</span> operator&lt;(<span class="k">const</span> Edge&amp; other) <span class="k">const</span> { <span class="k">return</span> w &lt; other.w; }
@@ -390,13 +393,14 @@ MST edges: (1,2), (2,5), (2,6), (3,4), (1,3) with total cost 13</pre><p style="m
     }
 
     sort(edges.begin(), edges.end());
-    DSU dsu(n);
+    <span class="k">for</span> (<span class="k">int</span> v = 0; v &lt; n; v++) make_set(v);
 
     <span class="k">int</span> mst_cost = 0;
     vector&lt;Edge&gt; mst;
 
     <span class="k">for</span> (<span class="k">auto</span> &amp;e : edges) {
-        <span class="k">if</span> (dsu.unite(e.u, e.v)) {
+        <span class="k">if</span> (find_set(e.u) != find_set(e.v)) {   <span class="c">// different sets: no cycle</span>
+            union_sets(e.u, e.v);
             mst.push_back(e);
             mst_cost += e.w;
         }
