@@ -16,7 +16,7 @@
   <div class="eyebrow">ADS 2026 · KBTU · Lecture 12 · Lab 11</div>
   <h1>Minimum Spanning <em>Trees</em></h1>
   <p class="dek">Connect every vertex of a weighted graph with the least total weight and no cycles. Prim grows one tree from a start vertex; Kruskal adds the lightest edges and uses a disjoint set union to skip cycles. Both rely on the cut and cycle properties and reach the same cost.</p>
-  <div class="facts"><span class="fact">Length <b>~105 min</b></span><span class="fact">Beats <b>7</b></span><span class="fact">Live demos <b>3</b></span><span class="fact">Practice <b>Lab 11 · 5 problems</b></span></div>
+  <div class="facts"><span class="fact">Length <b>~105 min</b></span><span class="fact">Beats <b>8</b></span><span class="fact">Live demos <b>3</b></span><span class="fact">Practice <b>Lab 11 · 5 problems</b></span></div>
 </header>
 
 <div class="cols">
@@ -32,15 +32,16 @@
   <ol>
     <li><a href="#b3"><span class="n">03</span><span>Prim</span><span class="t">30′</span></a></li>
   </ol>
-  <div class="part">III · Kruskal</div>
+  <div class="part">III · DSU and Kruskal</div>
   <ol>
-    <li><a href="#b4"><span class="n">04</span><span>Kruskal</span><span class="t">35′</span></a></li>
+    <li><a href="#b4"><span class="n">04</span><span>DSU (union-find)</span><span class="t">25′</span></a></li>
+    <li><a href="#b5"><span class="n">05</span><span>Kruskal</span><span class="t">35′</span></a></li>
   </ol>
   <div class="part">IV · Wrap-up</div>
   <ol>
-    <li><a href="#b5"><span class="n">05</span><span>Prim vs Kruskal</span><span class="t">5′</span></a></li>
-    <li><a href="#b6"><span class="n">06</span><span>Takeaways</span><span class="t">3′</span></a></li>
-    <li><a href="#b7"><span class="n">07</span><span>Lab 11</span><span class="t">12′</span></a></li>
+    <li><a href="#b6"><span class="n">06</span><span>Prim vs Kruskal</span><span class="t">5′</span></a></li>
+    <li><a href="#b7"><span class="n">07</span><span>Takeaways</span><span class="t">3′</span></a></li>
+    <li><a href="#b8"><span class="n">08</span><span>Lab 11</span><span class="t">12′</span></a></li>
   </ol>
 </nav>
 
@@ -282,14 +283,70 @@ vector&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt
   <div class="beat-head">
     <div class="beat-n">04</div>
     <div>
+      <h2>Disjoint Set Union (DSU)</h2>
+      <div class="sub"><span>25 min</span> <span>board</span> <span>demo: DSU</span> <span>code</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>The problem</h4><p>We keep several <strong>disjoint sets</strong> of elements and need three operations:</p><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li><code>make_set(v)</code> — create a new set {v};</li><li><code>union_sets(a, b)</code> — merge the set containing a with the set containing b;</li><li><code>find_set(v)</code> — return the <strong>representative</strong> (the “name”) of the set containing v.</li></ul><p style="margin-top:12px">Two elements are in the same set exactly when <code>find_set(a) == find_set(b)</code>. Kruskal asks this question for every edge: are u and v already connected? If yes, the edge would close a cycle.</p></div>
+    <div class="card pad board"><h4>How the sets are stored</h4><p>Each set is a <strong>tree</strong>. Every vertex stores only its parent, <code>p[v]</code>; the root has <code>p[root] = root</code> and is the representative of the set.</p><pre class="out">sets {1, 2, 3, 4} and {5, 6}
+
+     1          5         v    : 1 2 3 4 5 6
+    / \         |         p[v] : 1 1 1 3 5 5
+   2   3        6
+       |
+       4</pre><p style="margin-top:12px"><code>find_set(4)</code> climbs 4 → 3 → 1 and stops at the root 1. <code>union_sets(4, 6)</code> finds the two roots, 1 and 5, and hangs one under the other: <code>p[5] = 1</code>. That is the whole data structure — one array.</p></div>
+    <div class="card pad demo"><h4>Demo · DSU step by step</h4><div class="ctl"><div class="seg" id="dsmode"><button data-m="0">naive</button><button data-m="1">path compression</button><button data-m="2" class="on">compression + rank</button></div></div><div class="ctl"><div class="seg" id="dsscen"><button data-s="0" class="on">Scenario 1 · groups</button><button data-s="1">Scenario 2 · a long chain</button></div><button class="pri" id="dsplay">▶ Play</button><button id="dsback">‹ Back</button><button id="dsstep">Step ›</button><button id="dsreset">Reset</button></div><div class="readout" style="margin-top:0;margin-bottom:10px"><div class="stat"><div class="lab">operation</div><div class="val" id="dsop" style="font-size:1rem">—</div></div><div class="stat"><div class="lab">sets</div><div class="val" id="dssets" style="font-size:1rem">—</div></div><div class="stat good"><div class="lab">tallest tree (edges)</div><div class="val" id="dsdepth">0</div></div></div><div id="dsarr" style="overflow-x:auto;margin-bottom:8px"></div><svg id="dssvg" viewBox="0 0 640 200" style="width:100%;height:auto;display:block"></svg><div class="log" id="dslog" style="white-space:pre-line;min-height:4.2em"></div><p style="margin-top:10px;font-size:.83rem;color:var(--ink-3)">Every set is a tree; an arrow goes from a vertex to its parent <code>p[v]</code>, and the root (ringed) points to itself — it is the name of the set. Blue = the path <code>find</code> walks up; green = a pointer that was just changed. Run scenario 2 in <em>naive</em> mode and then with the optimisations: the same operations build a chain of 7 edges in one case and a tree of height 1 in the other.</p></div>
+    <div class="card pad board"><h4>1 · The naive version</h4><pre><span class="k">int</span> p[N];
+
+<span class="k">void</span> make_set(<span class="k">int</span> v) {
+    p[v] = v;                    <span class="c">// a new set {v}; v is its own root</span>
+}
+
+<span class="k">int</span> find_set(<span class="k">int</span> v) {
+    <span class="k">if</span> (v == p[v]) <span class="k">return</span> v;     <span class="c">// v is the root</span>
+    <span class="k">return</span> find_set(p[v]);       <span class="c">// otherwise climb to the parent</span>
+}
+
+<span class="k">void</span> union_sets(<span class="k">int</span> a, <span class="k">int</span> b) {
+    a = find_set(a);
+    b = find_set(b);
+    <span class="k">if</span> (a != b) p[b] = a;        <span class="c">// hang the root of b under the root of a</span>
+}</pre><p style="margin-top:12px">It is correct, but the trees can turn into long chains: scenario 2 in naive mode builds 1 → 2 → … → 8, and every <code>find_set(8)</code> then walks 7 steps. In the worst case one operation is O(n).</p></div>
+    <div class="card pad board"><h4>2 · Path compression</h4><pre><span class="k">int</span> find_set(<span class="k">int</span> v) {
+    <span class="k">if</span> (v == p[v]) <span class="k">return</span> v;
+    <span class="k">return</span> p[v] = find_set(p[v]);   <span class="c">// remember the root on the way back</span>
+}</pre><p style="margin-top:12px">After the call every vertex on the path points <strong>directly to the root</strong>. The path was walked once anyway; now the next <code>find_set</code> from any of those vertices takes one step.</p></div>
+    <div class="card pad board"><h4>3 · Union by rank</h4><pre><span class="k">int</span> p[N], r[N];                  <span class="c">// r[v] — rank: an upper bound on the height of v's tree</span>
+
+<span class="k">void</span> make_set(<span class="k">int</span> v) {
+    p[v] = v;
+    r[v] = 0;
+}
+
+<span class="k">void</span> union_sets(<span class="k">int</span> a, <span class="k">int</span> b) {
+    a = find_set(a);
+    b = find_set(b);
+    <span class="k">if</span> (a == b) <span class="k">return</span>;              <span class="c">// already in one set</span>
+    <span class="k">if</span> (r[a] &lt; r[b]) swap(a, b);     <span class="c">// a is now the taller tree</span>
+    p[b] = a;                        <span class="c">// the lower tree goes under the taller one</span>
+    <span class="k">if</span> (r[a] == r[b]) r[a]++;        <span class="c">// two equal heights: the result is one taller</span>
+}</pre><p style="margin-top:12px">Always hang the <strong>lower</strong> tree under the taller one. The height grows only when two trees of equal rank are merged, so a tree of rank k has at least 2<sup>k</sup> vertices and the height never exceeds log₂ n.</p></div>
+    <div class="card pad board"><h4>Complexity</h4><div class="tw"><table><thead><tr><th>Version</th><th>find_set / union_sets</th></tr></thead><tbody><tr><td class="k">naive</td><td>O(n) in the worst case</td></tr><tr><td class="k">path compression only</td><td>O(log n) amortised</td></tr><tr><td class="k">union by rank only</td><td>O(log n)</td></tr><tr><td class="k">both together</td><td>O(α(n)) amortised — α is the inverse Ackermann function, at most 4 for any real n</td></tr></tbody></table></div><p style="margin-top:12px">The lecture code (the <span class="mono">DSU</span> struct in Kruskal below) uses both: <span class="mono">parent[v] = find(parent[v])</span> is the compression, the <span class="mono">rank</span> array is union by rank.</p></div>
+  </div>
+</section>
+
+<section class="beat" id="b5">
+  <div class="beat-head">
+    <div class="beat-n">05</div>
+    <div>
       <h2>Kruskal's Algorithm</h2>
-      <div class="sub"><span>35 min</span> <span>code</span> <span>demo: union-find</span> <span>demo: Kruskal</span></div>
+      <div class="sub"><span>35 min</span> <span>code</span> <span>demo: Kruskal</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="card pad board"><h4>Idea and steps</h4><p>Sort edges by weight and add them one by one, skipping edges that would create a cycle. A <strong>Disjoint Set Union (DSU)</strong>, also called Union-Find, quickly detects cycles.</p><ol style="margin:12px 0 0;padding-left:1.3em;line-height:1.75"><li>Sort all edges in non-decreasing order of weight.</li><li>Initialise the DSU so each vertex is its own set.</li><li>For each edge (u, v, w) in order: if <code>find(u) != find(v)</code>, add the edge to the MST and union the sets.</li><li>Stop when |V| − 1 edges are chosen.</li></ol><p style="margin-top:12px">Why this is correct: an edge that joins two different sets is the lightest edge leaving its set (cut property); an edge inside one set closes a cycle in which it is the heaviest, since all the others were taken earlier (cycle property).</p></div>
     <div class="card pad board"><h4>Complexity</h4><div class="tw"><table><thead><tr><th>Part</th><th class="n">Cost</th></tr></thead><tbody><tr><td class="k">Sorting edges</td><td class="n">O(E log E)</td></tr><tr><td class="k">DSU operations</td><td class="n">almost O(1) each (inverse Ackermann)</td></tr><tr><td class="k">Total</td><td class="n">O(E log E)</td></tr></tbody></table></div></div>
-    <div class="card pad demo"><h4>Demo · union-find, with and without compression</h4><div class="ctl"><label class="f" style="flex:1 1 80px"><span>a</span><input type="number" id="dsa" value="1" min="1" max="10"></label><label class="f" style="flex:1 1 80px"><span>b</span><input type="number" id="dsb" value="2" min="1" max="10"></label><button class="pri" id="dsu">union</button><div class="seg" id="dsopt"><button data-o="on" class="on">optimised</button><button data-o="off">naive</button></div><button id="dsr">Reset</button></div><div id="dstree" style="margin-top:6px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.6;color:var(--ink-2)"></div><div class="readout"><div class="stat"><div class="lab">components</div><div class="val" id="dsc">10</div></div><div class="stat"><div class="lab">deepest chain</div><div class="val" id="dsd">1</div></div><div class="stat good"><div class="lab">steps in last find</div><div class="val" id="dss">—</div></div></div><div class="log" id="dslog">Ten singleton sets. Union a few pairs, then switch to naive and compare the depth.</div></div>
     <div class="card pad board"><h4>Walkthrough on the example</h4><p>Edges sorted: <span class="mono">(1,2,1)</span>, <span class="mono">(2,5,1)</span>, <span class="mono">(2,6,2)</span>, <span class="mono">(1,5,3)</span>, <span class="mono">(3,4,4)</span>, <span class="mono">(1,3,5)</span>, <span class="mono">(5,6,6)</span>, <span class="mono">(1,4,8)</span>, <span class="mono">(2,4,9)</span></p><div style="margin-top:12px"></div><pre class="out">Start: sets {1}, {2}, {3}, {4}, {5}, {6}
 Add  (1,2,1): merge {1} with {2}
 Add  (2,5,1): merge {1,2} with {5}
@@ -454,9 +511,9 @@ vector&lt;pair&lt;<span class="k">int</span>, pair&lt;<span class="k">int</span>
   </div>
 </section>
 
-<section class="beat" id="b5">
+<section class="beat" id="b6">
   <div class="beat-head">
-    <div class="beat-n">05</div>
+    <div class="beat-n">06</div>
     <div>
       <h2>Prim vs Kruskal</h2>
       <div class="sub"><span>5 min</span> <span>board</span></div>
@@ -467,9 +524,9 @@ vector&lt;pair&lt;<span class="k">int</span>, pair&lt;<span class="k">int</span>
   </div>
 </section>
 
-<section class="beat" id="b6">
+<section class="beat" id="b7">
   <div class="beat-head">
-    <div class="beat-n">06</div>
+    <div class="beat-n">07</div>
     <div>
       <h2>Takeaways</h2>
       <div class="sub"><span>3 min</span></div>
@@ -480,9 +537,9 @@ vector&lt;pair&lt;<span class="k">int</span>, pair&lt;<span class="k">int</span>
   </div>
 </section>
 
-<section class="beat" id="b7">
+<section class="beat" id="b8">
   <div class="beat-head">
-    <div class="beat-n">07</div>
+    <div class="beat-n">08</div>
     <div>
       <h2>Lab 11 — the problems</h2>
       <div class="sub"><span>12 min</span> <span>ADS-Lab-11</span></div>
@@ -514,51 +571,119 @@ vector&lt;pair&lt;<span class="k">int</span>, pair&lt;<span class="k">int</span>
 (function(){
 var N=window.NOTES, el=N.el, on=N.on, each=N.each;
 
-/* ---------- 02 DSU ---------- */
-var n=10, par=[], sz=[], opt=true, lastSteps='—';
-function dsReset(){ par=[];sz=[]; for(var i=0;i<=n;i++){par[i]=i;sz[i]=1;} lastSteps='—'; dsPaint();
-  el('dslog').textContent='Ten singleton sets. Union a few pairs, then switch to naive and compare the depth.'; }
-function find(v,compress){
-  var steps=0;
-  if(compress){
-    var root=v; while(par[root]!==root){ root=par[root]; steps++; }
-    while(par[v]!==v){ var nx=par[v]; par[v]=root; v=nx; }
-    return {r:root,s:steps};
+/* ---------- DSU step by step ---------- */
+(function(){
+if(!document.getElementById('dssvg')) return;
+var n=8, mode=2, scen=0, S=[], at=0, timer=null;
+var SCEN=[
+  [['u',1,2],['u',3,4],['u',1,3],['u',5,6],['u',7,8],['u',5,7],['u',1,5],['f',8],['f',4],['u',2,8]],
+  [['u',7,8],['u',6,7],['u',5,6],['u',4,5],['u',3,4],['u',2,3],['u',1,2],['f',8],['f',8]]
+];
+function build(){
+  var p=[],r=[]; for(var v=0;v<=n;v++){ p[v]=v; r[v]=0; }
+  S=[];
+  function snap(o){ o.p=p.slice(); o.r=r.slice(); S.push(o); }
+  snap({op:'make_set(1..8)',msg:'make_set for every vertex: eight sets {1} … {8}, every p[v] = v.\nPress Step.'});
+  function find(v){
+    var path=[v]; while(p[path[path.length-1]]!==path[path.length-1]) path.push(p[path[path.length-1]]);
+    var root=path[path.length-1], ch=[];
+    if(mode>=1) path.forEach(function(x){ if(x!==root && p[x]!==root){ p[x]=root; ch.push(x); } });
+    return {root:root,path:path,ch:ch};
   }
-  while(par[v]!==v){ v=par[v]; steps++; }
-  return {r:v,s:steps};
+  function pathText(f){ return f.path.join(' → ')+(f.path.length>1?' ('+(f.path.length-1)+' step'+(f.path.length===2?'':'s')+')':' (already a root)'); }
+  function compText(f){ return f.ch.length?' Path compression: '+f.ch.map(function(x){return 'p['+x+'] = '+f.root;}).join(', ')+'.':''; }
+  SCEN[scen].forEach(function(o){
+    if(o[0]==='f'){
+      var before=p.slice(), f=find(o[1]);
+      S.push({p:before,r:r.slice(),op:'find_set('+o[1]+')',path:f.path,msg:'find_set('+o[1]+'): climb by parents '+pathText(f)+'. The root is '+f.root+'.'});
+      if(f.ch.length) snap({op:'find_set('+o[1]+')',ch:f.ch,msg:'On the way back every vertex of the path is pointed straight at the root.'+compText(f)+'\nThe next find_set('+o[1]+') takes one step.'});
+      else if(mode===0) S[S.length-1].msg+='\nNaive find does not change anything — the next call walks the same path again.';
+      return;
+    }
+    var a=o[1], b=o[2], before=p.slice(), fa=find(a), fb=find(b);
+    var head='union_sets('+a+', '+b+')', m='find_set('+a+'): '+pathText(fa)+'.  find_set('+b+'): '+pathText(fb)+'.'+compText(fa)+compText(fb);
+    if(fa.path.length>1||fb.path.length>1) S.push({p:before,r:r.slice(),op:head,path:fa.path.concat(fb.path),msg:m});
+    if(fa.ch.length||fb.ch.length){ snap({op:head,ch:fa.ch.concat(fb.ch),path:[fa.root,fb.root],msg:'Path compression during the two finds: the visited vertices now point at their roots.'}); }
+    var x=fa.root, y=fb.root;
+    if(x===y){ snap({op:head,path:[x],msg:'Both roots are '+x+' — '+a+' and '+b+' are already in one set. Nothing to do (in Kruskal this edge would close a cycle and is skipped).'}); return; }
+    var why;
+    if(mode===2){
+      if(r[x]<r[y]){ why='rank['+x+'] = '+r[x]+' < rank['+y+'] = '+r[y]+', so swap: the lower tree '+x+' goes under '+y+'.'; var t=x; x=y; y=t; }
+      else if(r[x]>r[y]) why='rank['+x+'] = '+r[x]+' > rank['+y+'] = '+r[y]+': the lower tree '+y+' goes under '+x+'.';
+      else why='equal ranks ('+r[x]+'): hang '+y+' under '+x+' and rank['+x+'] becomes '+(r[x]+1)+'.';
+    } else why='naive rule: p[root of b] = root of a, whatever the heights.';
+    p[y]=x; if(mode===2 && r[x]===r[y]) r[x]++;
+    snap({op:head,ch:[y],path:[x],msg:(fa.path.length>1||fb.path.length>1?'Roots '+fa.root+' and '+fb.root+' differ':'find_set('+a+') = '+a+', find_set('+b+') = '+b+' — both are roots, and they differ')+' → merge. '+why+'\np['+y+'] = '+x+'.'});
+  });
+  var last=S[S.length-1];
+  S.push({p:last.p,r:last.r,op:'done',msg:'Done. Compare the tallest tree with the other modes — same operations, different shapes.'});
 }
-function depth(v){ var d=0; while(par[v]!==v){ v=par[v]; d++; } return d; }
-function dsPaint(){
-  var kids={}; for(var i=1;i<=n;i++) if(par[i]!==i){ (kids[par[i]]=kids[par[i]]||[]).push(i); }
-  var out=[];
-  for(var r=1;r<=n;r++) if(par[r]===r){
-    (function rec(v,pad){
-      out.push(pad+(pad?'└─ ':'')+v+(par[v]===v?' (root)':''));
-      (kids[v]||[]).forEach(function(c){ rec(c,pad+'   '); });
-    })(r,'');
+function roots(p){ var a=[]; for(var v=1;v<=n;v++) if(p[v]===v) a.push(v); return a; }
+function depthOf(p,v){ var d=0; while(p[v]!==v){ v=p[v]; d++; } return d; }
+function draw(){
+  var s=S[at], p=s.p, kids={}, i;
+  for(var v=1;v<=n;v++) if(p[v]!==v) (kids[p[v]]=kids[p[v]]||[]).push(v);
+  /* tidy layout: leaves get consecutive columns, a parent sits above the middle of its children */
+  var X={}, Y={}, col=0, maxd=0;
+  function lay(v,d){ Y[v]=d; if(d>maxd) maxd=d; var c=kids[v]||[];
+    if(!c.length){ X[v]=col++; return; }
+    c.forEach(function(u){ lay(u,d+1); }); X[v]=(X[c[0]]+X[c[c.length-1]])/2; }
+  roots(p).forEach(function(r){ lay(r,0); col+=0.6; });
+  var W=640, step=Math.min(80,(W-60)/Math.max(1,col-0.6)), x0=(W-(col-0.6-1)*step)/2, H=70+maxd*58, R=17;
+  function px(v){ return x0+X[v]*step; } function py(v){ return 34+Y[v]*58; }
+  var on={}; (s.path||[]).forEach(function(v){ on[v]=1; });
+  var chg={}; (s.ch||[]).forEach(function(v){ chg[v]=1; });
+  var h='<defs><marker id="dsar" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ink-3)"/></marker>'
+    +'<marker id="dsarg" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--prime)"/></marker>'
+    +'<marker id="dsarb" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs>';
+  for(var v=1;v<=n;v++) if(p[v]!==v){
+    var x1=px(v),y1=py(v),x2=px(p[v]),y2=py(p[v]),dx=x2-x1,dy=y2-y1,L=Math.sqrt(dx*dx+dy*dy);
+    var c=chg[v]?'var(--prime)':(on[v]&&on[p[v]]?'var(--accent)':'var(--ink-3)'), mk=chg[v]?'dsarg':(on[v]&&on[p[v]]?'dsarb':'dsar');
+    h+='<line x1="'+(x1+dx/L*R)+'" y1="'+(y1+dy/L*R)+'" x2="'+(x2-dx/L*(R+3))+'" y2="'+(y2-dy/L*(R+3))+'" style="stroke:'+c+'" stroke-width="'+(chg[v]||on[v]?3:1.8)+'" marker-end="url(#'+mk+')"/>';
   }
-  el('dstree').innerHTML=out.map(function(s){return s.replace(/ /g,'&nbsp;');}).join('<br>');
-  var comps=0,mx=0;
-  for(var i=1;i<=n;i++){ if(par[i]===i) comps++; var d=depth(i); if(d>mx) mx=d; }
-  el('dsc').textContent=comps; el('dsd').textContent=mx+1; el('dss').textContent=lastSteps;
+  for(var v=1;v<=n;v++){
+    var isR=p[v]===v, f=on[v]?'var(--accent-soft)':'var(--surface-2)', st=on[v]?'var(--accent)':'var(--ink-3)';
+    if(isR) h+='<circle cx="'+px(v)+'" cy="'+py(v)+'" r="'+(R+4)+'" style="fill:none;stroke:'+st+'" stroke-width="1.5"/>';
+    h+='<circle cx="'+px(v)+'" cy="'+py(v)+'" r="'+R+'" style="fill:'+f+';stroke:'+st+'" stroke-width="2"/>';
+    h+='<text x="'+px(v)+'" y="'+(py(v)+5)+'" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="14" style="fill:var(--ink)">'+v+'</text>';
+    if(mode===2 && isR) h+='<text x="'+(px(v)+R+8)+'" y="'+(py(v)-12)+'" font-family="IBM Plex Mono,monospace" font-size="11" style="fill:var(--ink-3)">r='+s.r[v]+'</text>';
+  }
+  var svg=document.getElementById('dssvg'); svg.setAttribute('viewBox','0 0 640 '+H); svg.innerHTML=h;
+  /* the arrays */
+  var prev=at>0?S[at-1]:s, t='<table style="border-collapse:collapse;font-family:\'IBM Plex Mono\',monospace;font-size:.85rem"><tr><td style="padding:3px 10px;color:var(--ink-3)">v</td>';
+  for(i=1;i<=n;i++) t+='<td style="padding:3px 10px;text-align:center;color:var(--ink-3)">'+i+'</td>';
+  t+='</tr><tr><td style="padding:3px 10px;color:var(--ink-3)">p[v]</td>';
+  for(i=1;i<=n;i++){ var cg=p[i]!==prev.p[i]; t+='<td style="padding:3px 10px;text-align:center;border:1px solid var(--line);'+(cg?'background:var(--prime-soft);color:var(--prime);font-weight:600':'')+'">'+p[i]+'</td>'; }
+  t+='</tr>';
+  if(mode===2){ t+='<tr><td style="padding:3px 10px;color:var(--ink-3)">rank</td>';
+    for(i=1;i<=n;i++){ var cr=s.r[i]!==prev.r[i]; t+='<td style="padding:3px 10px;text-align:center;border:1px solid var(--line);'+(cr?'background:var(--prime-soft);color:var(--prime);font-weight:600':'')+'">'+s.r[i]+'</td>'; }
+    t+='</tr>'; }
+  document.getElementById('dsarr').innerHTML=t+'</table>';
+  var sets=roots(p).map(function(r){ var m=[]; for(var v=1;v<=n;v++){ var x=v; while(p[x]!==x) x=p[x]; if(x===r) m.push(v); } return '{'+m.join(',')+'}'; });
+  var md=0; for(var v=1;v<=n;v++) md=Math.max(md,depthOf(p,v));
+  document.getElementById('dsop').textContent=s.op;
+  document.getElementById('dssets').textContent=sets.join(' ');
+  document.getElementById('dsdepth').textContent=md;
+  document.getElementById('dslog').textContent='Step '+(at+1)+' / '+S.length+'\n'+s.msg;
 }
-on('dsu','click',function(){
-  var a=Math.max(1,Math.min(n,parseInt(el('dsa').value)||1));
-  var b=Math.max(1,Math.min(n,parseInt(el('dsb').value)||2));
-  var fa=find(a,opt), fb=find(b,opt);
-  lastSteps=fa.s+fb.s;
-  if(fa.r===fb.r){ el('dslog').textContent='find('+a+') = find('+b+') = '+fa.r+' — already in one set, union does nothing. In Kruskal this edge would be rejected.'; dsPaint(); return; }
-  if(opt && sz[fa.r]<sz[fb.r]){ var t=fa; fa=fb; fb=t; }
-  par[fb.r]=fa.r; sz[fa.r]+=sz[fb.r];
-  el('dslog').textContent='united '+a+' and '+b+' — '+fb.r+' now hangs under '+fa.r+(opt?' (smaller under larger, then compressed)':' (naive: no balancing, no compression)');
-  dsPaint();
+function go(i){ at=Math.max(0,Math.min(S.length-1,i)); draw(); if(at===S.length-1) stop(); }
+function stop(){ if(timer){clearInterval(timer);timer=null;} el('dsplay').textContent='▶ Play'; }
+function restart(){ stop(); build(); go(0); }
+on('dsstep','click',function(){ stop(); go(at+1); });
+on('dsback','click',function(){ stop(); go(at-1); });
+on('dsreset','click',function(){ stop(); go(0); });
+on('dsplay','click',function(){
+  if(timer){ stop(); return; }
+  if(at===S.length-1) go(0);
+  el('dsplay').textContent='❚❚ Pause';
+  timer=setInterval(function(){ go(at+1); },1300);
 });
-on('dsr','click',dsReset);
-each('#dsopt button',function(b){ b.addEventListener('click',function(){
-  each('#dsopt button',function(x){x.classList.remove('on');});
-  b.classList.add('on'); opt=b.getAttribute('data-o')==='on'; dsReset(); }); });
-dsReset();
+each('#dsmode button',function(b){ b.addEventListener('click',function(){
+  each('#dsmode button',function(x){x.classList.remove('on');}); b.classList.add('on'); mode=+b.getAttribute('data-m'); restart(); }); });
+each('#dsscen button',function(b){ b.addEventListener('click',function(){
+  each('#dsscen button',function(x){x.classList.remove('on');}); b.classList.add('on'); scen=+b.getAttribute('data-s'); restart(); }); });
+restart();
+})();
 
 /* ---------- 03 kruskal ---------- */
 var E=[],K={p:[],i:0,cost:0,taken:0,rej:0},V=8,ktimer=null;
