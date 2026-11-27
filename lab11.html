@@ -15,8 +15,8 @@
 <header class="masthead">
   <div class="eyebrow">ADS 2026 · KBTU · Lecture 12 · Lab 11</div>
   <h1>Minimum Spanning <em>Trees</em></h1>
-  <p class="dek">Connect every vertex of a weighted graph with the least total weight and no cycles. Kruskal adds the lightest edges and uses a disjoint set union to skip cycles; Prim grows one tree from a start vertex. Both reach the same cost.</p>
-  <div class="facts"><span class="fact">Length <b>~105 min</b></span><span class="fact">Beats <b>7</b></span><span class="fact">Live demos <b>2</b></span><span class="fact">Practice <b>Lab 11 · 5 problems</b></span></div>
+  <p class="dek">Connect every vertex of a weighted graph with the least total weight and no cycles. Prim grows one tree from a start vertex; Kruskal adds the lightest edges and uses a disjoint set union to skip cycles. Both rely on the cut and cycle properties and reach the same cost.</p>
+  <div class="facts"><span class="fact">Length <b>~105 min</b></span><span class="fact">Beats <b>7</b></span><span class="fact">Live demos <b>3</b></span><span class="fact">Practice <b>Lab 11 · 5 problems</b></span></div>
 </header>
 
 <div class="cols">
@@ -26,19 +26,19 @@
   <div class="part">I · The problem</div>
   <ol>
     <li><a href="#b1"><span class="n">01</span><span>What an MST is</span><span class="t">12′</span></a></li>
-    <li><a href="#b2"><span class="n">02</span><span>Key properties</span><span class="t">8′</span></a></li>
+    <li><a href="#b2"><span class="n">02</span><span>Key properties</span><span class="t">15′</span></a></li>
   </ol>
-  <div class="part">II · Kruskal</div>
+  <div class="part">II · Prim</div>
   <ol>
-    <li><a href="#b3"><span class="n">03</span><span>Kruskal</span><span class="t">35′</span></a></li>
+    <li><a href="#b3"><span class="n">03</span><span>Prim</span><span class="t">30′</span></a></li>
   </ol>
-  <div class="part">III · Prim</div>
+  <div class="part">III · Kruskal</div>
   <ol>
-    <li><a href="#b4"><span class="n">04</span><span>Prim</span><span class="t">30′</span></a></li>
+    <li><a href="#b4"><span class="n">04</span><span>Kruskal</span><span class="t">35′</span></a></li>
   </ol>
   <div class="part">IV · Wrap-up</div>
   <ol>
-    <li><a href="#b5"><span class="n">05</span><span>Kruskal vs Prim</span><span class="t">5′</span></a></li>
+    <li><a href="#b5"><span class="n">05</span><span>Prim vs Kruskal</span><span class="t">5′</span></a></li>
     <li><a href="#b6"><span class="n">06</span><span>Takeaways</span><span class="t">3′</span></a></li>
     <li><a href="#b7"><span class="n">07</span><span>Lab 11</span><span class="t">12′</span></a></li>
   </ol>
@@ -73,11 +73,15 @@
     <div class="beat-n">02</div>
     <div>
       <h2>Key Properties of MSTs</h2>
-      <div class="sub"><span>8 min</span> <span>board</span></div>
+      <div class="sub"><span>15 min</span> <span>board</span> <span>demo: cut and cycle</span></div>
     </div>
   </div>
   <div class="stack">
     <div class="card pad board"><h4>Four properties</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>An MST has exactly |V| − 1 edges and no cycles.</li><li>Adding any edge to the MST creates a cycle; removing any MST edge disconnects the graph.</li><li><strong>Cut property:</strong> for any cut (partition of the vertices), the lightest edge crossing the cut belongs to at least one MST.</li><li><strong>Cycle property:</strong> in any cycle, the heaviest edge cannot be in an MST.</li></ul></div>
+    <div class="card pad board"><h4>What a cut is</h4><p>A <strong>cut</strong> splits the vertices into two non-empty groups S and V − S. An edge <strong>crosses</strong> the cut if one end is in S and the other is not. Every spanning tree must connect the two groups, so it contains at least one crossing edge — the cut property says which one is always safe to take: the lightest.</p><p style="margin-top:10px">On the example: the cut {1} | {2, 3, 4, 5, 6} is crossed by (1,2,1), (1,3,5), (1,4,8), (1,5,3). The lightest, (1,2,1), is in the MST. The cycle 1 – 3 – 4 – 1 has weights 5, 4, 8; the heaviest, (1,4,8), is not in the MST.</p></div>
+    <div class="card pad demo"><h4>Demo · cut property and cycle property</h4><div class="ctl"><div class="seg" id="ccmode"><button data-m="cut" class="on">Cut</button><button data-m="cyc">Cycle</button></div><button id="ccprev">‹ Prev</button><button class="pri" id="ccnext">Next ›</button><button id="ccrand">Random cut</button><button id="ccmst">Show MST</button></div><div class="readout" style="margin-top:0;margin-bottom:10px"><div class="stat"><div class="lab" id="cclab1">crossing edges</div><div class="val" id="ccv1">—</div></div><div class="stat good"><div class="lab" id="cclab2">lightest crossing</div><div class="val" id="ccv2">—</div></div><div class="stat"><div class="lab">in the MST?</div><div class="val" id="ccv3">—</div></div></div><svg id="ccsvg" viewBox="0 0 480 270" style="width:100%;max-width:560px;height:auto;display:block;margin:0 auto"></svg><div class="log" id="cclog" style="white-space:pre-line;min-height:2.8em"></div><p style="margin-top:10px;font-size:.83rem;color:var(--ink-3)">The example graph of this lecture. <strong>Cut:</strong> click vertices to move them between the two sides (filled / empty); the edges that cross are highlighted and the lightest one is green. <strong>Cycle:</strong> step through every simple cycle of the graph; the heaviest edge is red. “Show MST” outlines the five MST edges, so you can check both rules against the answer.</p></div>
+    <div class="card pad board"><h4>Why the cut property holds</h4><p>Let e be the lightest edge crossing a cut, and suppose some MST T does not contain e.</p><ol style="margin:10px 0 0;padding-left:1.3em;line-height:1.75"><li>Add e to T. A tree plus one edge has exactly one cycle.</li><li>That cycle crosses the cut through e, so it must cross back through another edge f of the cut.</li><li>e is the lightest crossing edge, so w(f) ≥ w(e).</li><li>T + e − f is again a spanning tree, and its weight is not larger than T. So it is also an MST — and it contains e.</li></ol></div>
+    <div class="card pad board"><h4>Why the cycle property holds</h4><p>Let e = (u, v) be the strictly heaviest edge of a cycle C, and suppose an MST T contains e.</p><ol style="margin:10px 0 0;padding-left:1.3em;line-height:1.75"><li>Remove e from T. The tree falls apart into two parts: one with u, one with v. That is a cut.</li><li>The rest of C still leads from u to v, so some other edge f of C crosses this cut.</li><li>f is on the same cycle, so w(f) &lt; w(e).</li><li>T − e + f is a spanning tree lighter than T — a contradiction. (With equal weights the statement becomes: some MST avoids e.)</li></ol><p style="margin-top:10px">In short: if u and v can be reached around the cycle with cheaper edges, the most expensive edge of that cycle is never needed.</p></div>
   </div>
 </section>
 
@@ -85,189 +89,20 @@
   <div class="beat-head">
     <div class="beat-n">03</div>
     <div>
-      <h2>Kruskal's Algorithm</h2>
-      <div class="sub"><span>35 min</span> <span>code</span> <span>demo: union-find</span> <span>demo: Kruskal</span></div>
-    </div>
-  </div>
-  <div class="stack">
-    <div class="card pad board"><h4>Idea and steps</h4><p>Sort edges by weight and add them one by one, skipping edges that would create a cycle. A <strong>Disjoint Set Union (DSU)</strong>, also called Union-Find, quickly detects cycles.</p><ol style="margin:12px 0 0;padding-left:1.3em;line-height:1.75"><li>Sort all edges in non-decreasing order of weight.</li><li>Initialise the DSU so each vertex is its own set.</li><li>For each edge (u, v, w) in order: if <code>find(u) != find(v)</code>, add the edge to the MST and union the sets.</li><li>Stop when |V| − 1 edges are chosen.</li></ol></div>
-    <div class="card pad board"><h4>Complexity</h4><div class="tw"><table><thead><tr><th>Part</th><th class="n">Cost</th></tr></thead><tbody><tr><td class="k">Sorting edges</td><td class="n">O(E log E)</td></tr><tr><td class="k">DSU operations</td><td class="n">almost O(1) each (inverse Ackermann)</td></tr><tr><td class="k">Total</td><td class="n">O(E log E)</td></tr></tbody></table></div></div>
-    <div class="card pad demo"><h4>Demo · union-find, with and without compression</h4><div class="ctl"><label class="f" style="flex:1 1 80px"><span>a</span><input type="number" id="dsa" value="1" min="1" max="10"></label><label class="f" style="flex:1 1 80px"><span>b</span><input type="number" id="dsb" value="2" min="1" max="10"></label><button class="pri" id="dsu">union</button><div class="seg" id="dsopt"><button data-o="on" class="on">optimised</button><button data-o="off">naive</button></div><button id="dsr">Reset</button></div><div id="dstree" style="margin-top:6px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.6;color:var(--ink-2)"></div><div class="readout"><div class="stat"><div class="lab">components</div><div class="val" id="dsc">10</div></div><div class="stat"><div class="lab">deepest chain</div><div class="val" id="dsd">1</div></div><div class="stat good"><div class="lab">steps in last find</div><div class="val" id="dss">—</div></div></div><div class="log" id="dslog">Ten singleton sets. Union a few pairs, then switch to naive and compare the depth.</div></div>
-    <div class="card pad board"><h4>1 · The DSU</h4><pre><span class="k">struct</span> DSU {
-    vector&lt;<span class="k">int</span>&gt; parent, rank;
-    DSU(<span class="k">int</span> n) : parent(n), rank(n, 0) {
-        iota(parent.begin(), parent.end(), 0);
-    }
-    <span class="k">int</span> find(<span class="k">int</span> v) {
-        <span class="k">if</span> (parent[v] == v) <span class="k">return</span> v;
-        <span class="k">return</span> parent[v] = find(parent[v]); <span class="c">// path compression</span>
-    }
-    <span class="k">bool</span> unite(<span class="k">int</span> a, <span class="k">int</span> b) {
-        a = find(a); b = find(b);
-        <span class="k">if</span> (a == b) <span class="k">return</span> <span class="k">false</span>;          <span class="c">// already in same set</span>
-        <span class="k">if</span> (rank[a] &lt; rank[b]) swap(a, b); <span class="c">// union by rank</span>
-        parent[b] = a;
-        <span class="k">if</span> (rank[a] == rank[b]) rank[a]++;
-        <span class="k">return</span> <span class="k">true</span>;
-    }
-};</pre><p style="margin-top:12px"><span class="mono">find</span> returns the root of the set and, on the way back, points every node straight at it (path compression). <span class="mono">unite</span> hangs the lower tree under the higher one (union by rank) and returns <span class="mono">false</span> when both ends are already in one set — that edge would close a cycle.</p></div>
-    <div class="card pad board"><h4>2 · The edge</h4><pre><span class="k">struct</span> Edge {
-    <span class="k">int</span> u, v, w;
-    <span class="k">bool</span> operator&lt;(<span class="k">const</span> Edge&amp; other) <span class="k">const</span> { <span class="k">return</span> w &lt; other.w; }
-};</pre><p style="margin-top:12px"><span class="mono">operator&lt;</span> compares by weight, so <span class="mono">sort</span> puts the lightest edges first.</p></div>
-    <div class="card pad board"><h4>3 · main</h4><pre><span class="k">int</span> main() {
-    <span class="k">int</span> n, m;
-    cin &gt;&gt; n &gt;&gt; m;
-    vector&lt;Edge&gt; edges;
-    edges.reserve(m);
-    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
-        <span class="k">int</span> x, y, w;
-        cin &gt;&gt; x &gt;&gt; y &gt;&gt; w;
-        edges.push_back({x - 1, y - 1, w});
-    }
-
-    sort(edges.begin(), edges.end());
-    DSU dsu(n);
-
-    <span class="k">int</span> mst_cost = 0;
-    vector&lt;Edge&gt; mst;
-
-    <span class="k">for</span> (<span class="k">auto</span> &amp;e : edges) {
-        <span class="k">if</span> (dsu.unite(e.u, e.v)) {
-            mst.push_back(e);
-            mst_cost += e.w;
-        }
-        <span class="k">if</span> ((<span class="k">int</span>)mst.size() == n - 1) break;
-    }
-
-    cout &lt;&lt; <span class="s">"MST cost: "</span> &lt;&lt; mst_cost &lt;&lt; <span class="s">"\nEdges:\n"</span>;
-    <span class="k">for</span> (<span class="k">auto</span> &amp;e : mst) {
-        cout &lt;&lt; e.u + 1 &lt;&lt; <span class="s">" - "</span> &lt;&lt; e.v + 1 &lt;&lt; <span class="s">" ("</span> &lt;&lt; e.w &lt;&lt; <span class="s">")\n"</span>;
-    }
-    <span class="k">return</span> 0;
-}</pre><div class="out-lbl">input</div><pre class="out">6 9
-1 2 1
-1 3 5
-1 4 8
-1 5 3
-2 4 9
-2 5 1
-2 6 2
-3 4 4
-5 6 6</pre><div class="out-lbl">output</div><pre class="out">MST cost: 13
-Edges:
-1 - 2 (1)
-2 - 5 (1)
-2 - 6 (2)
-3 - 4 (4)
-1 - 3 (5)</pre></div>
-    <div class="card pad board"><h4>Walkthrough on the example</h4><p>Edges sorted: <span class="mono">(1,2,1)</span>, <span class="mono">(2,5,1)</span>, <span class="mono">(2,6,2)</span>, <span class="mono">(1,5,3)</span>, <span class="mono">(3,4,4)</span>, <span class="mono">(1,3,5)</span>, <span class="mono">(5,6,6)</span>, <span class="mono">(1,4,8)</span>, <span class="mono">(2,4,9)</span></p><div style="margin-top:12px"></div><pre class="out">Start: sets {1}, {2}, {3}, {4}, {5}, {6}
-Add  (1,2,1): merge {1} with {2}
-Add  (2,5,1): merge {1,2} with {5}
-Add  (2,6,2): merge {1,2,5} with {6}
-Skip (1,5,3): 1 and 5 are already in one set — would create a cycle
-Add  (3,4,4): merge {3} with {4}
-Add  (1,3,5): merge {1,2,5,6} with {3,4}
-MST edges: (1,2), (2,5), (2,6), (3,4), (1,3) with total cost 13</pre><p style="margin-top:12px">Five edges are taken, so the loop stops there: n − 1 = 5. Of the remaining edges only (1,5,3) was looked at, and it would have closed the cycle 1 – 2 – 5.</p></div>
-    <div class="card pad demo"><h4>Demo · Kruskal, edge by edge</h4><div class="ctl"><button class="pri" id="mkstep">Step</button><button id="mkplay">▶ Play</button><button id="mkreset">New graph</button></div><div class="readout" style="margin-top:0;margin-bottom:12px"><div class="stat good"><div class="lab">MST cost</div><div class="val" id="mkcost">0</div></div><div class="stat"><div class="lab">edges taken</div><div class="val" id="mktak">0 / 0</div></div><div class="stat bad"><div class="lab">rejected (cycles)</div><div class="val" id="mkrej">0</div></div></div><div class="steps"><table><thead><tr><th class="n">w</th><th>edge</th><th>find(u)</th><th>find(v)</th><th>verdict</th></tr></thead><tbody id="mksteps"></tbody></table></div><div class="log" id="mklog">Edges are sorted by weight. Step through and watch which ones DSU rejects.</div></div>
-    <div class="card pad board"><h4>Another version · edges as pairs</h4><p>The edge is stored as <span class="mono">pair&lt;w, pair&lt;x, y&gt;&gt;</span>, so plain <span class="mono">sort</span> orders by weight with no comparator. The DSU is two arrays and two functions:</p><div style="margin-top:12px"></div><pre><span class="k">int</span> find(<span class="k">int</span> v) {
-    <span class="k">if</span> (p[v] == v)
-        <span class="k">return</span> v;
-    p[v] = find(p[v]);
-    <span class="k">return</span> p[v];
-}
-
-<span class="k">void</span> union_set(<span class="k">int</span> v, <span class="k">int</span> u) {
-    v = find(v);
-    u = find(u);
-    <span class="k">if</span> (r[v] &lt; r[u])
-        p[v] = u;
-    <span class="k">else</span> <span class="k">if</span> (r[u] &lt; r[v])
-        p[u] = v;
-    <span class="k">else</span> {
-        p[u] = v;
-        r[v]++;
-    }
-}</pre><div style="margin-top:14px"><details class="code"><summary>the full program — version 2<span class="lines">61 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
-<span class="k">#include</span> &lt;vector&gt;
-<span class="k">#include</span> &lt;algorithm&gt;   <span class="c">// added: sort lives here</span>
-#define pb push_back
-#define mp make_pair
-#define f first
-#define s second 
-
-<span class="k">using</span> <span class="k">namespace</span> std;
-vector&lt;pair&lt;<span class="k">int</span>, pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt; &gt; g;
-<span class="k">int</span> p[100];
-<span class="k">int</span> r[100];
-<span class="k">int</span> n, m, x, y, w;
-
-<span class="k">int</span> find(<span class="k">int</span> v) {
-    <span class="k">if</span> (p[v] == v)
-        <span class="k">return</span> v;
-    p[v] = find(p[v]);
-    <span class="k">return</span> p[v];
-}
-
-<span class="k">void</span> union_set(<span class="k">int</span> v, <span class="k">int</span> u) {
-    v = find(v);
-    u = find(u);
-    <span class="k">if</span> (r[v] &lt; r[u])
-        p[v] = u;
-    <span class="k">else</span> <span class="k">if</span> (r[u] &lt; r[v])
-        p[u] = v;
-    <span class="k">else</span> {
-        p[u] = v;
-        r[v]++;
-    }
-}
-
-<span class="k">int</span> main() {
-    cin &gt;&gt; n &gt;&gt; m;
-    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
-        cin &gt;&gt; x &gt;&gt; y &gt;&gt; w;
-        x--;
-        y--;
-        g.pb(mp(w, mp(x, y)));
-    }
-    sort(g.begin(), g.end());
-    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
-        p[i] = i;
-    <span class="c">// for (int i = 0; i &lt; m; i++) </span>
-    <span class="c">//     cout &lt;&lt; g[i].s.f &lt;&lt; " " &lt;&lt; g[i].s.s &lt;&lt; " " &lt;&lt; g[i].f &lt;&lt; endl;</span>
-    <span class="k">int</span> sum = 0;
-    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
-        <span class="k">int</span> v = g[i].s.f;
-        <span class="k">int</span> u = g[i].s.s;
-
-        <span class="k">if</span> (find(v) != find(u)) {
-            union_set(u, v);
-            sum += g[i].f;
-            cout &lt;&lt; g[i].s.f + 1 &lt;&lt; <span class="s">" "</span> &lt;&lt; g[i].s.s + 1 &lt;&lt; endl;
-        }
-    }
-    cout &lt;&lt; sum;
-    <span class="k">return</span> 0;
-}</pre></details></div><div class="out-lbl">output</div><pre class="out">1 2
-2 5
-2 6
-3 4
-1 3
-13</pre><p style="margin-top:12px">It prints each chosen edge and then the total.</p></div>
-  </div>
-</section>
-
-<section class="beat" id="b4">
-  <div class="beat-head">
-    <div class="beat-n">04</div>
-    <div>
       <h2>Prim's Algorithm</h2>
       <div class="sub"><span>30 min</span> <span>code</span></div>
     </div>
   </div>
   <div class="stack">
-    <div class="card pad board"><h4>Idea and steps</h4><p>Grow the MST from an arbitrary start vertex by repeatedly picking the minimum-weight edge that connects the current tree to a new vertex. Below is the dense O(V²) version — scan all vertices to find the next minimum key. A min-heap version improves it to O(E log V).</p><ol style="margin:12px 0 0;padding-left:1.3em;line-height:1.75"><li>Set <code>key[start] = 0</code>, all others to infinity.</li><li>Repeat n times: pick the unused vertex v with the smallest <code>key[v]</code>; mark v used; for each neighbour (to, w), if <code>w &lt; key[to]</code>, update <code>key[to]</code> and record the parent.</li><li>The keys of the chosen edges and the parents describe the MST.</li></ol></div>
+    <div class="card pad board"><h4>Idea and steps</h4><p>Grow the MST from an arbitrary start vertex by repeatedly picking the minimum-weight edge that connects the current tree to a new vertex. Below is the dense O(V²) version — scan all vertices to find the next minimum key. A min-heap version improves it to O(E log V).</p><ol style="margin:12px 0 0;padding-left:1.3em;line-height:1.75"><li>Set <code>key[start] = 0</code>, all others to infinity.</li><li>Repeat n times: pick the unused vertex v with the smallest <code>key[v]</code>; mark v used; for each neighbour (to, w), if <code>w &lt; key[to]</code>, update <code>key[to]</code> and record the parent.</li><li>The keys of the chosen edges and the parents describe the MST.</li></ol><p style="margin-top:12px">Why this is correct: at every step the edge taken is the lightest edge of the cut “tree | everything else” — exactly the cut property.</p></div>
     <div class="card pad board"><h4>Complexity</h4><div class="tw"><table><thead><tr><th>Version</th><th class="n">Cost</th></tr></thead><tbody><tr><td class="k">Dense scan (below)</td><td class="n">O(V²)</td></tr><tr><td class="k">With a binary heap</td><td class="n">O(E log V)</td></tr></tbody></table></div></div>
+    <div class="card pad board"><h4>Walkthrough on the example</h4><pre class="out">Start at 1: key[2] ∞ → 1, key[3] ∞ → 5, key[4] ∞ → 8, key[5] ∞ → 3
+Pick 2 via (1,2,1): key[5] 3 → 1, key[6] ∞ → 2
+Pick 5 via (2,5,1): no key improves
+Pick 6 via (2,6,2): no key improves
+Pick 3 via (1,3,5): key[4] 8 → 4
+Pick 4 via (3,4,4): no key improves
+MST cost 13: (1,2), (1,3), (3,4), (2,5), (2,6)</pre><p style="margin-top:12px">The order of attaching is 1, 2, 5, 6, 3, 4 — five edges, cost 13.</p></div>
     <div class="card pad board"><h4>The program</h4><pre><span class="k">#include</span> &lt;bits/stdc++.h&gt;
 <span class="k">using</span> <span class="k">namespace</span> std;
 
@@ -325,13 +160,6 @@ Edges:
 3 - 4 (4)
 2 - 5 (1)
 2 - 6 (2)</pre><p style="margin-top:12px">The total is the sum of the keys: the key of each vertex is the weight of the edge that attached it to the tree.</p></div>
-    <div class="card pad board"><h4>Walkthrough on the example</h4><pre class="out">Start at 1: key[2] ∞ → 1, key[3] ∞ → 5, key[4] ∞ → 8, key[5] ∞ → 3
-Pick 2 via (1,2,1): key[5] 3 → 1, key[6] ∞ → 2
-Pick 5 via (2,5,1): no key improves
-Pick 6 via (2,6,2): no key improves
-Pick 3 via (1,3,5): key[4] 8 → 4
-Pick 4 via (3,4,4): no key improves
-MST cost 13: (1,2), (1,3), (3,4), (2,5), (2,6)</pre><p style="margin-top:12px">The order of attaching is 1, 2, 5, 6, 3, 4 — the same five edges as Kruskal, found in a different order, cost 13.</p></div>
     <div class="card pad board"><h4>Another version · with a parent array</h4><p>The same O(V²) loop on global arrays: <span class="mono">d</span> for the keys, <span class="mono">u</span> for used, <span class="mono">p</span> for the parent. At the end it prints each vertex with its parent — the edges of the MST.</p><div style="margin-top:14px"><details class="code"><summary>the full program — version 2<span class="lines">61 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
 <span class="k">#include</span> &lt;vector&gt;
 #define mp make_pair
@@ -450,16 +278,192 @@ vector&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt
   </div>
 </section>
 
+<section class="beat" id="b4">
+  <div class="beat-head">
+    <div class="beat-n">04</div>
+    <div>
+      <h2>Kruskal's Algorithm</h2>
+      <div class="sub"><span>35 min</span> <span>code</span> <span>demo: union-find</span> <span>demo: Kruskal</span></div>
+    </div>
+  </div>
+  <div class="stack">
+    <div class="card pad board"><h4>Idea and steps</h4><p>Sort edges by weight and add them one by one, skipping edges that would create a cycle. A <strong>Disjoint Set Union (DSU)</strong>, also called Union-Find, quickly detects cycles.</p><ol style="margin:12px 0 0;padding-left:1.3em;line-height:1.75"><li>Sort all edges in non-decreasing order of weight.</li><li>Initialise the DSU so each vertex is its own set.</li><li>For each edge (u, v, w) in order: if <code>find(u) != find(v)</code>, add the edge to the MST and union the sets.</li><li>Stop when |V| − 1 edges are chosen.</li></ol><p style="margin-top:12px">Why this is correct: an edge that joins two different sets is the lightest edge leaving its set (cut property); an edge inside one set closes a cycle in which it is the heaviest, since all the others were taken earlier (cycle property).</p></div>
+    <div class="card pad board"><h4>Complexity</h4><div class="tw"><table><thead><tr><th>Part</th><th class="n">Cost</th></tr></thead><tbody><tr><td class="k">Sorting edges</td><td class="n">O(E log E)</td></tr><tr><td class="k">DSU operations</td><td class="n">almost O(1) each (inverse Ackermann)</td></tr><tr><td class="k">Total</td><td class="n">O(E log E)</td></tr></tbody></table></div></div>
+    <div class="card pad demo"><h4>Demo · union-find, with and without compression</h4><div class="ctl"><label class="f" style="flex:1 1 80px"><span>a</span><input type="number" id="dsa" value="1" min="1" max="10"></label><label class="f" style="flex:1 1 80px"><span>b</span><input type="number" id="dsb" value="2" min="1" max="10"></label><button class="pri" id="dsu">union</button><div class="seg" id="dsopt"><button data-o="on" class="on">optimised</button><button data-o="off">naive</button></div><button id="dsr">Reset</button></div><div id="dstree" style="margin-top:6px;overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:.82rem;line-height:1.6;color:var(--ink-2)"></div><div class="readout"><div class="stat"><div class="lab">components</div><div class="val" id="dsc">10</div></div><div class="stat"><div class="lab">deepest chain</div><div class="val" id="dsd">1</div></div><div class="stat good"><div class="lab">steps in last find</div><div class="val" id="dss">—</div></div></div><div class="log" id="dslog">Ten singleton sets. Union a few pairs, then switch to naive and compare the depth.</div></div>
+    <div class="card pad board"><h4>Walkthrough on the example</h4><p>Edges sorted: <span class="mono">(1,2,1)</span>, <span class="mono">(2,5,1)</span>, <span class="mono">(2,6,2)</span>, <span class="mono">(1,5,3)</span>, <span class="mono">(3,4,4)</span>, <span class="mono">(1,3,5)</span>, <span class="mono">(5,6,6)</span>, <span class="mono">(1,4,8)</span>, <span class="mono">(2,4,9)</span></p><div style="margin-top:12px"></div><pre class="out">Start: sets {1}, {2}, {3}, {4}, {5}, {6}
+Add  (1,2,1): merge {1} with {2}
+Add  (2,5,1): merge {1,2} with {5}
+Add  (2,6,2): merge {1,2,5} with {6}
+Skip (1,5,3): 1 and 5 are already in one set — would create a cycle
+Add  (3,4,4): merge {3} with {4}
+Add  (1,3,5): merge {1,2,5,6} with {3,4}
+MST edges: (1,2), (2,5), (2,6), (3,4), (1,3) with total cost 13</pre><p style="margin-top:12px">Five edges are taken, so the loop stops there: n − 1 = 5. Of the remaining edges only (1,5,3) was looked at, and it would have closed the cycle 1 – 2 – 5. These are the same five edges Prim found, taken in a different order.</p></div>
+    <div class="card pad demo"><h4>Demo · Kruskal, edge by edge</h4><div class="ctl"><button class="pri" id="mkstep">Step</button><button id="mkplay">▶ Play</button><button id="mkreset">New graph</button></div><div class="readout" style="margin-top:0;margin-bottom:12px"><div class="stat good"><div class="lab">MST cost</div><div class="val" id="mkcost">0</div></div><div class="stat"><div class="lab">edges taken</div><div class="val" id="mktak">0 / 0</div></div><div class="stat bad"><div class="lab">rejected (cycles)</div><div class="val" id="mkrej">0</div></div></div><div class="steps"><table><thead><tr><th class="n">w</th><th>edge</th><th>find(u)</th><th>find(v)</th><th>verdict</th></tr></thead><tbody id="mksteps"></tbody></table></div><div class="log" id="mklog">Edges are sorted by weight. Step through and watch which ones DSU rejects.</div></div>
+    <div class="card pad board"><h4>1 · The DSU</h4><pre><span class="k">struct</span> DSU {
+    vector&lt;<span class="k">int</span>&gt; parent, rank;
+    DSU(<span class="k">int</span> n) : parent(n), rank(n, 0) {
+        iota(parent.begin(), parent.end(), 0);
+    }
+    <span class="k">int</span> find(<span class="k">int</span> v) {
+        <span class="k">if</span> (parent[v] == v) <span class="k">return</span> v;
+        <span class="k">return</span> parent[v] = find(parent[v]); <span class="c">// path compression</span>
+    }
+    <span class="k">bool</span> unite(<span class="k">int</span> a, <span class="k">int</span> b) {
+        a = find(a); b = find(b);
+        <span class="k">if</span> (a == b) <span class="k">return</span> <span class="k">false</span>;          <span class="c">// already in same set</span>
+        <span class="k">if</span> (rank[a] &lt; rank[b]) swap(a, b); <span class="c">// union by rank</span>
+        parent[b] = a;
+        <span class="k">if</span> (rank[a] == rank[b]) rank[a]++;
+        <span class="k">return</span> <span class="k">true</span>;
+    }
+};</pre><p style="margin-top:12px"><span class="mono">find</span> returns the root of the set and, on the way back, points every node straight at it (path compression). <span class="mono">unite</span> hangs the lower tree under the higher one (union by rank) and returns <span class="mono">false</span> when both ends are already in one set — that edge would close a cycle.</p></div>
+    <div class="card pad board"><h4>2 · The edge</h4><pre><span class="k">struct</span> Edge {
+    <span class="k">int</span> u, v, w;
+    <span class="k">bool</span> operator&lt;(<span class="k">const</span> Edge&amp; other) <span class="k">const</span> { <span class="k">return</span> w &lt; other.w; }
+};</pre><p style="margin-top:12px"><span class="mono">operator&lt;</span> compares by weight, so <span class="mono">sort</span> puts the lightest edges first.</p></div>
+    <div class="card pad board"><h4>3 · main</h4><pre><span class="k">int</span> main() {
+    <span class="k">int</span> n, m;
+    cin &gt;&gt; n &gt;&gt; m;
+    vector&lt;Edge&gt; edges;
+    edges.reserve(m);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
+        <span class="k">int</span> x, y, w;
+        cin &gt;&gt; x &gt;&gt; y &gt;&gt; w;
+        edges.push_back({x - 1, y - 1, w});
+    }
+
+    sort(edges.begin(), edges.end());
+    DSU dsu(n);
+
+    <span class="k">int</span> mst_cost = 0;
+    vector&lt;Edge&gt; mst;
+
+    <span class="k">for</span> (<span class="k">auto</span> &amp;e : edges) {
+        <span class="k">if</span> (dsu.unite(e.u, e.v)) {
+            mst.push_back(e);
+            mst_cost += e.w;
+        }
+        <span class="k">if</span> ((<span class="k">int</span>)mst.size() == n - 1) break;
+    }
+
+    cout &lt;&lt; <span class="s">"MST cost: "</span> &lt;&lt; mst_cost &lt;&lt; <span class="s">"\nEdges:\n"</span>;
+    <span class="k">for</span> (<span class="k">auto</span> &amp;e : mst) {
+        cout &lt;&lt; e.u + 1 &lt;&lt; <span class="s">" - "</span> &lt;&lt; e.v + 1 &lt;&lt; <span class="s">" ("</span> &lt;&lt; e.w &lt;&lt; <span class="s">")\n"</span>;
+    }
+    <span class="k">return</span> 0;
+}</pre><div class="out-lbl">input</div><pre class="out">6 9
+1 2 1
+1 3 5
+1 4 8
+1 5 3
+2 4 9
+2 5 1
+2 6 2
+3 4 4
+5 6 6</pre><div class="out-lbl">output</div><pre class="out">MST cost: 13
+Edges:
+1 - 2 (1)
+2 - 5 (1)
+2 - 6 (2)
+3 - 4 (4)
+1 - 3 (5)</pre></div>
+    <div class="card pad board"><h4>Another version · edges as pairs</h4><p>The edge is stored as <span class="mono">pair&lt;w, pair&lt;x, y&gt;&gt;</span>, so plain <span class="mono">sort</span> orders by weight with no comparator. The DSU is two arrays and two functions:</p><div style="margin-top:12px"></div><pre><span class="k">int</span> find(<span class="k">int</span> v) {
+    <span class="k">if</span> (p[v] == v)
+        <span class="k">return</span> v;
+    p[v] = find(p[v]);
+    <span class="k">return</span> p[v];
+}
+
+<span class="k">void</span> union_set(<span class="k">int</span> v, <span class="k">int</span> u) {
+    v = find(v);
+    u = find(u);
+    <span class="k">if</span> (r[v] &lt; r[u])
+        p[v] = u;
+    <span class="k">else</span> <span class="k">if</span> (r[u] &lt; r[v])
+        p[u] = v;
+    <span class="k">else</span> {
+        p[u] = v;
+        r[v]++;
+    }
+}</pre><div style="margin-top:14px"><details class="code"><summary>the full program — version 2<span class="lines">61 lines</span></summary><pre><span class="k">#include</span> &lt;iostream&gt;
+<span class="k">#include</span> &lt;vector&gt;
+<span class="k">#include</span> &lt;algorithm&gt;   <span class="c">// added: sort lives here</span>
+#define pb push_back
+#define mp make_pair
+#define f first
+#define s second 
+
+<span class="k">using</span> <span class="k">namespace</span> std;
+vector&lt;pair&lt;<span class="k">int</span>, pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt; &gt; g;
+<span class="k">int</span> p[100];
+<span class="k">int</span> r[100];
+<span class="k">int</span> n, m, x, y, w;
+
+<span class="k">int</span> find(<span class="k">int</span> v) {
+    <span class="k">if</span> (p[v] == v)
+        <span class="k">return</span> v;
+    p[v] = find(p[v]);
+    <span class="k">return</span> p[v];
+}
+
+<span class="k">void</span> union_set(<span class="k">int</span> v, <span class="k">int</span> u) {
+    v = find(v);
+    u = find(u);
+    <span class="k">if</span> (r[v] &lt; r[u])
+        p[v] = u;
+    <span class="k">else</span> <span class="k">if</span> (r[u] &lt; r[v])
+        p[u] = v;
+    <span class="k">else</span> {
+        p[u] = v;
+        r[v]++;
+    }
+}
+
+<span class="k">int</span> main() {
+    cin &gt;&gt; n &gt;&gt; m;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
+        cin &gt;&gt; x &gt;&gt; y &gt;&gt; w;
+        x--;
+        y--;
+        g.pb(mp(w, mp(x, y)));
+    }
+    sort(g.begin(), g.end());
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        p[i] = i;
+    <span class="c">// for (int i = 0; i &lt; m; i++) </span>
+    <span class="c">//     cout &lt;&lt; g[i].s.f &lt;&lt; " " &lt;&lt; g[i].s.s &lt;&lt; " " &lt;&lt; g[i].f &lt;&lt; endl;</span>
+    <span class="k">int</span> sum = 0;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) {
+        <span class="k">int</span> v = g[i].s.f;
+        <span class="k">int</span> u = g[i].s.s;
+
+        <span class="k">if</span> (find(v) != find(u)) {
+            union_set(u, v);
+            sum += g[i].f;
+            cout &lt;&lt; g[i].s.f + 1 &lt;&lt; <span class="s">" "</span> &lt;&lt; g[i].s.s + 1 &lt;&lt; endl;
+        }
+    }
+    cout &lt;&lt; sum;
+    <span class="k">return</span> 0;
+}</pre></details></div><div class="out-lbl">output</div><pre class="out">1 2
+2 5
+2 6
+3 4
+1 3
+13</pre><p style="margin-top:12px">It prints each chosen edge and then the total.</p></div>
+  </div>
+</section>
+
 <section class="beat" id="b5">
   <div class="beat-head">
     <div class="beat-n">05</div>
     <div>
-      <h2>Kruskal vs Prim</h2>
+      <h2>Prim vs Kruskal</h2>
       <div class="sub"><span>5 min</span> <span>board</span></div>
     </div>
   </div>
   <div class="stack">
-    <div class="card pad board"><h4>Which one when</h4><div class="tw"><table><thead><tr><th>Algorithm</th><th>Best For</th><th>Data Structures</th><th>Complexity</th></tr></thead><tbody><tr><td class="k">Kruskal</td><td>sparse graphs, edge list input</td><td>sort edges + DSU</td><td>O(E log E)</td></tr><tr><td class="k">Prim</td><td>dense graphs or adjacency list</td><td>min-heap + visited set</td><td>O(E log V) (or O(V²))</td></tr></tbody></table></div></div>
+    <div class="card pad board"><h4>Which one when</h4><div class="tw"><table><thead><tr><th>Algorithm</th><th>Best For</th><th>Data Structures</th><th>Complexity</th></tr></thead><tbody><tr><td class="k">Prim</td><td>dense graphs or adjacency list</td><td>min-heap + visited set</td><td>O(E log V) (or O(V²))</td></tr><tr><td class="k">Kruskal</td><td>sparse graphs, edge list input</td><td>sort edges + DSU</td><td>O(E log E)</td></tr></tbody></table></div></div>
   </div>
 </section>
 
@@ -472,7 +476,7 @@ vector&lt;pair&lt;<span class="k">int</span>, <span class="k">int</span>&gt; &gt
     </div>
   </div>
   <div class="stack">
-    <div class="card pad board"><h4>Four things to remember</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>MSTs connect all vertices with minimum total weight and no cycles.</li><li>Kruskal: sort the edges, add the lightest non-cycle edges using DSU.</li><li>Prim: grow from a start vertex, always choose the lightest outgoing edge.</li><li>Both algorithms give the same MST cost on connected undirected weighted graphs.</li></ul></div>
+    <div class="card pad board"><h4>Four things to remember</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>MSTs connect all vertices with minimum total weight and no cycles.</li><li>Prim: grow from a start vertex, always choose the lightest outgoing edge.</li><li>Kruskal: sort the edges, add the lightest non-cycle edges using DSU.</li><li>Both algorithms give the same MST cost on connected undirected weighted graphs.</li></ul></div>
   </div>
 </section>
 
@@ -599,6 +603,127 @@ on('mkplay','click',function(){
   ktimer=setInterval(function(){ if(!mkStep()) mkStop(); },600);
 });
 mkReset();
+})();
+
+/* ---------- cut and cycle properties demo ---------- */
+(function(){
+var N=window.NOTES, el=N.el, on=N.on, each=N.each;
+if(!document.getElementById('ccsvg')) return;
+var P={1:[240,50],2:[240,220],3:[60,50],4:[60,220],5:[420,50],6:[420,220]};
+var E=[[1,2,1],[1,3,5],[1,4,8],[1,5,3],[2,4,9],[2,5,1],[2,6,2],[3,4,4],[5,6,6]];
+var MST={'1-2':1,'2-5':1,'2-6':1,'3-4':1,'1-3':1};
+var R=20, mode='cut', showMst=false, side={1:1}, cyc=[], ci=0;
+function ek(a,b){ return a<b?a+'-'+b:b+'-'+a; }
+function en(e){ return '('+e[0]+','+e[1]+','+e[2]+')'; }
+
+/* every simple cycle once: smallest vertex first, second vertex < last vertex */
+(function(){
+  var adj={}; for(var v=1;v<=6;v++) adj[v]=[];
+  E.forEach(function(e,i){ adj[e[0]].push([e[1],i]); adj[e[1]].push([e[0],i]); });
+  for(var s=1;s<=6;s++){
+    (function dfs(v,path,used){
+      adj[v].forEach(function(t){
+        var u=t[0];
+        if(u===s && path.length>=3 && path[1]<path[path.length-1]){ cyc.push(path.slice()); return; }
+        if(u<=s || used[u]) return;
+        used[u]=1; path.push(u); dfs(u,path,used); path.pop(); used[u]=0;
+      });
+    })(s,[s],(function(){var o={}; o[s]=1; return o;})());
+  }
+  cyc.sort(function(a,b){ return a.length-b.length || (a.join()<b.join()?-1:1); });
+})();
+function edgeOf(a,b){ for(var i=0;i<E.length;i++){ var e=E[i]; if((e[0]===a&&e[1]===b)||(e[0]===b&&e[1]===a)) return e; } }
+
+function line(a,b){
+  var x1=P[a][0],y1=P[a][1],x2=P[b][0],y2=P[b][1],dx=x2-x1,dy=y2-y1,L=Math.sqrt(dx*dx+dy*dy),ux=dx/L,uy=dy/L;
+  return [x1+ux*R,y1+uy*R,x2-ux*R,y2-uy*R];
+}
+function draw(hl){
+  var h='';
+  E.forEach(function(e){
+    var k=ek(e[0],e[1]), c=line(e[0],e[1]), st=hl[k]||'';
+    var col='var(--line)', w=1.8, dash='';
+    if(st==='cross'){ col='var(--accent)'; w=2.6; dash='7 5'; }
+    if(st==='cyc'){ col='var(--accent)'; w=3; }
+    if(st==='best'){ col='var(--prime)'; w=5; }
+    if(st==='worst'){ col='var(--mark)'; w=5; }
+    if(showMst && MST[k]) h+='<line x1="'+c[0]+'" y1="'+c[1]+'" x2="'+c[2]+'" y2="'+c[3]+'" style="stroke:var(--ink-3);opacity:.28" stroke-width="13" stroke-linecap="round"/>';
+    h+='<line x1="'+c[0]+'" y1="'+c[1]+'" x2="'+c[2]+'" y2="'+c[3]+'" style="stroke:'+col+'" stroke-width="'+w+'"'+(dash?' stroke-dasharray="'+dash+'"':'')+' stroke-linecap="round"/>';
+    var mx=(P[e[0]][0]+P[e[1]][0])/2, my=(P[e[0]][1]+P[e[1]][1])/2;
+    h+='<rect x="'+(mx-12)+'" y="'+(my-11)+'" width="24" height="20" rx="5" style="fill:var(--surface);stroke:'+(st==='best'||st==='worst'?col:'var(--line)')+'"/>';
+    h+='<text x="'+mx+'" y="'+(my+4)+'" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="13" style="fill:'+(st==='best'||st==='worst'?col:'var(--ink-2)')+';font-weight:600">'+e[2]+'</text>';
+  });
+  for(var v=1;v<=6;v++){
+    var inS=mode==='cut'&&side[v];
+    var fill=inS?'var(--accent)':'var(--surface-2)', tc=inS?'var(--surface)':'var(--ink)', stroke=inS?'var(--accent)':'var(--ink-3)';
+    h+='<g data-v="'+v+'" style="cursor:'+(mode==='cut'?'pointer':'default')+'"><circle cx="'+P[v][0]+'" cy="'+P[v][1]+'" r="'+R+'" style="fill:'+fill+';stroke:'+stroke+'" stroke-width="2"/>';
+    h+='<text x="'+P[v][0]+'" y="'+(P[v][1]+5)+'" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="15" style="fill:'+tc+';pointer-events:none">'+v+'</text></g>';
+  }
+  el('ccsvg').innerHTML=h;
+}
+function setStats(l1,v1,l2,v2,v3,msg){
+  el('cclab1').textContent=l1; el('ccv1').textContent=v1;
+  el('cclab2').textContent=l2; el('ccv2').textContent=v2;
+  el('ccv3').textContent=v3; el('cclog').textContent=msg;
+}
+function names(S){ var a=[]; for(var v=1;v<=6;v++) if(!!side[v]===S) a.push(v); return '{'+a.join(', ')+'}'; }
+function paintCut(){
+  var cnt=0; for(var v=1;v<=6;v++) if(side[v]) cnt++;
+  var hl={};
+  if(cnt===0||cnt===6){ draw(hl); setStats('crossing edges','—','lightest crossing','—','—','A cut needs vertices on both sides. Click a vertex to move it.'); return; }
+  var cr=E.filter(function(e){ return !!side[e[0]]!==!!side[e[1]]; });
+  var mn=Math.min.apply(null,cr.map(function(e){return e[2];}));
+  var best=cr.filter(function(e){return e[2]===mn;});
+  cr.forEach(function(e){ hl[ek(e[0],e[1])]='cross'; });
+  best.forEach(function(e){ hl[ek(e[0],e[1])]='best'; });
+  draw(hl);
+  var inm=best.filter(function(e){return MST[ek(e[0],e[1])];});
+  var m='Cut '+names(true)+' | '+names(false)+'. Crossing: '+cr.map(en).join(', ')+'.\n';
+  m+= best.length>1 ? 'Lightest weight '+mn+' is shared by '+best.map(en).join(' and ')+' — each of them belongs to some MST.'
+                    : 'Lightest crossing edge '+en(best[0])+' — the cut property says it belongs to an MST'+(inm.length?', and it is one of the five MST edges.':'.');
+  setStats('crossing edges',cr.length,'lightest crossing',best.map(en).join(' '),inm.length===best.length?'yes ✓':inm.length?'one of them ✓':'—',m);
+}
+function paintCyc(){
+  var c=cyc[ci], hl={}, es=[];
+  for(var i=0;i<c.length;i++) es.push(edgeOf(c[i],c[(i+1)%c.length]));
+  var mx=Math.max.apply(null,es.map(function(e){return e[2];}));
+  var worst=es.filter(function(e){return e[2]===mx;});
+  es.forEach(function(e){ hl[ek(e[0],e[1])]='cyc'; });
+  worst.forEach(function(e){ hl[ek(e[0],e[1])]='worst'; });
+  draw(hl);
+  var w=worst[0], inm=MST[ek(w[0],w[1])];
+  var m='Cycle '+c.concat([c[0]]).join(' – ')+', weights '+es.map(function(e){return e[2];}).join(', ')+'.\n';
+  m+='Heaviest edge '+en(w)+': '+w[0]+' and '+w[1]+' are already connected around the cycle by lighter edges, so '+en(w)+' is never needed'+(inm?'':' — and indeed it is not in the MST.');
+  setStats('cycle',(ci+1)+' / '+cyc.length,'heaviest on cycle',en(w),inm?'yes ✗':'no ✓',m);
+}
+function paint(){ mode==='cut'?paintCut():paintCyc(); el('ccrand').style.display=mode==='cut'?'':'none'; }
+
+var cuts=[[1],[1,3],[1,3,4],[2,6],[5,6],[1,2,5],[3,4],[2,4,6]], cutAt=0;
+function setCut(a){ side={}; a.forEach(function(v){side[v]=1;}); }
+on('ccnext','click',function(){
+  if(mode==='cut'){ cutAt=(cutAt+1)%cuts.length; setCut(cuts[cutAt]); }
+  else ci=(ci+1)%cyc.length;
+  paint();
+});
+on('ccprev','click',function(){
+  if(mode==='cut'){ cutAt=(cutAt+cuts.length-1)%cuts.length; setCut(cuts[cutAt]); }
+  else ci=(ci+cyc.length-1)%cyc.length;
+  paint();
+});
+on('ccrand','click',function(){
+  var a; do{ a=[]; for(var v=1;v<=6;v++) if(Math.random()<0.5) a.push(v); }while(a.length===0||a.length===6);
+  setCut(a); paint();
+});
+on('ccmst','click',function(){ showMst=!showMst; el('ccmst').classList.toggle('on',showMst); el('ccmst').textContent=showMst?'Hide MST':'Show MST'; paint(); });
+el('ccsvg').addEventListener('click',function(ev){
+  if(mode!=='cut') return;
+  var g=ev.target.closest&&ev.target.closest('g[data-v]'); if(!g) return;
+  var v=+g.getAttribute('data-v'); if(side[v]) delete side[v]; else side[v]=1; paint();
+});
+each('#ccmode button',function(b){ b.addEventListener('click',function(){
+  each('#ccmode button',function(x){x.classList.remove('on');});
+  b.classList.add('on'); mode=b.getAttribute('data-m'); paint(); }); });
+setCut(cuts[0]); paint();
 })();
 
 </script>
