@@ -79,7 +79,7 @@
   <div class="stack">
     <div class="card pad board"><h4>Four properties</h4><ul style="margin:0;padding-left:1.2em;line-height:1.75"><li>An MST has exactly |V| − 1 edges and no cycles.</li><li>Adding any edge to the MST creates a cycle; removing any MST edge disconnects the graph.</li><li><strong>Cut property:</strong> for any cut (partition of the vertices), the lightest edge crossing the cut belongs to at least one MST.</li><li><strong>Cycle property:</strong> in any cycle, the heaviest edge cannot be in an MST.</li></ul></div>
     <div class="card pad board"><h4>What a cut is</h4><p>A <strong>cut</strong> splits the vertices into two non-empty groups S and V − S. An edge <strong>crosses</strong> the cut if one end is in S and the other is not. Every spanning tree must connect the two groups, so it contains at least one crossing edge — the cut property says which one is always safe to take: the lightest.</p><p style="margin-top:10px">On the example: the cut {1} | {2, 3, 4, 5, 6} is crossed by (1,2,1), (1,3,5), (1,4,8), (1,5,3). The lightest, (1,2,1), is in the MST. The cycle 1 – 3 – 4 – 1 has weights 5, 4, 8; the heaviest, (1,4,8), is not in the MST.</p></div>
-    <div class="card pad demo"><h4>Demo · cut property and cycle property</h4><div class="ctl"><div class="seg" id="ccmode"><button data-m="cut" class="on">Cut</button><button data-m="cyc">Cycle</button></div><button class="pri" id="ccgrow">Grow A ›</button><button id="ccreset">Reset</button><button id="ccrand">Random cut</button><button id="ccprev">‹ Prev</button><button class="pri" id="ccnext">Next ›</button><button id="ccmst">Show MST</button></div><div class="readout" style="margin-top:0;margin-bottom:10px"><div class="stat"><div class="lab" id="cclab1">group A | group B</div><div class="val" id="ccv1" style="font-size:1rem">—</div></div><div class="stat good"><div class="lab" id="cclab2">cheapest edge between A and B</div><div class="val" id="ccv2">—</div></div><div class="stat"><div class="lab">in the MST?</div><div class="val" id="ccv3">—</div></div></div><svg id="ccsvg" viewBox="0 0 480 270" style="width:100%;max-width:560px;height:auto;display:block;margin:0 auto"></svg><div class="log" id="cclog" style="white-space:pre-line;min-height:4.2em"></div><p style="margin-top:10px;font-size:.83rem;color:var(--ink-3)">The example graph of this lecture. <strong>Cut:</strong> the vertices are split into group A (filled) and group B (empty). Only the edges <em>between</em> the groups are drawn bright (dashed); the cheapest of them is green. Click a vertex to move it to the other group, or press <em>Grow A</em>: it takes the cheapest edge between the groups and pulls its B-end into A — repeat it and the green edges become the whole MST (this is Prim). <strong>Cycle:</strong> step through every cycle of the graph; the most expensive edge on it is red and never belongs to the MST. <em>Show MST</em> outlines the five MST edges.</p></div>
+    <div class="card pad demo"><h4>Demo · cut property and cycle property</h4><div class="ctl"><div class="seg" id="ccgraph"><button data-g="lec" class="on">Lecture example</button><button data-g="wheel">Wheel</button><button data-g="rnd">Random graph</button></div></div><div class="ctl"><div class="seg" id="ccmode"><button data-m="cut" class="on">Cut</button><button data-m="cyc">Cycle</button></div><button class="pri" id="ccgrow">Grow A ›</button><button id="ccreset">Reset</button><button id="ccprev">‹ Prev</button><button class="pri" id="ccnext">Next ›</button><button id="ccmst">Show MST</button></div><div class="readout" style="margin-top:0;margin-bottom:10px"><div class="stat"><div class="lab" id="cclab1">group A | group B</div><div class="val" id="ccv1" style="font-size:1rem">—</div></div><div class="stat good"><div class="lab" id="cclab2">cheapest edge between A and B</div><div class="val" id="ccv2">—</div></div><div class="stat"><div class="lab">in the MST?</div><div class="val" id="ccv3">—</div></div></div><svg id="ccsvg" viewBox="0 -8 480 290" style="width:100%;max-width:560px;height:auto;display:block;margin:0 auto"></svg><div class="log" id="cclog" style="white-space:pre-line;min-height:4.2em"></div><p style="margin-top:10px;font-size:.83rem;color:var(--ink-3)">Pick a graph: the example of this lecture, a wheel, or a random one (press <em>Random graph</em> again for a new one). <strong>Cut:</strong> the vertices are split into group A (filled) and group B (empty). Only the edges <em>between</em> the groups are drawn bright (dashed); the cheapest of them is green. Click a vertex to move it to the other group, or press <em>Grow A</em>: it takes the cheapest edge between the groups and pulls its B-end into A — repeat it and the green edges become the whole MST (this is Prim). <strong>Cycle:</strong> step through every cycle of the graph; the most expensive edge on it is red and never belongs to the MST. <em>Show MST</em> outlines the MST edges.</p></div>
     <div class="card pad board"><h4>Why the cut property holds</h4><p>Let e be the lightest edge crossing a cut, and suppose some MST T does not contain e.</p><ol style="margin:10px 0 0;padding-left:1.3em;line-height:1.75"><li>Add e to T. A tree plus one edge has exactly one cycle.</li><li>That cycle crosses the cut through e, so it must cross back through another edge f of the cut.</li><li>e is the lightest crossing edge, so w(f) ≥ w(e).</li><li>T + e − f is again a spanning tree, and its weight is not larger than T. So it is also an MST — and it contains e.</li></ol></div>
     <div class="card pad board"><h4>Why the cycle property holds</h4><p>Let e = (u, v) be the strictly heaviest edge of a cycle C, and suppose an MST T contains e.</p><ol style="margin:10px 0 0;padding-left:1.3em;line-height:1.75"><li>Remove e from T. The tree falls apart into two parts: one with u, one with v. That is a cut.</li><li>The rest of C still leads from u to v, so some other edge f of C crosses this cut.</li><li>f is on the same cycle, so w(f) &lt; w(e).</li><li>T − e + f is a spanning tree lighter than T — a contradiction. (With equal weights the statement becomes: some MST avoids e.)</li></ol><p style="margin-top:10px">In short: if u and v can be reached around the cycle with cheaper edges, the most expensive edge of that cycle is never needed.</p></div>
   </div>
@@ -609,18 +609,50 @@ mkReset();
 (function(){
 var N=window.NOTES, el=N.el, on=N.on, each=N.each;
 if(!document.getElementById('ccsvg')) return;
-var P={1:[240,55],2:[240,215],3:[60,55],4:[60,215],5:[420,55],6:[420,215]};
-var E=[[1,2,1],[1,3,5],[1,4,8],[1,5,3],[2,4,9],[2,5,1],[2,6,2],[3,4,4],[5,6,6]];
-var MST={'1-2':1,'2-5':1,'2-6':1,'3-4':1,'1-3':1};
+var GRAPHS={
+  lec:{P:{1:[240,55],2:[240,215],3:[60,55],4:[60,215],5:[420,55],6:[420,215]},
+       E:[[1,2,1],[1,3,5],[1,4,8],[1,5,3],[2,4,9],[2,5,1],[2,6,2],[3,4,4],[5,6,6]]},
+  wheel:{P:{1:[240,30],2:[380,85],3:[380,190],4:[240,245],5:[100,190],6:[100,85],7:[240,137]},
+       E:[[1,2,7],[2,3,3],[3,4,8],[4,5,2],[5,6,9],[6,1,4],[7,1,5],[7,2,6],[7,3,1],[7,4,10],[7,5,11],[7,6,12]]}
+};
+var V=[], P={}, E=[], MST={}, mstCost=0, cx=240, cy=135;
 var R=20, mode='cut', showMst=false, side={}, taken=[], cyc=[], ci=0;
 function ek(a,b){ return a<b?a+'-'+b:b+'-'+a; }
 function en(e){ return e[0]+'–'+e[1]+' ('+e[2]+')'; }
 
-/* every simple cycle once: smallest vertex first, second vertex < last vertex */
-(function(){
-  var adj={}; for(var v=1;v<=6;v++) adj[v]=[];
+function randomGraph(){
+  /* 2 × 4 grid of vertices; grid edges plus one diagonal per square, so nothing crosses */
+  var xs=[60,180,300,420], ys=[55,215], p={}, cand=[];
+  for(var r=0;r<2;r++) for(var c=0;c<4;c++) p[r*4+c+1]=[xs[c],ys[r]];
+  for(var c=0;c<3;c++){ cand.push([c+1,c+2]); cand.push([c+5,c+6]); cand.push(Math.random()<0.5?[c+1,c+6]:[c+2,c+5]); }
+  for(var c=0;c<4;c++) cand.push([c+1,c+5]);
+  var ws=[]; for(var w=1;w<=20;w++) ws.push(w);
+  for(var i=ws.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=ws[i]; ws[i]=ws[j]; ws[j]=t; }
+  var e;
+  do{ e=[]; cand.forEach(function(c){ if(Math.random()<0.75) e.push([c[0],c[1]]); }); }while(!connected(8,e));
+  e.forEach(function(x,i){ x.push(ws[i]); });
+  return {P:p,E:e};
+}
+function connected(n,e){
+  var par={}; for(var v=1;v<=n;v++) par[v]=v;
+  function f(v){ while(par[v]!==v) v=par[v]=par[par[v]]; return v; }
+  var k=n; e.forEach(function(x){ var a=f(x[0]),b=f(x[1]); if(a!==b){ par[a]=b; k--; } });
+  return k===1;
+}
+function load(g){
+  P=g.P; E=g.E; V=Object.keys(P).map(Number).sort(function(a,b){return a-b;});
+  cx=0; cy=0; V.forEach(function(v){ cx+=P[v][0]; cy+=P[v][1]; }); cx/=V.length; cy/=V.length;
+  /* the MST by Kruskal (stable on ties) */
+  var par={}; V.forEach(function(v){ par[v]=v; });
+  function f(v){ while(par[v]!==v) v=par[v]=par[par[v]]; return v; }
+  MST={}; mstCost=0;
+  E.slice().sort(function(a,b){return a[2]-b[2];}).forEach(function(e){
+    var a=f(e[0]),b=f(e[1]); if(a!==b){ par[a]=b; MST[ek(e[0],e[1])]=1; mstCost+=e[2]; } });
+  /* every simple cycle once: smallest vertex first, second vertex < last vertex */
+  var adj={}; V.forEach(function(v){ adj[v]=[]; });
   E.forEach(function(e){ adj[e[0]].push(e[1]); adj[e[1]].push(e[0]); });
-  for(var s=1;s<=6;s++){
+  cyc=[];
+  V.forEach(function(s){
     (function dfs(v,path,used){
       adj[v].forEach(function(u){
         if(u===s && path.length>=3 && path[1]<path[path.length-1]){ cyc.push(path.slice()); return; }
@@ -628,9 +660,10 @@ function en(e){ return e[0]+'–'+e[1]+' ('+e[2]+')'; }
         used[u]=1; path.push(u); dfs(u,path,used); path.pop(); used[u]=0;
       });
     })(s,[s],(function(){var o={}; o[s]=1; return o;})());
-  }
+  });
   cyc.sort(function(a,b){ return a.length-b.length || (a.join()<b.join()?-1:1); });
-})();
+  ci=0; reset();
+}
 function edgeOf(a,b){ for(var i=0;i<E.length;i++){ var e=E[i]; if((e[0]===a&&e[1]===b)||(e[0]===b&&e[1]===a)) return e; } }
 
 function line(a,b){
@@ -654,17 +687,20 @@ function draw(hl){
     h+='<g style="opacity:'+(st?1:0.55)+'"><rect x="'+(mx-12)+'" y="'+(my-11)+'" width="24" height="20" rx="5" style="fill:var(--surface);stroke:'+(hot?col:'var(--line)')+'"/>';
     h+='<text x="'+mx+'" y="'+(my+4)+'" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="13" style="fill:'+(hot?col:'var(--ink-2)')+';font-weight:600">'+e[2]+'</text></g>';
   });
-  for(var v=1;v<=6;v++){
+  V.forEach(function(v){
     var inA=mode==='cut'&&side[v];
     var fill=inA?'var(--accent)':'var(--surface-2)', tc=inA?'var(--surface)':'var(--ink)', stroke=inA?'var(--accent)':'var(--ink-3)';
     h+='<g data-v="'+v+'" style="cursor:'+(mode==='cut'?'pointer':'default')+'"><circle cx="'+P[v][0]+'" cy="'+P[v][1]+'" r="'+R+'" style="fill:'+fill+';stroke:'+stroke+'" stroke-width="2"/>';
     h+='<text x="'+P[v][0]+'" y="'+(P[v][1]+5)+'" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="15" style="fill:'+tc+';pointer-events:none">'+v+'</text>';
-    if(mode==='cut'){
-      var ty=P[v][1]<130?P[v][1]-28:P[v][1]+38;
-      h+='<text x="'+P[v][0]+'" y="'+ty+'" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="12.5" style="fill:'+(inA?'var(--accent)':'var(--ink-3)')+';font-weight:600;pointer-events:none">'+(inA?'A':'B')+'</text>';
+    if(mode==='cut' && Math.abs(P[v][0]-cx)+Math.abs(P[v][1]-cy)>30){
+      /* the A / B tag sits outside the drawing, away from its centre; the hub of the wheel has no room for one */
+      var dx=P[v][0]-cx, dy=P[v][1]-cy, L=Math.sqrt(dx*dx+dy*dy)||1;
+      if(Math.abs(dy)>8){ dx=0; dy=dy>0?1:-1; L=1; }
+      var tx=P[v][0]+dx/L*32, ty=P[v][1]+dy/L*32+4;
+      h+='<text x="'+tx+'" y="'+ty+'" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="12.5" style="fill:'+(inA?'var(--accent)':'var(--ink-3)')+';font-weight:600;pointer-events:none">'+(inA?'A':'B')+'</text>';
     }
     h+='</g>';
-  }
+  });
   el('ccsvg').innerHTML=h;
 }
 function setStats(l1,v1,l2,v2,v3,msg){
@@ -672,15 +708,16 @@ function setStats(l1,v1,l2,v2,v3,msg){
   el('cclab2').textContent=l2; el('ccv2').textContent=v2;
   el('ccv3').textContent=v3; el('cclog').textContent=msg;
 }
-function group(inA){ var a=[]; for(var v=1;v<=6;v++) if(!!side[v]===inA) a.push(v); return '{'+a.join(', ')+'}'; }
+function group(inA){ return '{'+V.filter(function(v){ return !!side[v]===inA; }).join(', ')+'}'; }
 function crossing(){ return E.filter(function(e){ return !!side[e[0]]!==!!side[e[1]]; }); }
 function cheapest(cr){ var b=null; cr.forEach(function(e){ if(!b||e[2]<b[2]) b=e; }); return b; }
+function countA(){ return V.filter(function(v){ return side[v]; }).length; }
 function paintCut(){
-  var cnt=0; for(var v=1;v<=6;v++) if(side[v]) cnt++;
+  var cnt=countA();
   var hl={}; taken.forEach(function(e){ hl[ek(e[0],e[1])]='taken'; });
-  if(cnt===6){ draw(hl);
+  if(cnt===V.length){ draw(hl);
     setStats('group A | group B','all in A','cheapest edge between A and B','—','—',
-      taken.length?'Every vertex is in A. The '+taken.length+' green edges taken on the way — '+taken.map(en).join(', ')+' — are exactly the MST, total '+taken.reduce(function(s,e){return s+e[2];},0)+'. Each of them was the cheapest edge of some cut.':'Group B is empty, so there is no cut. Click a vertex to move it to B.');
+      taken.length===V.length-1?'Every vertex is in A. The '+taken.length+' green edges taken on the way — '+taken.map(en).join(', ')+' — form the MST, total '+mstCost+'. Each of them was the cheapest edge of some cut.':'Group B is empty, so there is no cut. Click a vertex to move it to B, or press Reset.');
     return; }
   if(cnt===0){ draw(hl); setStats('group A | group B','all in B','cheapest edge between A and B','—','—','Group A is empty, so there is no cut. Click a vertex to move it to A.'); return; }
   var cr=crossing(), best=cheapest(cr);
@@ -691,9 +728,10 @@ function paintCut(){
   var m='A = '+group(true)+', B = '+group(false)+'.\n'
     +'Edges between A and B: '+cr.map(en).join(', ')+'. A spanning tree must use at least one of them, or A and B stay disconnected.\n'
     +'The cheapest one, '+en(best)+', is always safe to take: it is in the MST'+(ties.length>1?' (so is '+en(ties[1])+', the same weight)':'')+'.';
-  setStats('group A | group B',group(true)+' | '+group(false),'cheapest edge between A and B',en(best),MST[ek(best[0],best[1])]?'yes ✓':'—',m);
+  setStats('group A | group B',group(true)+' | '+group(false),'cheapest edge between A and B',en(best),MST[ek(best[0],best[1])]?'yes ✓':'in another MST ✓',m);
 }
 function paintCyc(){
+  if(!cyc.length){ draw({}); setStats('cycle','none','most expensive edge on the cycle','—','—','This graph is a tree — it has no cycles, and every edge is in the MST.'); return; }
   var c=cyc[ci], hl={}, es=[];
   for(var i=0;i<c.length;i++) es.push(edgeOf(c[i],c[(i+1)%c.length]));
   var worst=es[0]; es.forEach(function(e){ if(e[2]>worst[2]) worst=e; });
@@ -707,24 +745,20 @@ function paintCyc(){
 }
 function paint(){
   var cut=mode==='cut';
-  ['ccgrow','ccreset','ccrand'].forEach(function(id){ el(id).style.display=cut?'':'none'; });
+  ['ccgrow','ccreset'].forEach(function(id){ el(id).style.display=cut?'':'none'; });
   ['ccprev','ccnext'].forEach(function(id){ el(id).style.display=cut?'none':''; });
   cut?paintCut():paintCyc();
 }
-function reset(){ side={1:1}; taken=[]; }
+function reset(){ side={}; side[V[0]]=1; taken=[]; }
 on('ccgrow','click',function(){
-  var cnt=0; for(var v=1;v<=6;v++) if(side[v]) cnt++;
-  if(cnt===0||cnt===6){ reset(); paint(); return; }
+  var cnt=countA();
+  if(cnt===0||cnt===V.length){ reset(); paint(); return; }
   var best=cheapest(crossing());
   taken.push(best); side[side[best[0]]?best[1]:best[0]]=1; paint();
 });
 on('ccreset','click',function(){ reset(); paint(); });
-on('ccrand','click',function(){
-  var a; do{ a=[]; for(var v=1;v<=6;v++) if(Math.random()<0.5) a.push(v); }while(a.length===0||a.length===6);
-  side={}; a.forEach(function(v){side[v]=1;}); taken=[]; paint();
-});
-on('ccnext','click',function(){ ci=(ci+1)%cyc.length; paint(); });
-on('ccprev','click',function(){ ci=(ci+cyc.length-1)%cyc.length; paint(); });
+on('ccnext','click',function(){ if(cyc.length) ci=(ci+1)%cyc.length; paint(); });
+on('ccprev','click',function(){ if(cyc.length) ci=(ci+cyc.length-1)%cyc.length; paint(); });
 on('ccmst','click',function(){ showMst=!showMst; el('ccmst').textContent=showMst?'Hide MST':'Show MST'; paint(); });
 el('ccsvg').addEventListener('click',function(ev){
   if(mode!=='cut') return;
@@ -734,7 +768,11 @@ el('ccsvg').addEventListener('click',function(ev){
 each('#ccmode button',function(b){ b.addEventListener('click',function(){
   each('#ccmode button',function(x){x.classList.remove('on');});
   b.classList.add('on'); mode=b.getAttribute('data-m'); paint(); }); });
-reset(); paint();
+each('#ccgraph button',function(b){ b.addEventListener('click',function(){
+  each('#ccgraph button',function(x){x.classList.remove('on');});
+  b.classList.add('on'); var g=b.getAttribute('data-g');
+  load(g==='rnd'?randomGraph():GRAPHS[g]); paint(); }); });
+load(GRAPHS.lec); paint();
 })();
 
 </script>
